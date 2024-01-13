@@ -1,0 +1,140 @@
+{
+    "company": {
+      "name": "ABC Corporation",
+      "departments": [
+        {
+          "name": "Human Resources",
+          "employees": [
+            {
+              "firstname": "John",
+              "lastname": "Doe",
+              "mobile": "123-456-7890",
+              "email": "john.doe@example.com",
+              "address": "123 Main St, Cityville",
+              "gender": "Male",
+              "nationality": "American",
+              "state": "CA",
+              "zip": "90001",
+              "code": "HR001",
+              "employeeId": "EMP001",
+              "username": "john_doe"
+            },
+            {
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "mobile": "987-654-3210",
+              "email": "jane.smith@example.com",
+              "address": "456 Oak St, Townsville",
+              "gender": "Female",
+              "nationality": "Canadian",
+              "state": "ON",
+              "zip": "M5A 1A1",
+              "code": "HR002",
+              "employeeId": "EMP002",
+              "username": "jane_smith"
+            }
+          ]
+        },
+        {
+          "name": "Finance",
+          "employees": [
+            {
+              "firstname": "Robert",
+              "lastname": "Johnson",
+              "mobile": "555-123-4567",
+              "email": "robert.johnson@example.com",
+              "address": "789 Pine St, Villageton",
+              "gender": "Male",
+              "nationality": "British",
+              "state": "NY",
+              "zip": "10001",
+              "code": "FN001",
+              "employeeId": "EMP003",
+              "username": "robert_johnson"
+            },
+            {
+              "firstname": "Elena",
+              "lastname": "Garcia",
+              "mobile": "888-987-6543",
+              "email": "elena.garcia@example.com",
+              "address": "321 Elm St, Hamletville",
+              "gender": "Female",
+              "nationality": "Spanish",
+              "state": "TX",
+              "zip": "75001",
+              "code": "FN002",
+              "employeeId": "EMP004",
+              "username": "elena_garcia"
+            }
+          ]
+        },
+        {
+            "name": "Engineering",
+            "employees": [
+              {
+                "firstname": "Robert",
+                "lastname": "Johnson",
+                "mobile": "555-123-4567",
+                "email": "robert.johnson@example.com",
+                "address": "789 Pine St, Villageton",
+                "gender": "Male",
+                "nationality": "British",
+                "state": "NY",
+                "zip": "10001",
+                "code": "FN001",
+                "employeeId": "EMP003",
+                "username": "robert_johnson"
+              },
+              {
+                "firstname": "Elena",
+                "lastname": "Garcia",
+                "mobile": "888-987-6543",
+                "email": "elena.garcia@example.com",
+                "address": "321 Elm St, Hamletville",
+                "gender": "Female",
+                "nationality": "Spanish",
+                "state": "TX",
+                "zip": "75001",
+                "code": "FN002",
+                "employeeId": "EMP004",
+                "username": "elena_garcia"
+              }
+            ]
+          },
+          {
+            "name": "Frontend",
+            "employees": [
+              {
+                "firstname": "Robert",
+                "lastname": "Johnson",
+                "mobile": "555-123-4567",
+                "email": "robert.johnson@example.com",
+                "address": "789 Pine St, Villageton",
+                "gender": "Male",
+                "nationality": "British",
+                "state": "NY",
+                "zip": "10001",
+                "code": "FN001",
+                "employeeId": "EMP003",
+                "username": "robert_johnson"
+              },
+              {
+                "firstname": "Elena",
+                "lastname": "Garcia",
+                "mobile": "888-987-6543",
+                "email": "elena.garcia@example.com",
+                "address": "321 Elm St, Hamletville",
+                "gender": "Female",
+                "nationality": "Spanish",
+                "state": "TX",
+                "zip": "75001",
+                "code": "FN002",
+                "employeeId": "EMP004",
+                "username": "elena_garcia"
+              }
+            ]
+          }
+      ]
+    }
+  }
+  

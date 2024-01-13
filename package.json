@@ -1,0 +1,37 @@
+{
+  "name": "ic-payroll",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "config": " dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy && dfx generate && cp src/declarations/backend/* .dfx/local/canisters/backend/ && npm i --force",
+    "start": "npm run generate && npm run start:dfx && npm run serve",
+    "start:dfx": "dfx start --background --clean",
+    "build": "vite build",
+    "serve": "vite preview",
+    "deploy": "dfx deploy ",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "format": "prettier --write frontend/"
+  },
+  "dependencies": {
+    "@dfinity/agent": "^0.15.1",
+    "@dfinity/auth-client": "^0.20.2",
+    "@dfinity/candid": "^0.15.1",
+    "@dfinity/identity": "^0.15.1",
+    "@dfinity/principal": "^0.15.1",
+    "@headlessui/vue": "^1.7.17",
+    "@heroicons/vue": "^2.1.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "pinia": "^2.1.7",
+    "vue": "^3.2.37",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.3",
+    "@vue/compiler-sfc": "^3.2.37",
+    "autoprefixer": "^10.4.16",
+    "buffer": "^6.0.3",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "vite": "^2.9.13"
+  }
+}
