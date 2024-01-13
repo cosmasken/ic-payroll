@@ -1,5 +1,0 @@
-service : {
-  getValue: () -> (nat) query;
-  increment: () -> ();
-  whoami: () -> (principal) query;
-}

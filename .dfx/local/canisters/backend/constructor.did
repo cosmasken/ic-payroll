@@ -1,5 +1,5 @@
 service : {
-  getValue: () -> (nat) query;
+  getBalance: () -> (text);
   increment: () -> ();
   whoami: () -> (principal) query;
 }

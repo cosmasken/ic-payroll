@@ -1,11 +1,17 @@
 {
   "__Candid_UI": {
-    "local": "by6od-j4aaa-aaaaa-qaadq-cai"
+    "local": "avqkn-guaaa-aaaaa-qaaea-cai"
   },
   "assets": {
-    "local": "bw4dl-smaaa-aaaaa-qaacq-cai"
+    "local": "a4tbr-q4aaa-aaaaa-qaafq-cai"
   },
   "backend": {
-    "local": "b77ix-eeaaa-aaaaa-qaada-cai"
+    "local": "ajuq4-ruaaa-aaaaa-qaaga-cai"
+  },
+  "icrc1_index": {
+    "local": "a3shf-5eaaa-aaaaa-qaafa-cai"
+  },
+  "icrc1_ledger": {
+    "local": "mxzaz-hqaaa-aaaar-qaada-cai"
   }
 }

@@ -39,7 +39,7 @@
           
           <button class="border border-gray-300 rounded-[10px] p-5">
             principal : {{  response }}<br>
-            balance
+            balance  :  {{  balance }}<br>
           </button>
 
           
@@ -94,21 +94,28 @@ import { useAuthStore } from "../store/auth"
 import { useCompanyStore } from "../store/company"
 import UserType from "./onboarding/UserType.vue"
 
+import * as ledger from "../../src/declarations/icrc1_ledger"
+
 const companyStore = useCompanyStore()
 
 const authStore = useAuthStore()
 let response = ref("")
 
-const count = ref(0)
+const balance = ref("")
 
 watchEffect(async () => {
   const res = await  authStore.whoamiActor?.whoami()
   response.value =  await res
 })
 
+watchEffect(async () => {
+  const res = await  authStore.whoamiActor?.getBalance()
+  balance.value =  await res
+})
+
+
 // -> logs 0
 
-count.value++
 const storeSetup = companyStore.isInitialized;
 function whoamiCall() {
   authStore.whoamiActor?.whoami().then((res) => {
