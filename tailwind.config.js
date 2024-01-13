@@ -5,7 +5,12 @@ module.exports = {
     "./frontend/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+
+      fontFamily: {
+        lexend: ['Lexend', 'sans-serif'],
+    },
+    },
   },
   plugins: [],
 }

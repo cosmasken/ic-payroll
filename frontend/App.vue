@@ -1,4 +1,4 @@
-<template>
+<template class="font-lexend">
   <main>
     <div v-if="isReady">
       <LoggedIn v-if="isAuthenticated" />
