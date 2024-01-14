@@ -1,6 +1,6 @@
 <script setup>
-import TrendCard from '../components/TrendCard.vue'
-import Calendar from '../components/Calendar.vue';
+import TrendCard from "../components/TrendCard.vue"
+import Calendar from "../components/Calendar.vue"
 </script>
 <template>
   <div class="flex flex-row p-5">
@@ -15,8 +15,7 @@ import Calendar from '../components/Calendar.vue';
       </div>
     </div>
     <div class="w-[414px] rounded-[10px] border border-bordercolor p-5">
-
-<Calendar/>
+      <Calendar />
     </div>
   </div>
 </template>

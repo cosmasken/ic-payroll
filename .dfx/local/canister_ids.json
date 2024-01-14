@@ -3,13 +3,13 @@
     "local": "bnz7o-iuaaa-aaaaa-qaaaa-cai"
   },
   "assets": {
-    "local": "be2us-64aaa-aaaaa-qaabq-cai"
-  },
-  "backend": {
     "local": "br5f7-7uaaa-aaaaa-qaaca-cai"
   },
-  "icrc1_index": {
+  "backend": {
     "local": "bd3sg-teaaa-aaaaa-qaaba-cai"
+  },
+  "icrc1_index": {
+    "local": "be2us-64aaa-aaaaa-qaabq-cai"
   },
   "icrc1_ledger": {
     "local": "mxzaz-hqaaa-aaaar-qaada-cai"

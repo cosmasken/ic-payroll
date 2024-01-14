@@ -1,9 +1,3 @@
-<script setup>
-
-</script>
-<template>
-Freelancers Dashboard
-</template>
-<style scoped>
-
-</style>
+<script setup></script>
+<template>Freelancers Dashboard</template>
+<style scoped></style>

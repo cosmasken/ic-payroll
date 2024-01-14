@@ -1,9 +1,17 @@
 <script setup>
 const tabs = [
-  { name: 'Personal Information', href: '/personal-information', current: false },
-  { name: 'Professional Information', href: '/professional-information', current: false },
-  { name: 'Documents', href: '/documents', current: true },
-  { name: 'Account Access', href: '/account-access', current: false }
+  {
+    name: "Personal Information",
+    href: "/personal-information",
+    current: false,
+  },
+  {
+    name: "Professional Information",
+    href: "/professional-information",
+    current: false,
+  },
+  { name: "Documents", href: "/documents", current: true },
+  { name: "Account Access", href: "/account-access", current: false },
 ]
 </script>
 <template>
@@ -35,7 +43,7 @@ const tabs = [
                 tab.current
                   ? 'border-indigo-500 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
+                'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium',
               ]"
               :aria-current="tab.current ? 'page' : undefined"
               >{{ tab.name }}</router-link

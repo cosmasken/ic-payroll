@@ -1,65 +1,65 @@
 <script setup>
-import { ref } from 'vue'
-import Searchbar from '../components/Searchbar.vue'
-import router from '../router/'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid'
+import { ref } from "vue"
+import Searchbar from "../components/Searchbar.vue"
+import router from "../router/"
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid"
 
 const isEmpty = ref(true)
 
 const gotoaddemployee = () => {
-  router.push('/add-employee/')
+  router.push("/add-employee/")
 }
 
 const employees = [
   {
-    name: 'Lindsay Walton',
-    designation: 'Front-end Developer',
-    department: 'Frontend',
-    id: '23',
-    type: 'office',
-    status: 'Permannet'
+    name: "Lindsay Walton",
+    designation: "Front-end Developer",
+    department: "Frontend",
+    id: "23",
+    type: "office",
+    status: "Permannet",
   },
   // More people...
   {
-    name: 'Lindsay Walton',
-    designation: 'Front-end Developer',
-    department: 'Frontend',
-    id: '45',
-    type: 'office',
-    status: 'Permannet'
+    name: "Lindsay Walton",
+    designation: "Front-end Developer",
+    department: "Frontend",
+    id: "45",
+    type: "office",
+    status: "Permannet",
   },
   {
-    name: 'Lindsay Walton',
-    designation: 'Front-end Developer',
-    department: 'Frontend',
-    id: '7567',
-    type: 'office',
-    status: 'Permannet'
+    name: "Lindsay Walton",
+    designation: "Front-end Developer",
+    department: "Frontend",
+    id: "7567",
+    type: "office",
+    status: "Permannet",
   },
   {
-    name: 'Lindsay Walton',
-    designation: 'Front-end Developer',
-    department: 'Frontend',
-    id: '786',
-    type: 'office',
-    status: 'Permannet'
+    name: "Lindsay Walton",
+    designation: "Front-end Developer",
+    department: "Frontend",
+    id: "786",
+    type: "office",
+    status: "Permannet",
   },
   {
-    name: 'Lindsay Walton',
-    designation: 'Front-end Developer',
-    department: 'Frontend',
-    id: '243',
-    type: 'office',
-    status: 'Permannet'
+    name: "Lindsay Walton",
+    designation: "Front-end Developer",
+    department: "Frontend",
+    id: "243",
+    type: "office",
+    status: "Permannet",
   },
   {
-    name: 'Lindsay Walton',
-    designation: 'Front-end Developer',
-    department: 'Frontend',
-    id: '687',
-    type: 'office',
-    status: 'Permannet'
-  }
+    name: "Lindsay Walton",
+    designation: "Front-end Developer",
+    department: "Frontend",
+    id: "687",
+    type: "office",
+    status: "Permannet",
+  },
 ]
 </script>
 <template>
@@ -69,7 +69,7 @@ const employees = [
       <div class="flex flex-row space-x-5">
         <div
           @click="gotoaddemployee()"
-          class="rounded-[10px] cursor-pointer flex flex-row  bg-[#7152F3] p-3 items-center space-x-[10px]"
+          class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
           <p class="text-base font-light text-white">Add New Employee</p>
@@ -78,7 +78,9 @@ const employees = [
           class="rounded-[10px] flex flex-row cursor-pointer border border-[#A2A1A833] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/filter.png" alt="" class="w-6 h-6" />
-          <p class="text-base font-light dark:text-white text-[#16151C]">Filter</p>
+          <p class="text-base font-light dark:text-white text-[#16151C]">
+            Filter
+          </p>
         </div>
       </div>
     </div>
@@ -86,7 +88,9 @@ const employees = [
     <!-- Table-->
     <div class="flow-root">
       <div class="overflow-x-auto">
-        <div class="inline-block min-w-full border-b border-gray-300 align-middle">
+        <div
+          class="inline-block min-w-full border-b border-gray-300 align-middle"
+        >
           <table class="min-w-full divide-y divide-gray-300">
             <thead>
               <tr>
@@ -200,25 +204,30 @@ const employees = [
       </div>
 
       <div>
-        <p class="text-accentgray dark:text-white text-sm leading-[22px] font-light">
+        <p
+          class="text-accentgray dark:text-white text-sm leading-[22px] font-light"
+        >
           Showing
-          {{ ' ' }}
+          {{ " " }}
           <span class="font-medium">1</span>
-          {{ ' ' }}
+          {{ " " }}
           to
-          {{ ' ' }}
+          {{ " " }}
           <span class="font-medium">10</span>
-          {{ ' ' }}
+          {{ " " }}
           out of
-          {{ ' ' }}
+          {{ " " }}
           <span class="font-medium">97</span>
-          {{ ' ' }}
+          {{ " " }}
           Records
         </p>
       </div>
 
       <div>
-        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+        <nav
+          class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+          aria-label="Pagination"
+        >
           <a
             href="#"
             class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"

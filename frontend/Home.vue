@@ -1,13 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue"
+import { useAuthStore } from "./store/auth"
+const authStore = useAuthStore()
 const darkmode = ref(false)
 
 const toggleDarkMode = () => {
   darkmode.value = !darkmode.value
   if (darkmode.value) {
-    document.documentElement.classList.add('dark')
+    document.documentElement.classList.add("dark")
   } else {
-    document.documentElement.classList.remove('dark')
+    document.documentElement.classList.remove("dark")
   }
 }
 </script>
@@ -33,7 +35,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/dashboard"
             >
-              <img src="./assets/dashboard.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/dashboard.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Dashboard</span>
             </router-link>
             <router-link
@@ -41,7 +47,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/employees"
             >
-              <img src="./assets/employees.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/employees.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Employees</span>
             </router-link>
             <router-link
@@ -49,7 +59,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/departments"
             >
-              <img src="./assets/departments.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/departments.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Departments</span>
             </router-link>
             <router-link
@@ -57,7 +71,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/attendance"
             >
-              <img src="./assets/attendance.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/attendance.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Attendance</span>
             </router-link>
             <router-link
@@ -65,7 +83,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/payroll"
             >
-              <img src="./assets/payroll.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/payroll.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Payroll</span>
             </router-link>
             <router-link
@@ -73,7 +95,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/jobs"
             >
-              <img src="./assets/jobs.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/jobs.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Jobs</span>
             </router-link>
 
@@ -82,7 +108,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/candidates"
             >
-              <img src="./assets/candidates.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/candidates.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Candidates</span>
             </router-link>
             <router-link
@@ -90,7 +120,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/leaves"
             >
-              <img src="./assets/leaves.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/leaves.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Leaves</span>
             </router-link>
             <router-link
@@ -98,7 +132,11 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/holidays"
             >
-              <img src="./assets/holidays.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/holidays.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Holidays</span>
             </router-link>
             <router-link
@@ -106,17 +144,27 @@ const toggleDarkMode = () => {
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/settings"
             >
-              <img src="./assets/settings.png" class="shrink-0 h-6 w-6" alt="Vite logo" />
+              <img
+                src="./assets/settings.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
               <span>Settings</span>
             </router-link>
           </div>
         </div>
+
+        <button @click="authStore.logout"
+        class="border border-gray-300 rounded-[10px] p-5">
+     
+          Log out
+        </button>
         <nav class="flex rounded-[10px] align-bottom" aria-label="Tabs">
           <div
             @click="toggleDarkMode()"
             :class="{
               'bg-[#7152F3]  rounded-[10px] text-white ': !darkmode,
-              'bg-transparent text-white': darkmode
+              'bg-transparent text-white': darkmode,
             }"
             class="flex items-center space-x-[10px] cursor-pointer px-3 py-2 text-base font-light"
           >
@@ -158,7 +206,7 @@ const toggleDarkMode = () => {
             @click="toggleDarkMode()"
             :class="{
               'bg-[#7152F3]  rounded-[10px] ': darkmode,
-              'bg-transparent text-[#16151C]': !darkmode
+              'bg-transparent text-[#16151C]': !darkmode,
             }"
             class="flex items-center space-x-[10px] cursor-pointer px-3 py-2 text-base font-light"
           >
@@ -203,7 +251,9 @@ const toggleDarkMode = () => {
       <!-- Header-->
       <div class="w-full sticky flex flex-row justify-between">
         <div class="flex flex-col">
-          <p class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]">
+          <p
+            class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
+          >
             Hello Cosmas 👋🏻
           </p>
           <p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p>
@@ -243,7 +293,13 @@ const toggleDarkMode = () => {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <rect width="50" height="50" rx="10" fill="#A2A1A8" fill-opacity="0.1" />
+                <rect
+                  width="50"
+                  height="50"
+                  rx="10"
+                  fill="#A2A1A8"
+                  fill-opacity="0.1"
+                />
                 <path
                   d="M18.6796 21.794C19.0538 18.4909 21.7709 16 25 16C28.2291 16 30.9462 18.4909 31.3204 21.794L31.6652 24.8385C31.7509 25.595 32.0575 26.3069 32.5445 26.88C33.5779 28.0964 32.7392 30 31.1699 30H18.8301C17.2608 30 16.4221 28.0964 17.4555 26.88C17.9425 26.3069 18.2491 25.595 18.3348 24.8385L18.6796 21.794Z"
                   stroke="#16151C"
@@ -266,7 +322,13 @@ const toggleDarkMode = () => {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <rect width="50" height="50" rx="10" fill="#A2A1A8" fill-opacity="0.1" />
+                <rect
+                  width="50"
+                  height="50"
+                  rx="10"
+                  fill="#A2A1A8"
+                  fill-opacity="0.1"
+                />
                 <path
                   d="M18.6796 21.794C19.0538 18.4909 21.7709 16 25 16C28.2291 16 30.9462 18.4909 31.3204 21.794L31.6652 24.8385C31.7509 25.595 32.0575 26.3069 32.5445 26.88C33.5779 28.0964 32.7392 30 31.1699 30H18.8301C17.2608 30 16.4221 28.0964 17.4555 26.88C17.9425 26.3069 18.2491 25.595 18.3348 24.8385L18.6796 21.794Z"
                   stroke="#16151C"
@@ -283,12 +345,20 @@ const toggleDarkMode = () => {
             </div>
           </div>
 
-          <div class="flex flex-row p-[5px] items-center border rounded-lg border-[#A2A1A833]">
+          <div
+            class="flex flex-row p-[5px] items-center border rounded-lg border-[#A2A1A833]"
+          >
             <div class="h-[40px] w-[40px]">
-              <img src="./assets/dp.png" class="h-[40px] w-[40px]" alt="Vite logo" />
+              <img
+                src="./assets/dp.png"
+                class="h-[40px] w-[40px]"
+                alt="Vite logo"
+              />
             </div>
             <div class="flex flex-col space-y-[2px]">
-              <p class="font-semibold text-base text-[#16151C] dark:text-white">Robert Allen</p>
+              <p class="font-semibold text-base text-[#16151C] dark:text-white">
+                Robert Allen
+              </p>
               <p class="font-light text-xs text-[#A2A1A8]">Hr Manager</p>
             </div>
             <div class="pl-[10px]">

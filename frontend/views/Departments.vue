@@ -1,6 +1,6 @@
 <script setup>
-import Searchbar from '../components/Searchbar.vue'
-import DepartmentCard from '../components/DepartmentCard.vue'
+import Searchbar from "../components/Searchbar.vue"
+import DepartmentCard from "../components/DepartmentCard.vue"
 //
 </script>
 <template>

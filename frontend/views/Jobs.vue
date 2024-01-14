@@ -1,6 +1,6 @@
 <script setup>
-import JobCardVue from '../components/JobCard.vue'
-import Searchbar from '../components/Searchbar.vue'
+import JobCardVue from "../components/JobCard.vue"
+import Searchbar from "../components/Searchbar.vue"
 </script>
 <template>
   <div class="flex flex-col space-y-[30px] p-5">
@@ -16,7 +16,9 @@ import Searchbar from '../components/Searchbar.vue'
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
       <!-- Active jobs-->
-      <div class="flex flex-col space-y-4 rounded-[10px] border border-[#A2A1A833] p-4">
+      <div
+        class="flex flex-col space-y-4 rounded-[10px] border border-[#A2A1A833] p-4"
+      >
         <div class="flex flex-row space-x-2 items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +29,9 @@ import Searchbar from '../components/Searchbar.vue'
           >
             <circle cx="5" cy="5" r="5" fill="#EFBE12" />
           </svg>
-          <p class="text-[14px] leading-[22px] text-[#16151C] dark:text-white font-semibold">
+          <p
+            class="text-[14px] leading-[22px] text-[#16151C] dark:text-white font-semibold"
+          >
             Active Class
           </p>
         </div>
@@ -40,7 +44,9 @@ import Searchbar from '../components/Searchbar.vue'
         </div>
       </div>
       <!-- InAcive jobs-->
-      <div class="flex flex-col space-y-4 rounded-[10px] border border-[#A2A1A833] p-4">
+      <div
+        class="flex flex-col space-y-4 rounded-[10px] border border-[#A2A1A833] p-4"
+      >
         <div class="flex flex-row space-x-2 items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +57,9 @@ import Searchbar from '../components/Searchbar.vue'
           >
             <circle cx="5" cy="5" r="5" fill="#EFBE12" />
           </svg>
-          <p class="text-[14px] leading-[22px] text-[#16151C] dark:text-white font-semibold">
+          <p
+            class="text-[14px] leading-[22px] text-[#16151C] dark:text-white font-semibold"
+          >
             Active Class
           </p>
         </div>
@@ -62,7 +70,9 @@ import Searchbar from '../components/Searchbar.vue'
         </div>
       </div>
       <!-- Complete jobs-->
-      <div class="flex flex-col space-y-4 rounded-[10px] border border-[#A2A1A833] p-4">
+      <div
+        class="flex flex-col space-y-4 rounded-[10px] border border-[#A2A1A833] p-4"
+      >
         <div class="flex flex-row space-x-2 items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +83,9 @@ import Searchbar from '../components/Searchbar.vue'
           >
             <circle cx="5" cy="5" r="5" fill="#EFBE12" />
           </svg>
-          <p class="text-[14px] leading-[22px] text-[#16151C] dark:text-white font-semibold">
+          <p
+            class="text-[14px] leading-[22px] text-[#16151C] dark:text-white font-semibold"
+          >
             Active Class
           </p>
         </div>

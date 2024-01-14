@@ -10,23 +10,20 @@ const authStore = useAuthStore()
     >
       <div class="mx-auto flex flex-col w-full max-w-sm lg:w-96 items-center">
         <img
-            class="h-10 w-auto"
-            src="../../assets/dfinity.svg"
-            alt="Your Company"
-          />
-        <div >
-          
+          class="h-10 w-auto"
+          src="../../assets/dfinity.svg"
+          alt="Your Company"
+        />
+        <div>
           <h2
             class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900"
           >
             Sign in to your account
           </h2>
         </div>
-       
+
         <div class="mt-10">
-          <div 
-          @click="authStore.login()"
-          class="mt-6 grid grid-cols-1 gap-4">
+          <div @click="authStore.login()" class="mt-6 grid grid-cols-1 gap-4">
             <a
               href="#"
               class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent"

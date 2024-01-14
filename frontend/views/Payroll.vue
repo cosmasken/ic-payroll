@@ -1,7 +1,7 @@
 <script setup>
-import TableComponent from '../components/TableComponent.vue'
-import Searchbar from '../components/Searchbar.vue'
-import Header from '../components/Header.vue'
+import TableComponent from "../components/TableComponent.vue"
+import Searchbar from "../components/Searchbar.vue"
+import Header from "../components/Header.vue"
 </script>
 <template>
   <div class="p-5">
