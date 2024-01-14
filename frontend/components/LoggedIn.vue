@@ -39,7 +39,8 @@
           
           <button class="border border-gray-300 rounded-[10px] p-5">
             principal : {{  response }}<br>
-            balance  :  {{  balance }}<br>
+            ckbtc balance  :  {{  balance }}<br>
+           
           </button>
 
           
@@ -47,7 +48,7 @@
         <UserType/>
 
         <div 
-          
+          @click="gotoDashboard()"
           class="mt-6 grid grid-cols-1 gap-4">
             <a
               href="#"
@@ -94,7 +95,7 @@ import { useAuthStore } from "../store/auth"
 import { useCompanyStore } from "../store/company"
 import UserType from "./onboarding/UserType.vue"
 
-import * as ledger from "../../src/declarations/icrc1_ledger"
+import router from "../router"
 
 const companyStore = useCompanyStore()
 
@@ -102,6 +103,9 @@ const authStore = useAuthStore()
 let response = ref("")
 
 const balance = ref("")
+const paymentres = ref("")
+
+
 
 watchEffect(async () => {
   const res = await  authStore.whoamiActor?.whoami()
@@ -114,11 +118,20 @@ watchEffect(async () => {
 })
 
 
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.makeTransfer('inhle-3bt2j-k3bn6-kp5my-33r3q-lpe4j-s4c57-fpzvm-up5rx-smpre-5qe',500)
+  paymentres.value =  await res
+})
+
+function gotoDashboard() {
+  router.push({ name: 'Dashboard' })
+}
+
 // -> logs 0
 
 const storeSetup = companyStore.isInitialized;
-function whoamiCall() {
-  authStore.whoamiActor?.whoami().then((res) => {
+function sendMulla() {
+  authStore.whoamiActor?.makeTransfer('inhle-3bt2j-k3bn6-kp5my-33r3q-lpe4j-s4c57-fpzvm-up5rx-smpre-5qe',500).then((res) => {
     response.value = res
   })
 }

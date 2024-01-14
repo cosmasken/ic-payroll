@@ -2,7 +2,7 @@
 
 </script>
 <template>
-
+Freelancers Dashboard
 </template>
 <style scoped>
 

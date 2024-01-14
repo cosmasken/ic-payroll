@@ -1,0 +1,71 @@
+//dfx deploy --network local internet_identity
+dfx deps pull 
+dfx deps init internet-identity --argument '(null)'
+dfx deps deploy
+
+
+dfx identity use minter
+export OWNER=$(dfx identity get-principal)
+
+dfx deploy --network local --specified-id mxzaz-hqaaa-aaaar-qaada-cai icrc1_ledger --argument '
+  (variant {
+    Init = record {
+      token_name = "Local ckBTC";
+      token_symbol = "LCKBTC";
+      minting_account = record {
+        owner = principal "'${OWNER}'";
+      };
+      initial_balances = vec {
+        record {
+          record {
+            owner = principal "'${OWNER}'";
+          };
+          100_000_000_000;
+        };
+      };
+      metadata = vec {};
+      transfer_fee = 10;
+      archive_options = record {
+        trigger_threshold = 2000;
+        num_blocks_to_archive = 1000;
+        controller_id = principal "'${OWNER}'";
+      }
+    }
+  })
+'
+
+
+dfx deploy --network local icrc1_index --argument '
+  record {
+   ledger_id = (principal "mxzaz-hqaaa-aaaar-qaada-cai");
+  }
+'
+
+dfx canister --network local call icrc1_ledger icrc1_transfer '
+  (record {
+    to=(record {
+      owner=(principal "n25ly-aexj7-kaetk-f3gwc-zqepl-knjme-y5ng2-2qfv3-x6lwn-vw3nd-pqe")
+    });
+    amount=100_000_000
+  })
+'
+
+dfx deploy --network local backend --argument '(0)'
+
+
+dfx generate
+
+
+cp src/declarations/backend/* .dfx/local/canisters/backend/
+
+
+dfx deploy 
+npm i 
+npm run dev
+
+
+cosmas - h6ey4-644dx-4ulk3-ix7xc-gdrxn-qrynh-5budz-ibghc-4u33c-vnsaz-pae
+
+minter - 7perq-wiajy-4wimm-4qbek-u7rfv-ortmq-gkajk-6vzst-trmbo-3kwv5-7qe
+
+token_admin - vvfrr-zsa5k-bouq4-6uyq3-zbzjj-kxnxt-xrdfe-hzqnu-btkn2-c4q3f-oae
