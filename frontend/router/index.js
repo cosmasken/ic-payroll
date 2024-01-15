@@ -11,36 +11,79 @@ const router = createRouter({
       name: "Auth",
       component: () => import("../App.vue"),
     },
+  
     {
       path: "/home",
-      name: "Home",
       component: () => import("../Home.vue"),
+      children: [
+        {
+          path: "/home/dashboard",
+          component: () => import("../views/Dashboard.vue"),
+        },
+        {
+          path: "/home/attendance",
+          component: () => import("../views/Attendance.vue"),
+        },
+        {
+          path: "/home/employees",
+          component: () => import("../views/Employees.vue"),
+        },
+        {
+          path: "/home/candidates",
+          component: () => import("../views/Candidates.vue"),
+        },
+        {
+          path: "/home/departments",
+          component: () => import("../views/Departments.vue"),
+        },
+        {
+          path: "/home/holidays",
+          component: () => import("../views/Holidays.vue"),
+        },
+        {
+          path: "/home/jobs",
+          component: () => import("../views/Jobs.vue"),
+        },
+        {
+          path: "/home/payroll",
+          component: () => import("../views/Payroll.vue"),
+        },
+        {
+          path: "/home/leaves",
+          component: () => import("../views/Leaves.vue"),
+        },
+        {
+          path: "/home/settings",
+          component: () => import("../views/Settings.vue"),
+        },
+       
+      ],
     },
-    {
-      path: "/dashboard",
-      name: "Dashboard",
-      component: () => import("../views/Dashboard.vue"),
-    },
-    {
-      path: "/freelancers",
-      name: "Freelancers",
-      component: () => import("../freelancer/Dashboard.vue"),
-    },
-    {
-      path: "/attendance",
-      name: "Attendance",
-      component: () => import("../views/Attendance.vue"),
-    },
-    {
-      path: "/candidates",
-      name: "Candidates",
-      component: () => import("../views/Candidates.vue"),
-    },
-    {
-      path: "/departments",
-      name: "Departments",
-      component: () => import("../views/Departments.vue"),
-    },
+    // {
+    //   path: "/dashboard",
+    //   name: "Dashboard",
+    //   component: () => import("../views/Dashboard.vue"),
+    // },
+    // {
+    //   path: "/freelancers",
+    //   name: "Freelancers",
+    //   component: () => import("../freelancer/Dashboard.vue"),
+    // },
+    // {
+    //   path: "/attendance",
+    //   name: "Attendance",
+    //   component: () => import("../views/Attendance.vue"),
+    // },
+    // {
+    //   path: "/candidates",
+    //   name: "Candidates",
+    //   component: () => import("../views/Candidates.vue"),
+    // },
+    // {
+    //   path: "/departments",
+    //   name: "Departments",
+    //   component: () => import("../views/Departments.vue"),
+    // },
     {
       path: "/add-employee",
       component: () => import("../views/AddEmployee.vue"),
@@ -63,36 +106,36 @@ const router = createRouter({
         },
       ],
     },
-    {
-      path: "/employees",
-      name: "Employees",
-      component: () => import("../views/Employees.vue"),
-    },
-    {
-      path: "/holidays",
-      name: "Holidays",
-      component: () => import("../views/Holidays.vue"),
-    },
-    {
-      path: "/jobs",
-      name: "Jobs",
-      component: () => import("../views/Jobs.vue"),
-    },
-    {
-      path: "/leaves",
-      name: "Leaves",
-      component: () => import("../views/Leaves.vue"),
-    },
-    {
-      path: "/payroll",
-      name: "Payroll",
-      component: () => import("../views/Payroll.vue"),
-    },
-    {
-      path: "/settings",
-      name: "Settings",
-      component: () => import("../views/Settings.vue"),
-    },
+    // {
+    //   path: "/employees",
+    //   name: "Employees",
+    //   component: () => import("../views/Employees.vue"),
+    // },
+    // {
+    //   path: "/holidays",
+    //   name: "Holidays",
+    //   component: () => import("../views/Holidays.vue"),
+    // },
+    // {
+    //   path: "/jobs",
+    //   name: "Jobs",
+    //   component: () => import("../views/Jobs.vue"),
+    // },
+    // {
+    //   path: "/leaves",
+    //   name: "Leaves",
+    //   component: () => import("../views/Leaves.vue"),
+    // },
+    // {
+    //   path: "/payroll",
+    //   name: "Payroll",
+    //   component: () => import("../views/Payroll.vue"),
+    // },
+    // {
+    //   path: "/settings",
+    //   name: "Settings",
+    //   component: () => import("../views/Settings.vue"),
+    // },
     // {
     //   path: '/add-employee',
     //   name: 'AddEmployee',

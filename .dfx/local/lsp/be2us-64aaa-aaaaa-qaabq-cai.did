@@ -1,63 +1,11 @@
-type Account = record { owner : principal; subaccount : opt vec nat8 };
-type GetAccountTransactionsArgs = record {
-  max_results : nat;
-  start : opt TxId;
-  account : Account;
-};
-type GetTransactions = record {
-  transactions : vec TransactionWithId;
-  oldest_tx_id : opt TxId;
-};
-type GetTransactionsErr = record { message : text };
-type GetTransactionsResult = variant {
-  Ok : GetTransactions;
-  Err : GetTransactionsErr;
-};
-type InitArgs = record { ledger_id : principal };
-type ListSubaccountsArgs = record { owner : principal; start : opt SubAccount };
-type SubAccount = vec nat8;
-type Transaction = record {
-  burn : opt record {
-    from : Account;
-    memo : opt vec nat8;
-    created_at_time : opt nat64;
-    amount : nat;
-    spender : opt Account;
-  };
-  kind : text;
-  mint : opt record {
-    to : Account;
-    memo : opt vec nat8;
-    created_at_time : opt nat64;
-    amount : nat;
-  };
-  approve : opt record {
-    fee : opt nat;
-    from : Account;
-    memo : opt vec nat8;
-    created_at_time : opt nat64;
-    amount : nat;
-    expected_allowance : opt nat;
-    expires_at : opt nat64;
-    spender : opt Account;
-  };
-  timestamp : nat64;
-  transfer : opt record {
-    to : Account;
-    fee : opt nat;
-    from : Account;
-    memo : opt vec nat8;
-    created_at_time : opt nat64;
-    amount : nat;
-    spender : opt Account;
-  };
-};
-type TransactionWithId = record { id : TxId; transaction : Transaction };
-type TxId = nat;
+type Result = 
+ variant {
+   err: text;
+   ok: text;
+ };
 service : {
-  get_account_transactions : (GetAccountTransactionsArgs) -> (
-      GetTransactionsResult,
-    );
-  ledger_id : () -> (principal) query;
-  list_subaccounts : (ListSubaccountsArgs) -> (vec SubAccount) query;
+  getBalance: () -> (text);
+  increment: () -> ();
+  makeTransfer: (text, nat) -> (Result);
+  whoami: () -> (principal) query;
 }

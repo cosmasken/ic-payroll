@@ -2,6 +2,7 @@ import { defineStore } from "pinia"
 import { AuthClient } from "@dfinity/auth-client"
 import { createActor, canisterId } from "../../src/declarations/backend"
 import { toRaw } from "vue"
+import router from "../router"
 
 const defaultOptions = {
   /**
@@ -66,6 +67,8 @@ export const useAuthStore = defineStore("auth", {
           this.whoamiActor = this.identity
             ? actorFromIdentity(this.identity)
             : null
+
+            router.push("/home/dashboard")
         },
       })
     },

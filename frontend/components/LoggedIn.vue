@@ -71,7 +71,7 @@ import { useAuthStore } from "../store/auth"
 import { useCompanyStore } from "../store/company"
 import UserType from "./onboarding/UserType.vue"
 
-import router from "../router/index.js"
+import router from "../router"
 
 const companyStore = useCompanyStore()
 
@@ -100,7 +100,7 @@ watchEffect(async () => {
 })
 
 function gotoDashboard() {
-  router.push("/home")
+  router.push("/home/dashboard")
 }
 
 // -> logs 0

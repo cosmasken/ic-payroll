@@ -1,8 +1,14 @@
 <script setup>
 import { ref } from "vue"
 import { useAuthStore } from "./store/auth"
+import router from "./router/"
 const authStore = useAuthStore()
 const darkmode = ref(false)
+
+const logout = () => {
+  router.push("/auth")
+  authStore.logout()
+}
 
 const toggleDarkMode = () => {
   darkmode.value = !darkmode.value
@@ -33,7 +39,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/dashboard"
+              to="/home/dashboard"
             >
               <img
                 src="./assets/dashboard.png"
@@ -45,7 +51,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/employees"
+              to="/home/employees"
             >
               <img
                 src="./assets/employees.png"
@@ -57,7 +63,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/departments"
+              to="/home/departments"
             >
               <img
                 src="./assets/departments.png"
@@ -69,7 +75,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/attendance"
+              to="/home/attendance"
             >
               <img
                 src="./assets/attendance.png"
@@ -81,7 +87,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/payroll"
+              to="/home/payroll"
             >
               <img
                 src="./assets/payroll.png"
@@ -93,7 +99,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/jobs"
+              to="/home/jobs"
             >
               <img
                 src="./assets/jobs.png"
@@ -106,7 +112,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/candidates"
+              to="/home/candidates"
             >
               <img
                 src="./assets/candidates.png"
@@ -118,7 +124,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/leaves"
+              to="/home/leaves"
             >
               <img
                 src="./assets/leaves.png"
@@ -130,7 +136,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/holidays"
+              to="/home/holidays"
             >
               <img
                 src="./assets/holidays.png"
@@ -142,7 +148,7 @@ const toggleDarkMode = () => {
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/settings"
+              to="/home/settings"
             >
               <img
                 src="./assets/settings.png"
@@ -154,7 +160,7 @@ const toggleDarkMode = () => {
           </div>
         </div>
 
-        <button @click="authStore.logout"
+        <button @click="logout"
         class="border border-gray-300 rounded-[10px] p-5">
      
           Log out
