@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue"
+import AccountSwitcherVue from "./components/AccountSwitcher.vue";
 import { useAuthStore } from "./store/auth"
 import router from "./router/"
 const authStore = useAuthStore()
@@ -29,6 +30,8 @@ const toggleDarkMode = () => {
     >
       <div class="flex flex-col justify-between h-full">
         <div>
+
+          <AccountSwitcherVue/>
           <div v-if="darkmode">
             <img src="./assets/darklogo.png" class="h-[50px]" />
           </div>

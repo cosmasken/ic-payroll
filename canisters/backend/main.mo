@@ -1,3 +1,14 @@
+/**
+ * Module     : Main.mo
+ * Copyright  : Cosmas Ken
+ * License    : Apache 2.0 with LLVM Exception
+ * Maintainer : Cosmas Ken <arubacosmas@gmail.com>
+ * Stability  : Stable
+ */
+
+import List "mo:base/List";
+import Option "mo:base/Option";
+import Trie "mo:base/Trie";
 import CkBtcLedger "canister:icrc1_ledger";
 import Principal "mo:base/Principal";
 import Nat "mo:base/Nat";
@@ -11,11 +22,132 @@ actor Backend {
         msg.caller
     };
 
-    stable var currentValue: Nat = 0;
+  
+  stable var projectName : Text = "Pochi";
 
-    public func increment(): async () {
-        currentValue += 1;
+  /**
+   * Low-Level API
+   */
+
+  public query func get() : async Text {
+    return projectName;
+  };
+
+
+  /**
+   * Types
+   */
+
+    // The type of a company identifier.
+  public type CompanyId = Nat32;
+   // The type of a director identifier.
+  public type DirectorId = Nat32;
+
+    // The type of a company.
+  public type Director = {
+    name : Text;
+    companies : List.List<Company>;
+  };
+
+
+    // The type of a company.
+  public type Company = {
+    name : Text;
+    departments : List.List<Department>;
+  };
+
+      // The type of a department.
+  public type Department = {
+    name : Text;
+    employees : List.List<Employee>;
+  };
+
+      // The type of a employee.
+  public type Employee = {
+    name : Text;
+    address : Text;
+  };
+
+  /**
+   * Application State
+   */
+
+  // The next available superhero identifier.
+    private stable var nextCompany : CompanyId = 0;
+
+    // The company data store.
+  private stable var companies : Trie.Trie<CompanyId, Company> = Trie.empty();
+
+  /**
+   * High-Level API
+   */
+
+
+   // Create a company.
+  public func createCompany(company : Company) : async CompanyId {
+    let companyId = nextCompany;
+    nextCompany += 1;
+    companies := Trie.replace(
+      companies,
+      key(companyId),
+      Nat32.equal,
+      ?company,
+    ).0;
+    return companyId;
+  };
+
+
+  
+  // Read a company.
+  public query func readCompany(companyId : CompanyId) : async ?Company {
+    let result = Trie.find(companies, key(companyId), Nat32.equal);
+    return result;
+  };
+
+  
+
+    // Update a company.
+  public func updateCompanyDetails(companyId : CompanyId, company : Company) : async Bool {
+    let result = Trie.find(companies, key(companyId), Nat32.equal);
+    let exists = Option.isSome(result);
+    if (exists) {
+      companies := Trie.replace(
+        companies,
+        key(companyId),
+        Nat32.equal,
+        ?company,
+      ).0;
     };
+    return exists;
+  };
+
+
+
+    // Delete a company.
+  public func deleteCompany(companyId : CompanyId) : async Bool {
+    let result = Trie.find(companies, key(companyId), Nat32.equal);
+    let exists = Option.isSome(result);
+    if (exists) {
+      companies := Trie.replace(
+        companies,
+        key(companyId),
+        Nat32.equal,
+        null,
+      ).0;
+    };
+    return exists;
+  };
+
+  /**
+   * Utilities
+   */
+
+  // Create a trie key from a company identifier.
+  private func key(x : CompanyId) : Trie.Key<CompanyId> {
+    return { hash = x; key = x };
+  };
+
+
 
     public shared ({ caller }) func getBalance() : async Text{
 

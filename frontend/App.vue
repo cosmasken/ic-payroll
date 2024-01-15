@@ -20,6 +20,4 @@ const { isReady, isAuthenticated } = storeToRefs(authStore)
 if (isReady.value === false) {
   authStore.init()
 }
-
-
 </script>

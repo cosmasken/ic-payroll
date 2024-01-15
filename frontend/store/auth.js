@@ -68,7 +68,7 @@ export const useAuthStore = defineStore("auth", {
             ? actorFromIdentity(this.identity)
             : null
 
-            router.push("/home/dashboard")
+          router.push("/home/dashboard")
         },
       })
     },

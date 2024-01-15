@@ -10,4 +10,11 @@ module {
     to : Account;
     amount : Nat;
   };
+
+  public type Payment = {
+    from : Account;
+    amount : Nat;
+  };
+
+  
 };

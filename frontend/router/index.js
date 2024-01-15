@@ -11,7 +11,7 @@ const router = createRouter({
       name: "Auth",
       component: () => import("../App.vue"),
     },
-  
+
     {
       path: "/home",
       component: () => import("../Home.vue"),
@@ -56,7 +56,6 @@ const router = createRouter({
           path: "/home/settings",
           component: () => import("../views/Settings.vue"),
         },
-       
       ],
     },
     // {
