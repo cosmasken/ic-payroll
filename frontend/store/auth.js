@@ -38,6 +38,7 @@ export const useAuthStore = defineStore("auth", {
   state: () => {
     return {
       isReady: false,
+      isIndivual: false,
       isAuthenticated: null,
       authClient: null,
       identity: null,
@@ -68,7 +69,7 @@ export const useAuthStore = defineStore("auth", {
             ? actorFromIdentity(this.identity)
             : null
 
-          router.push("/home/dashboard")
+         // router.push("/home/dashboard")
         },
       })
     },
@@ -79,5 +80,18 @@ export const useAuthStore = defineStore("auth", {
       this.identity = null
       this.whoamiActor = null
     },
+
+   
   },
+
+  getters:{
+    getIsAuthenticated(){
+      return this.isAuthenticated
+    },
+    getIsIndivual(){
+      return this.isIndivual
+    }
+  
+
+  }
 })

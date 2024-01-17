@@ -1,14 +1,47 @@
 <script setup>
-import { ref } from "vue"
-import AccountSwitcherVue from "./components/AccountSwitcher.vue";
+import { ref ,watchEffect } from "vue"
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import useClipboard from 'vue-clipboard3'
 import { useAuthStore } from "./store/auth"
+import { useCompanyStore } from "./store/company"
 import router from "./router/"
 const authStore = useAuthStore()
+const companyStore = useCompanyStore()
 const darkmode = ref(false)
+let response = ref("")
 
+const balance = ref("")
 const logout = () => {
   router.push("/auth")
   authStore.logout()
+}
+
+const { toClipboard } = useClipboard()
+  const copy = async () => {
+      try {
+        await toClipboard(response.value)
+        console.log('Copied to clipboard')
+      //  console.log(balance)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.whoami()
+  response.value = await res
+})
+
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getBalance()
+  balance.value = await res
+})
+
+
+const walletAddress = "0x1234567890123456789012345678901234567890"
+
+//const accountType = companyStore.getAccountType();
+const toggleModes = () =>{
+  companyStore.toggleAccountType
 }
 
 const toggleDarkMode = () => {
@@ -26,12 +59,12 @@ const toggleDarkMode = () => {
     class="w-full p-5 h-full flex flex-row space-x-[30px] self-stretch bg-white dark:bg-[#16151C]"
   >
     <div
-      class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-[1048px]"
+      class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-screen"
     >
       <div class="flex flex-col justify-between h-full">
+       
         <div>
 
-          <AccountSwitcherVue/>
           <div v-if="darkmode">
             <img src="./assets/darklogo.png" class="h-[50px]" />
           </div>
@@ -63,7 +96,7 @@ const toggleDarkMode = () => {
               />
               <span>Employees</span>
             </router-link>
-            <router-link
+            <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/departments"
@@ -74,8 +107,8 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Departments</span>
-            </router-link>
-            <router-link
+            </router-link-->
+            <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/attendance"
@@ -86,7 +119,7 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Attendance</span>
-            </router-link>
+            </router-link-->
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -99,7 +132,7 @@ const toggleDarkMode = () => {
               />
               <span>Payroll</span>
             </router-link>
-            <router-link
+            <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/jobs"
@@ -110,9 +143,9 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Jobs</span>
-            </router-link>
+            </router-link-->
 
-            <router-link
+            <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/candidates"
@@ -123,8 +156,8 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Candidates</span>
-            </router-link>
-            <router-link
+            </router-link-->
+            <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/leaves"
@@ -135,8 +168,8 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Leaves</span>
-            </router-link>
-            <router-link
+            </router-link-->
+            <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/holidays"
@@ -147,7 +180,7 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Holidays</span>
-            </router-link>
+            </router-link-->
             <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -268,32 +301,9 @@ const toggleDarkMode = () => {
           <p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p>
         </div>
         <div class="flex flex-row justify-evenly items-center space-x-5">
-          <div>
-            <div class="relative shadow-sm">
-              <!--div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-      <div v-if="!darkmode">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M2.75 11.5C2.75 16.3325 6.66751 20.25 11.5 20.25C16.3325 20.25 20.25 16.3325 20.25 11.5C20.25 6.66751 16.3325 2.75 11.5 2.75C6.66751 2.75 2.75 6.66751 2.75 11.5ZM11.5 21.75C5.83908 21.75 1.25 17.1609 1.25 11.5C1.25 5.83908 5.83908 1.25 11.5 1.25C17.1609 1.25 21.75 5.83908 21.75 11.5C21.75 14.0605 20.8111 16.4017 19.2589 18.1982L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L18.1982 19.2589C16.4017 20.8111 14.0605 21.75 11.5 21.75Z" fill="#16151C"/>
-</svg>
-      </div>
-      <div v-else>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.75 11.5C2.75 16.3325 6.66751 20.25 11.5 20.25C16.3325 20.25 20.25 16.3325 20.25 11.5C20.25 6.66751 16.3325 2.75 11.5 2.75C6.66751 2.75 2.75 6.66751 2.75 11.5ZM11.5 21.75C5.83908 21.75 1.25 17.1609 1.25 11.5C1.25 5.83908 5.83908 1.25 11.5 1.25C17.1609 1.25 21.75 5.83908 21.75 11.5C21.75 14.0605 20.8111 16.4017 19.2589 18.1982L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L18.1982 19.2589C16.4017 20.8111 14.0605 21.75 11.5 21.75Z" fill="white"/>
-</svg>
-        </div>
-    
-    </div-->
-              <input
-                type="text"
-                name="text"
-                id="text"
-                class="block w-full bg-white dark:bg-[#16151C] border border-[#A2A1A833] rounded-[10px] 0 py-[13px] px-4 text-gray-900 ring-1 ring-inset ring-[#16151C] dark:placeholder:text-[#A2A1A833] placeholder:text-[#16151C33] focus:ring-2 focus:ring-inset focus:ring-[#16151C] sm:text-sm sm:leading-6"
-                placeholder="Search"
-              />
-            </div>
-          </div>
+          
 
-          <div>
+          <div class="cursor-pointer">
             <div v-if="darkmode">
               <svg
                 width="50"
@@ -353,60 +363,35 @@ const toggleDarkMode = () => {
               </svg>
             </div>
           </div>
+          <div class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
+                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                            {{ response }}
+                          </p>
+                          <div class="flex flex-row justify-between">
+                            <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                              {{ balance }} CKBTC
+                            </p>
+                            <div 
+                              class="h-6 w-6 rounded-md bg-[#E0ECFE] flex items-center justify-center cursor-pointer"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="12"
+                                height="12"
+                                viewBox="0 0 12 12"
+                                fill="none"
+                              >
+                                <path
+                                  d="M7.875 9.75V10.5312C7.875 10.7901 7.66514 11 7.40625 11H2.09375C1.83486 11 1.625 10.7901 1.625 10.5312V3.34375C1.625 3.08486 1.83486 2.875 2.09375 2.875H3.5V8.65625C3.5 9.25936 3.99064 9.75 4.59375 9.75H7.875ZM7.875 3.03125V1H4.59375C4.33486 1 4.125 1.20986 4.125 1.46875V8.65625C4.125 8.91514 4.33486 9.125 4.59375 9.125H9.90625C10.1651 9.125 10.375 8.91514 10.375 8.65625V3.5H8.34375C8.08594 3.5 7.875 3.28906 7.875 3.03125ZM10.2377 2.42521L8.94979 1.13729C8.86188 1.04938 8.74265 1 8.61834 1H8.5V2.875H10.375V2.75666C10.375 2.63234 10.3256 2.51312 10.2377 2.42521Z"
+                                  fill="#227BF6"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
 
-          <div
-            class="flex flex-row p-[5px] items-center border rounded-lg border-[#A2A1A833]"
-          >
-            <div class="h-[40px] w-[40px]">
-              <img
-                src="./assets/dp.png"
-                class="h-[40px] w-[40px]"
-                alt="Vite logo"
-              />
-            </div>
-            <div class="flex flex-col space-y-[2px]">
-              <p class="font-semibold text-base text-[#16151C] dark:text-white">
-                Robert Allen
-              </p>
-              <p class="font-light text-xs text-[#A2A1A8]">Hr Manager</p>
-            </div>
-            <div class="pl-[10px]">
-              <div v-if="darkmode">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    d="M5.8335 8.33325L10.0002 11.6666L14.1668 8.33325"
-                    stroke="white"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
-              <div v-else>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    d="M5.83333 8.3335L10 11.6668L14.1667 8.3335"
-                    stroke="#16151C"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
+    
+
         </div>
       </div>
 

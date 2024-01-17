@@ -12,6 +12,7 @@ import Trie "mo:base/Trie";
 import CkBtcLedger "canister:icrc1_ledger";
 import Principal "mo:base/Principal";
 import Nat "mo:base/Nat";
+import Nat32 "mo:base/Nat32";
 import Result "mo:base/Result";
 import Error "mo:base/Error";
 import Text "mo:base/Text";
@@ -23,115 +24,94 @@ actor Backend {
     };
 
   
-  stable var projectName : Text = "Pochi";
-
-  /**
-   * Low-Level API
-   */
-
-  public query func get() : async Text {
-    return projectName;
-  };
-
-
   /**
    * Types
    */
 
-    // The type of a company identifier.
-  public type CompanyId = Nat32;
-   // The type of a director identifier.
-  public type DirectorId = Nat32;
+  // The type of a freelanceer identifier.
+  public type EmployeeId = Nat32;
 
-    // The type of a company.
-  public type Director = {
-    name : Text;
-    companies : List.List<Company>;
-  };
-
-
-    // The type of a company.
-  public type Company = {
-    name : Text;
-    departments : List.List<Department>;
-  };
-
-      // The type of a department.
-  public type Department = {
-    name : Text;
-    employees : List.List<Employee>;
-  };
-
-      // The type of a employee.
+  // The type of a freelanceer.
   public type Employee = {
     name : Text;
+    email : Text;
     address : Text;
+    wallet : Text;
+    phone : Text;
+    salary : Nat;
+    role : Text;
+    department : Text;
+    //id : EmployeeId;
+
   };
 
   /**
    * Application State
    */
 
-  // The next available superhero identifier.
-    private stable var nextCompany : CompanyId = 0;
+  // The next available freelanceer identifier.
+  private stable var next : EmployeeId = 0;
 
-    // The company data store.
-  private stable var companies : Trie.Trie<CompanyId, Company> = Trie.empty();
+  // The freelanceer data store.
+  private stable var freelancers : Trie.Trie<EmployeeId, Employee> = Trie.empty();
+
+//get number of freelancers
+  public query func getNumberOfFreelancers() : async Nat32 {
+    return next;
+  };
+
+  //return all freelancers
+  public query func getAllFreelancers() : async Trie {
+    return freelancers;
+  };
 
   /**
    * High-Level API
    */
 
-
-   // Create a company.
-  public func createCompany(company : Company) : async CompanyId {
-    let companyId = nextCompany;
-    nextCompany += 1;
-    companies := Trie.replace(
-      companies,
-      key(companyId),
-      Nat32.equal,
-      ?company,
+  // Create a freelanceer.
+  public func create(freelancer : Employee) : async EmployeeId {
+    let freelancerId = next;
+    next += 1;
+    freelancers := Trie.replace(
+      freelancers,
+      key(freelancerId),
+      eq,
+      ?freelancer,
     ).0;
-    return companyId;
+    return freelancerId;
   };
 
-
-  
-  // Read a company.
-  public query func readCompany(companyId : CompanyId) : async ?Company {
-    let result = Trie.find(companies, key(companyId), Nat32.equal);
+  // Read a freelanceer.
+  public query func read(freelancerId : EmployeeId) : async ?Employee {
+    let result = Trie.find(freelancers, key(freelancerId), eq);
     return result;
   };
 
-  
-
-    // Update a company.
-  public func updateCompanyDetails(companyId : CompanyId, company : Company) : async Bool {
-    let result = Trie.find(companies, key(companyId), Nat32.equal);
+  // Update a freelanceer.
+  public func update(freelancerId : EmployeeId, freelancer : Employee) : async Bool {
+    let result = Trie.find(freelancers, key(freelancerId), eq);
     let exists = Option.isSome(result);
     if (exists) {
-      companies := Trie.replace(
-        companies,
-        key(companyId),
-        Nat32.equal,
-        ?company,
+      freelancers := Trie.replace(
+        freelancers,
+        key(freelancerId),
+        eq,
+        ?freelancer,
       ).0;
     };
     return exists;
   };
 
-
-
-    // Delete a company.
-  public func deleteCompany(companyId : CompanyId) : async Bool {
-    let result = Trie.find(companies, key(companyId), Nat32.equal);
+  // Delete a freelanceer.
+  public func delete(freelancerId : EmployeeId) : async Bool {
+    let result = Trie.find(freelancers, key(freelancerId), eq);
     let exists = Option.isSome(result);
     if (exists) {
-      companies := Trie.replace(
-        companies,
-        key(companyId),
-        Nat32.equal,
+      freelancers := Trie.replace(
+        freelancers,
+        key(freelancerId),
+        eq,
         null,
       ).0;
     };
@@ -142,11 +122,17 @@ actor Backend {
    * Utilities
    */
 
-  // Create a trie key from a company identifier.
-  private func key(x : CompanyId) : Trie.Key<CompanyId> {
+  // Test two superhero identifiers for equality.
+  private func eq(x : EmployeeId, y : EmployeeId) : Bool {
+    return x == y;
+  };
+
+  // Create a trie key from a superhero identifier.
+  private func key(x : EmployeeId) : Trie.Key<EmployeeId> {
     return { hash = x; key = x };
   };
 
+  
 
 
     public shared ({ caller }) func getBalance() : async Text{

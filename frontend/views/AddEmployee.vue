@@ -1,68 +1,90 @@
-<script setup>
-import MultiStepForm from "../components/MultiStepForm.vue"
-const tabs = [
-  { name: "Personal Information", href: "/add-employee/", current: false },
-  {
-    name: "Professional Information",
-    href: "/add-employee/professional-information",
-    current: false,
-  },
-  { name: "Documents", href: "/add-employee/documents", current: false },
-  {
-    name: "Account Access",
-    href: "/add-employee/account-access",
-    current: false,
-  },
-]
 
-const changeTab = (index) => {
-  tabs.forEach((tab, i) => {
-    tab.current = i === index
-  })
-}
-</script>
 <template>
-  <!--MultiStepForm :steps="['Personal information 👶','Series 📺','Feedback 🌟']"/-->
+  <form>
+    <div class="space-y-12 p-5">
+     
 
-  <div class="p-5">
-    <div>
-      <div class="sm:hidden">
-        <label for="tabs" class="sr-only">Select a tab</label>
+      <div class="border-b border-gray-900/10 pb-12">
+        <h2 class="text-base font-semibold leading-7 text-gray-900 dark:text-white">Personal Information</h2>
+        <p class="mt-1 text-sm leading-6 text-gray-600 dark:text-white">Use a permanent address where user can receive mail.</p>
 
-        <select
-          v-model="selectedTab"
-          @change="changeTab(selectedTab)"
-          id="tabs"
-          name="tabs"
-          class="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-        >
-          <option v-for="tab in tabs" :key="tab.name" :selected="tab.current">
-            {{ tab.name }}
-          </option>
-        </select>
-      </div>
-      <div class="hidden sm:block">
-        <div class="border-b border-gray-200">
-          <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-            <router-link
-              v-model="selectedTab"
-              @click="changeTab(selectedTab)"
-              v-for="tab in tabs"
-              :key="tab.name"
-              :to="tab.href"
-              :class="[
-                tab.current
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium',
-              ]"
-              :aria-current="tab.current ? 'page' : undefined"
-              >{{ tab.name }}</router-link
-            >
-          </nav>
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          <div class="sm:col-span-3">
+            <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">First name</label>
+            <div class="mt-2">
+              <input type="text" name="first-name" id="first-name" autocomplete="given-name"
+               class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 dark:placeholder:text-white focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Last name</label>
+            <div class="mt-2">
+              <input type="text" name="last-name" id="last-name" autocomplete="family-name"
+               class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="designation" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Designation</label>
+            <div class="mt-2">
+              <input type="text" name="designation" id="designation" autocomplete="designation"
+               class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            </div>
+          </div>
+
+          <div class="sm:col-span-4">
+            <label for="email" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Email address</label>
+            <div class="mt-2">
+              <input id="email" name="email" type="email" autocomplete="email"
+               class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="country" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Country</label>
+            <div class="mt-2">
+              <select id="country" name="country" autocomplete="country-name" 
+              class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                <option>United States</option>
+                <option>Kenya</option>
+                <option>Uganda</option>
+                <option>Nigeria</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-span-full">
+            <label for="wallet-address" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Wallet address</label>
+            <div class="mt-2">
+              <input type="text" name="street-address" id="wallet-address" autocomplete="wallet-address"
+               class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            </div>
+          </div>
+
+          <div class="col-span-full">
+            <label for="wallet-address" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Wallet address</label>
+           
+{{ response }} is address
+          </div>
+
+        
+         
         </div>
       </div>
+
+     
     </div>
-    <router-view> </router-view>
-  </div>
+
+    <div class="mt-6 flex items-center justify-end gap-x-6 p-5">
+      <button type="button" class="text-sm font-semibold leading-6 text-gray-900 dark:text-white">Cancel</button>
+      <button
+      @click="getBalance()"
+      class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+    </div>
+  </form>
 </template>
+
+<script setup>
+
+</script>

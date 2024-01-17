@@ -2,7 +2,8 @@
 import { ref } from "vue"
 
 defineProps({
-  msg: String,
+  title: String,
+  number: String,
 })
 
 const count = ref(0)
@@ -18,14 +19,14 @@ const count = ref(0)
         <p
           class="text-[#16151C] dark:text-white text-sm leading-[22px] font-light"
         >
-          Total Employee
+          {{title}}
         </p>
       </div>
       <div class="flex flex-row justify-between items-center">
         <p
           class="text-[#16151C] dark:text-white text-[30px] leading-10 font-semibold"
         >
-          560
+          {{number}}
         </p>
         <div
           class="flex flex-row space-x-[10px] items-center bg-[#30BE821A] p-[5px] rounded-[5px]"

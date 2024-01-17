@@ -44,7 +44,7 @@ dfx deploy --network local icrc1_index --argument '
 dfx canister --network local call icrc1_ledger icrc1_transfer '
   (record {
     to=(record {
-      owner=(principal "n25ly-aexj7-kaetk-f3gwc-zqepl-knjme-y5ng2-2qfv3-x6lwn-vw3nd-pqe")
+      owner=(principal "d7njd-37rc3-doolf-tqqu7-2c2ac-2ygh3-dxiah-smibj-a635u-2stsf-sae")
     });
     amount=100_000_000
   })

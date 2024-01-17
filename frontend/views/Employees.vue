@@ -4,13 +4,15 @@ import Searchbar from "../components/Searchbar.vue"
 import router from "../router/"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid"
 
+
 const isEmpty = ref(true)
 
 const gotoaddemployee = () => {
-  router.push("/add-employee/")
+  router.push("/home/add-employee")
 }
 
-const employees = [
+const employees = [];
+const employees1 = [
   {
     name: "Lindsay Walton",
     designation: "Front-end Developer",
@@ -67,20 +69,19 @@ const employees = [
     <div class="flex flex-row justify-between items-center">
       <Searchbar />
       <div class="flex flex-row space-x-5">
-        <div
+        <button
           @click="gotoaddemployee()"
           class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
-          <p class="text-base font-light text-white">Add New Employee</p>
-        </div>
+          <p class="text-base font-light text-white">Add New </p>
+        </button>
         <div
-          class="rounded-[10px] flex flex-row cursor-pointer border border-[#A2A1A833] p-3 items-center space-x-[10px]"
+          
+          class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
-          <img src="../assets/filter.png" alt="" class="w-6 h-6" />
-          <p class="text-base font-light dark:text-white text-[#16151C]">
-            Filter
-          </p>
+          <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
+          <p class="text-base font-light text-white">Import Data</p>
         </div>
       </div>
     </div>

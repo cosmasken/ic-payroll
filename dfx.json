@@ -10,6 +10,7 @@
         "node_compatibility": true
       }
     },
+    
     "assets": {
       "dependencies": [
         "backend",

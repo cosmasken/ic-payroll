@@ -5,12 +5,33 @@ import { useAuthStore } from "./auth"
 export const useCompanyStore = defineStore("company", {
   state: () => {
     return {
-      userType: "",
+      accountType: "Individual",
       isInitialized: false,
       storeName: "",
       departments: [],
       employees: [],
+      identity: null,
     }
+  },
+  getters: {
+    getAccountType() {
+      return this.accountType
+    },
+    getIsInitialized() {
+      return this.isInitialized
+    },
+    getStoreName() {
+      return this.storeName
+    },
+    getDepartments() {
+      return this.departments
+    },
+    getEmployees() {
+      return this.employees
+    },
+    getIdentity() {
+      return this.identity
+    },
   },
   // could also be defined as
   // state: () => ({ count: 0 })
@@ -26,6 +47,16 @@ export const useCompanyStore = defineStore("company", {
         throw new Error("User must be authenticated")
       }
       this.isInitialized = true
+    },
+    setAccountType(type) {
+      if (type === "Individual" || type === "Company") {
+        this.accountType = type
+      } else {
+        throw new Error("Invalid account type")
+      }
+    },
+    toggleAccountType() {
+      this.accountType = this.accountType === "Individual" ? "Company" : "Individual"
     },
   },
 })
