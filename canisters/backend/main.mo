@@ -16,12 +16,12 @@ import Nat32 "mo:base/Nat32";
 import Result "mo:base/Result";
 import Error "mo:base/Error";
 import Text "mo:base/Text";
+import Array "mo:base/Array";
+import Debug "mo:base/Debug";
+import HashMap "mo:base/HashMap";
 import { toAccount; toSubaccount; createInvoice } "./utils";
 actor Backend {
 
-    public shared query (msg) func whoami() : async Principal {
-        msg.caller
-    };
 
   
   /**
@@ -52,6 +52,8 @@ actor Backend {
   // The next available freelanceer identifier.
   private stable var next : EmployeeId = 0;
 
+  private stable var employees : [Employee] = [];
+
   // The freelanceer data store.
   private stable var freelancers : Trie.Trie<EmployeeId, Employee> = Trie.empty();
 
@@ -61,10 +63,10 @@ actor Backend {
   };
 
   //return all freelancers
-  public query func getAllFreelancers() : async Trie {
-    return freelancers;
-  };
-
+  // public query func getAllFreelancers() : async Trie {
+  //   let freelancersList = Trie.all(freelancers);
+  //   return freelancersList;
+  // };
   /**
    * High-Level API
    */
@@ -132,76 +134,8 @@ actor Backend {
     return { hash = x; key = x };
   };
 
-  
 
 
-    public shared ({ caller }) func getBalance() : async Text{
-
-    // check ckBTC balance of the callers dedicated account
-    let balance = await CkBtcLedger.icrc1_balance_of(
-      { owner = caller;
-      subaccount = null;}
-    );
-
-    let formattedBalance = balance / 100000000;
-
-    return Nat.toText(formattedBalance);
-
-    };
-
-
-     public shared ({ caller }) func makeTransfer(receiver:Text, amount:Nat) : async Result.Result<Text, Text>{
-
-    // check ckBTC balance of the callers dedicated account
-    let balance = await CkBtcLedger.icrc1_balance_of(
-      { owner = caller;
-      subaccount = null;}
-    );
-
-  let formattedBalance = balance / 100000000;
-  
-    if (balance < 100) {
-      return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
-    };
-
-  
-
-      try {
-      // if enough funds were sent, move them to the canisters default account
-      let transferResult = await CkBtcLedger.icrc1_transfer(
-        {
-          amount = amount - 10;
-          from_subaccount = null;
-          created_at_time = null;
-          fee = ?10;
-          memo = null;
-          to = {
-            owner = Principal.fromText(receiver);
-            subaccount = null;
-          };
-        }
-      );
-
-      switch (transferResult) {
-        case (#Err(transferError)) {
-          return #err("Couldn't transfer funds to default account:\n" # debug_show (transferError));
-        };
-        case (_) {};
-      };
-    } catch (error : Error) {
-      return #err("Reject message: " # Error.message(error));
-    };
-
-
-return #ok("🥠: " # " amount Sent");
-
-    };
-
-
-
- 
-
-   
   };
 
 
