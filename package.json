@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "config": " dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy && dfx generate && cp src/declarations/backend/* .dfx/local/canisters/backend/ && npm i --force",
+    "deploy:internet":"dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy",
+    "deploy:internetq": " dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy && dfx generate && cp src/declarations/backend/* .dfx/local/canisters/backend/ && npm i --force",
     "start": "npm run generate && npm run start:dfx && npm run serve",
     "start:dfx": "dfx start --background --clean",
     "build": "vite build",

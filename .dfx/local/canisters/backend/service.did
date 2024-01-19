@@ -1,4 +1,11 @@
+type Result = 
+ variant {
+   err: text;
+   ok: text;
+ };
 service : {
   getCanister: () -> (text);
-  whoami: () -> (principal);
+  getMyBalance: () -> (text);
+  transfer: () -> (Result);
+  whoami: () -> (text);
 }

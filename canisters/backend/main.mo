@@ -41,13 +41,64 @@ actor Backend {
  return  Principal.toText(Principal.fromActor(Backend))
    };
 
-     public shared (message) func whoami() : async Principal {
-    return message.caller;
+     public shared (message) func whoami() : async Text {
+
+    return Principal.toText(message.caller);
   };
 
-//   public shared ({caller}) func getMyBalance() : async Result.Result<Text, Text>  {
+  public shared ({caller}) func getMyBalance() : async Text  {
+// check ckBTC balance of the callers dedicated account
+    let balance = await CkBtcLedger.icrc1_balance_of(
+      { owner = caller;
+      subaccount = null;}
+    );
 
-//   };
+    let formattedBalance = balance / 100000000;
+
+    return Nat.toText(formattedBalance);
+  };
+
+
+  public shared({caller}) func transfer() : async Result.Result<Text, Text>  {
+ let balance = await CkBtcLedger.icrc1_balance_of(
+      { owner = caller;
+      subaccount = null;}
+    );
+
+
+if (balance < 100) {
+      return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
+    };
+
+    try {
+      // if enough funds were sent, move them to the canisters default account
+      let transferResult = await CkBtcLedger.icrc1_transfer(
+        {
+          amount = 500;
+          from_subaccount = null;
+          created_at_time = null;
+          fee = ?10;
+          memo = null;
+          to = {
+            owner = Principal.fromText("ingbq-lkoqj-qpaw2-erpne-uxyji-fumuf-xxm5s-6quwy-bpi6a-u4szd-nae");
+            subaccount = null;
+          };
+        }
+      );
+
+      switch (transferResult) {
+        case (#Err(transferError)) {
+          return #err("Couldn't transfer funds to default account:\n" # debug_show (transferError));
+        };
+        case (_) {};
+      };
+    } catch (error : Error) {
+      return #err("Reject message: " # Error.message(error));
+    };
+
+    return #ok("🥠: " # "success");
+
+  }
 
 
 }

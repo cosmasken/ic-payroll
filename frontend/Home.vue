@@ -8,7 +8,7 @@ const authStore = useAuthStore()
 const companyStore = useCompanyStore()
 const darkmode = ref(false)
 let response = ref("")
-let canisterid = ref("")
+let trans = ref("")
 
 const balance = ref("")
 const logout = () => {
@@ -34,7 +34,10 @@ watchEffect(async () => {
   const res = await authStore.whoamiActor?.getMyBalance()
   balance.value = await res
 })
-
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.transfer()
+  trans.value = await res
+})
 // watchEffect(async () => {
 //   const res = await authStore.whoamiActor?.getBalance(Principal.fromText(authStore.whoamiActor))
 //   balance.value = await res
@@ -381,7 +384,7 @@ const toggleDarkMode = () => {
           </div>
           <div class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
                           <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                            {{ canisterid }}
+                            {{ response }}
                           </p>
                           <div class="flex flex-row justify-between">
                             <p class="text-sm leading-6 font-semibold text-[#919DB5]">
