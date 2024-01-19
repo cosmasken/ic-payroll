@@ -5,10 +5,10 @@ import OverviewCard from "../components/OverviewCard.vue"
 import { useAuthStore } from "../store/auth"
 const authStore = useAuthStore()
 let response = ref(0)
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getNumberOfFreelancers()
-  response.value = await res
-})
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.getNumberOfFreelancers()
+//   response.value = await res
+// })
 
 </script>
 <template>

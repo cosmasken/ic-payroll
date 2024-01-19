@@ -10,7 +10,6 @@
         "node_compatibility": true
       }
     },
-    
     "assets": {
       "dependencies": [
         "backend",
@@ -24,7 +23,7 @@
       ],
       "type": "assets"
     },
-    "internet-identity" : {
+    "internet-identity": {
       "type": "pull",
       "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
     },
@@ -51,7 +50,7 @@
   },
   "defaults": {
     "build": {
-      "packtool": ""
+      "packtool": "mops sources"
     }
   },
   "networks": {

@@ -4,6 +4,8 @@ import { createActor, canisterId } from "../../src/declarations/backend"
 import { toRaw } from "vue"
 import router from "../router"
 
+
+
 const defaultOptions = {
   /**
    *  @type {import("@dfinity/auth-client").AuthClientCreateOptions}
@@ -43,6 +45,7 @@ export const useAuthStore = defineStore("auth", {
       authClient: null,
       identity: null,
       whoamiActor: null,
+      balance: null,
     }
   },
   actions: {
@@ -52,11 +55,14 @@ export const useAuthStore = defineStore("auth", {
       const isAuthenticated = await authClient.isAuthenticated()
       const identity = isAuthenticated ? authClient.getIdentity() : null
       const whoamiActor = identity ? actorFromIdentity(identity) : null
+      
 
       this.isAuthenticated = isAuthenticated
       this.identity = identity
       this.whoamiActor = whoamiActor
       this.isReady = true
+
+     
     },
     async login() {
       const authClient = toRaw(this.authClient)
@@ -81,17 +87,10 @@ export const useAuthStore = defineStore("auth", {
       this.whoamiActor = null
     },
 
+
+
+
    
   },
 
-  getters:{
-    getIsAuthenticated(){
-      return this.isAuthenticated
-    },
-    getIsIndivual(){
-      return this.isIndivual
-    }
-  
-
-  }
 })

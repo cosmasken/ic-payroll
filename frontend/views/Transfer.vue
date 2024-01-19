@@ -71,16 +71,10 @@
     </div>
     </template>
     <script setup>
-    import { ref ,watchEffect } from "vue"
-    import { useAuthStore } from "../store/auth"
-    const authStore = useAuthStore()
-    let response = ref('')
-    
-    
-    watchEffect(async () => {
-   
-    const response = await authStore.whoamiActor?.makeTransfer();
-    console.log(response)
-      response.value = await response
-    })
+    import { ref ,watchEffect} from 'vue';
+import { useAuthStore } from "../store/auth";
+const authStore = useAuthStore();
+  let res = ref('')
+
+
     </script>

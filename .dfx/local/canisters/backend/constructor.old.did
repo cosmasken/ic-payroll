@@ -1,0 +1,4 @@
+service : {
+  getCanisterId: () -> (text);
+  whoami: () -> (principal);
+}

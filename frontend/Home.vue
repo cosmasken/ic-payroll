@@ -1,6 +1,5 @@
 <script setup>
-import { ref ,watchEffect } from "vue"
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { ref ,watchEffect} from "vue"
 import useClipboard from 'vue-clipboard3'
 import { useAuthStore } from "./store/auth"
 import { useCompanyStore } from "./store/company"
@@ -9,6 +8,7 @@ const authStore = useAuthStore()
 const companyStore = useCompanyStore()
 const darkmode = ref(false)
 let response = ref("")
+let canisterid = ref("")
 
 const balance = ref("")
 const logout = () => {
@@ -30,11 +30,15 @@ watchEffect(async () => {
   const res = await authStore.whoamiActor?.whoami()
   response.value = await res
 })
-
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getBalance()
+  const res = await authStore.whoamiActor?.getMyBalance()
   balance.value = await res
 })
+
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.getBalance(Principal.fromText(authStore.whoamiActor))
+//   balance.value = await res
+// })
 
 
 const walletAddress = "0x1234567890123456789012345678901234567890"
@@ -377,7 +381,7 @@ const toggleDarkMode = () => {
           </div>
           <div class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
                           <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                            {{ response }}
+                            {{ canisterid }}
                           </p>
                           <div class="flex flex-row justify-between">
                             <p class="text-sm leading-6 font-semibold text-[#919DB5]">

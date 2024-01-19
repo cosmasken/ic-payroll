@@ -1,0 +1,4 @@
+[dependencies]
+base = "0.9.8"
+sha2 = "0.0.2"
+map = "8.1.0"
