@@ -1,11 +1,81 @@
-type Result = 
- variant {
-   err: text;
-   ok: text;
- };
-service : {
-  getCanister: () -> (text);
-  getMyBalance: () -> (text);
-  transfer: () -> (Result);
-  whoami: () -> (text);
-}
+type GetAccountAddress = record { accountAddress : ICRC1Address };
+type GetAccountBalanceErr = record { msg : text };
+type GetAccountBalanceResult = variant {
+  ok : GetAccountBalanceSuccess;
+  err : GetAccountBalanceErr;
+};
+type GetAccountBalanceSuccess = record {
+  currentBalance : nat;
+  timestampNs : Time;
+  accountAddress : ICRC1Address;
+};
+type GetAccountPayments = record {
+  payments : vec Payment;
+  createdCount : nat;
+  timestampNs : Time;
+};
+type GetTokenCanisterMetadataResult = variant {
+  ok : record { metadata : Metadatas; canisterId : text };
+  err : record { msg : text };
+};
+type ICRC1Address = text;
+type Metadatas = vec Metadatum;
+type Metadatum = record { text; Value };
+type Payment = record {
+  id : text;
+  status : PaymentStatus;
+  clientPaymentId : text;
+  createdAtNs : Time;
+  description : opt text;
+  number : nat;
+  recipientAddress : ICRC1Address;
+  amount : nat;
+  sourceAddress : ICRC1Address;
+};
+type PaymentError = variant {
+  InvalidRecipientAddress : record {};
+  InterCanisterCallCaughtError : text;
+  ICRC1TokenCanisterTransferErr : TransferError;
+};
+type PaymentProcessor = service {
+  getMyAccountBalance : () -> (text);
+  getSubAccountBalance : () -> (text);
+  get_account_address : () -> (GetAccountAddress) query;
+  get_account_balance : () -> (GetAccountBalanceResult);
+  get_account_payments : () -> (GetAccountPayments) query;
+  get_icrc1_token_canister_metadata : () -> (GetTokenCanisterMetadataResult);
+  send_payment : (
+      record {
+        clientPaymentId : text;
+        description : opt text;
+        recipientAddress : text;
+        amount : nat;
+      },
+    ) -> (SendPayment);
+  set_icrc1_token_canister : (text) -> (Result);
+  whoami : () -> (principal);
+};
+type PaymentStatus = variant {
+  Failed : record { kind : PaymentError; timestampNs : Time };
+  Completed : record { txIndex : TxIndex; timestampNs : Time };
+  Pending : record {};
+};
+type Result = variant { ok; err : record { msg : text } };
+type SendPayment = record { result : Result; payment : Payment };
+type Time = int;
+type Timestamp = nat64;
+type Tokens = nat;
+type TransferError = variant {
+  GenericError : record { message : text; error_code : nat };
+  TemporarilyUnavailable;
+  BadBurn : record { min_burn_amount : Tokens };
+  Duplicate : record { duplicate_of : TxIndex__1 };
+  BadFee : record { expected_fee : Tokens };
+  CreatedInFuture : record { ledger_time : Timestamp };
+  TooOld;
+  InsufficientFunds : record { balance : Tokens };
+};
+type TxIndex = nat;
+type TxIndex__1 = nat;
+type Value = variant { Int : int; Nat : nat; Blob : vec nat8; Text : text };
+service : PaymentProcessor

@@ -22,7 +22,7 @@
     },
     "canister_http_adapter": {
       "enabled": true,
-      "socket_path": "/tmp/ic-https-outcalls-adapter-socket.23720.1705671434"
+      "socket_path": "/tmp/ic-https-outcalls-adapter-socket.12823.1705748817"
     },
     "log_level": "error",
     "artificial_delay": 600,

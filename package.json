@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "deploy:internet":"dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy",
+    "setup": "npm run deploy:identity; node ./setup.js; mops install;",
+    "deploy:identity": "dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy",
     "deploy:internetq": " dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy && dfx generate && cp src/declarations/backend/* .dfx/local/canisters/backend/ && npm i --force",
     "start": "npm run generate && npm run start:dfx && npm run serve",
     "start:dfx": "dfx start --background --clean",
@@ -13,18 +14,21 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --write frontend/"
   },
+ 
   "dependencies": {
     "@dfinity/agent": "^0.15.1",
     "@dfinity/auth-client": "^0.20.2",
     "@dfinity/candid": "^0.15.1",
     "@dfinity/identity": "^0.15.1",
-    "@dfinity/ledger-icrc": "^2.1.0",
+    "@dfinity/ledger": "^1.0.0",
     "@dfinity/principal": "^0.15.1",
     "@headlessui/vue": "^1.7.17",
     "@heroicons/vue": "^2.1.1",
     "@tailwindcss/forms": "^0.5.7",
     "babel-loader": "^9.1.3",
+    "common-tags": "^1.8.2",
     "css-loader": "^6.9.0",
+    "dotenv": "^16.3.2",
     "ic-mops": "^0.38.1",
     "mo-dev": "^0.12.0",
     "pinia": "^2.1.7",
@@ -33,7 +37,8 @@
     "vue-router": "^4.2.5",
     "vue-shimmer": "^1.0.0",
     "vue-style-loader": "^4.1.3",
-    "vue-template-compiler": "^2.7.16"
+    "vue-template-compiler": "^2.7.16",
+    "zx": "^7.2.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",
@@ -41,6 +46,7 @@
     "autoprefixer": "^10.4.16",
     "buffer": "^6.0.3",
     "daisyui": "^4.6.0",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "vite": "^2.9.13"

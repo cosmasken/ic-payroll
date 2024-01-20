@@ -45,7 +45,10 @@ export const useAuthStore = defineStore("auth", {
       authClient: null,
       identity: null,
       whoamiActor: null,
-      balance: null,
+      accountAddress: null,
+      currentBalanceBaseUnits: null,
+      createdCount: null,
+      payments: null,
     }
   },
   actions: {

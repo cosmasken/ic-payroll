@@ -41,6 +41,8 @@ dfx deploy --network local icrc1_index --argument '
   }
 '
 
+dfx canister call backend set_icrc1_token_canister '( "mxzaz-hqaaa-aaaar-qaada-cai" )'
+
 dfx canister --network local call icrc1_ledger icrc1_transfer '
   (record {
     to=(record {

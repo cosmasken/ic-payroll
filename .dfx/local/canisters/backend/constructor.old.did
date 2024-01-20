@@ -1,11 +1,115 @@
+type Value = 
+ variant {
+   Blob: blob;
+   Int: int;
+   Nat: nat;
+   Text: text;
+ };
+type TxIndex__1 = nat;
+type TxIndex = nat;
+type TransferError = 
+ variant {
+   BadBurn: record {min_burn_amount: Tokens;};
+   BadFee: record {expected_fee: Tokens;};
+   CreatedInFuture: record {ledger_time: Timestamp;};
+   Duplicate: record {duplicate_of: TxIndex__1;};
+   GenericError: record {
+                   error_code: nat;
+                   message: text;
+                 };
+   InsufficientFunds: record {balance: Tokens;};
+   TemporarilyUnavailable;
+   TooOld;
+ };
+type Tokens = nat;
+type Timestamp = nat64;
+type Time = int;
+type SendPayment = 
+ record {
+   payment: Payment;
+   result: Result;
+ };
 type Result = 
  variant {
-   err: text;
-   ok: text;
+   err: record {msg: text;};
+   ok;
  };
+type PaymentStatus = 
+ variant {
+   Completed: record {
+                timestampNs: Time;
+                txIndex: TxIndex;
+              };
+   Failed: record {
+             kind: PaymentError;
+             timestampNs: Time;
+           };
+   Pending: record {};
+ };
+type PaymentError = 
+ variant {
+   ICRC1TokenCanisterTransferErr: TransferError;
+   InterCanisterCallCaughtError: text;
+   InvalidRecipientAddress: record {};
+ };
+type Payment = 
+ record {
+   amount: nat;
+   clientPaymentId: text;
+   createdAtNs: Time;
+   description: opt text;
+   id: text;
+   number: nat;
+   recipientAddress: ICRC1Address;
+   sourceAddress: ICRC1Address;
+   status: PaymentStatus;
+ };
+type Metadatum = 
+ record {
+   text;
+   Value;
+ };
+type Metadatas = vec Metadatum;
+type ICRC1Address = text;
+type GetTokenCanisterMetadataResult = 
+ variant {
+   err: record {msg: text;};
+   ok: record {
+         canisterId: text;
+         metadata: Metadatas;
+       };
+ };
+type GetAccountPayments = 
+ record {
+   createdCount: nat;
+   payments: vec Payment;
+   timestampNs: Time;
+ };
+type GetAccountBalanceSuccess = 
+ record {
+   accountAddress: ICRC1Address;
+   currentBalance: nat;
+   timestampNs: Time;
+ };
+type GetAccountBalanceResult = 
+ variant {
+   err: GetAccountBalanceErr;
+   ok: GetAccountBalanceSuccess;
+ };
+type GetAccountBalanceErr = record {msg: text;};
+type GetAccountAddress = record {accountAddress: ICRC1Address;};
 service : {
-  getCanister: () -> (text);
-  getMyBalance: () -> (text);
-  transfer: () -> (Result);
-  whoami: () -> (text);
+  get_account_address: () -> (GetAccountAddress) query;
+  get_account_balance: () -> (GetAccountBalanceResult);
+  get_account_payments: () -> (GetAccountPayments) query;
+  get_icrc1_token_canister_metadata: () -> (GetTokenCanisterMetadataResult);
+  send_payment:
+   (record {
+      amount: nat;
+      clientPaymentId: text;
+      description: opt text;
+      recipientAddress: text;
+    }) -> (SendPayment);
+  set_icrc1_token_canister: (text) -> (Result);
+  whoami: () -> (principal);
 }

@@ -38,10 +38,16 @@ module Utils {
     Blob.fromArray(a);
   };
 
-    public func toAccount({ caller : Principal; canister : Principal }) : Types.Account {
+    public func createSubAccount({ caller : Principal; canister : Principal }) : Types.Account {
     {
       owner = canister;
       subaccount = ?toSubaccount(caller);
+    };
+  };
+  public func toAccount({ caller : Principal }) : Types.Account {
+    {
+      owner = caller;
+      subaccount = null;
     };
   };
 

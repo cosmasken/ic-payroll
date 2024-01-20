@@ -10,6 +10,11 @@ let response = ref(0)
 //   response.value = await res
 // })
 
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.get_account_payments()
+  response.value = await res
+})
+
 </script>
 <template>
 <div class="p-5 flex flex-col gap-5">
@@ -73,7 +78,7 @@ let response = ref(0)
         <p
           class="text-[#16151C] dark:text-white text-sm leading-[22px] font-light"
         >
-         Employees
+         Payments
         </p>
       </div>
       <div class="flex flex-row justify-between items-center">

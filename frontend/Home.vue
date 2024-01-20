@@ -1,5 +1,6 @@
 <script setup>
 import { ref ,watchEffect} from "vue"
+import { decodeIcrcAccount } from '@dfinity/ledger';
 import useClipboard from 'vue-clipboard3'
 import { useAuthStore } from "./store/auth"
 import { useCompanyStore } from "./store/company"
@@ -7,8 +8,11 @@ import router from "./router/"
 const authStore = useAuthStore()
 const companyStore = useCompanyStore()
 const darkmode = ref(false)
-let response = ref("")
-let trans = ref("")
+let subaccountaddress = ref("")
+let subaccountbalance = ref("")
+let accountbalance = ref("")
+let accountaddress = ref("")
+let identity = ref('')
 
 const balance = ref("")
 const logout = () => {
@@ -27,21 +31,33 @@ const { toClipboard } = useClipboard()
       }
     }
 watchEffect(async () => {
+  const res = await authStore.whoamiActor?.get_account_address()
+  subaccountaddress.value = await res
+})
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getMyAccountBalance()
+  console.log("balance is " + res)
+  const myNumber = Number(res);
+ accountbalance.value = await res /100000000
+})
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getSubAccountBalance()
+  console.log("balance is " + res)
+  const myNumber = Number(res);
+ subaccountbalance.value = await myNumber
+})
+watchEffect(async () => {
   const res = await authStore.whoamiActor?.whoami()
-  response.value = await res
+  identity.value = await res
 })
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getMyBalance()
-  balance.value = await res
+  const res = await authStore.whoamiActor?.get_account_payments()
+  accountaddress.value = await res
 })
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.transfer()
-  trans.value = await res
-})
-// watchEffect(async () => {
-//   const res = await authStore.whoamiActor?.getBalance(Principal.fromText(authStore.whoamiActor))
-//   balance.value = await res
-// })
+
+
+
+
 
 
 const walletAddress = "0x1234567890123456789012345678901234567890"
@@ -384,13 +400,23 @@ const toggleDarkMode = () => {
           </div>
           <div class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
                           <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                            {{ response }}
+                           Account: {{ identity }}
+                          </p>
+                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                           SubAccount : {{ subaccountaddress }}
                           </p>
                           <div class="flex flex-row justify-between">
                             <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                              {{ balance }} CKBTC
+                              SubAccount Balance  {{ subaccountbalance  }} CKBTC
                             </p>
+                            <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                              Account Balance  {{ accountbalance  }} CKBTC
+                            </p>
+                            <!--p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                              {{ accountbalance }} CKBTC
+                            </p-->
                             <div 
+                           
                               class="h-6 w-6 rounded-md bg-[#E0ECFE] flex items-center justify-center cursor-pointer"
                             >
                               <svg
