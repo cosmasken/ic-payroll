@@ -10,46 +10,16 @@ import Sha256 "mo:sha2/Sha256";
 import ICRC1_AccountConverter "./icrc1-account-converter";
 import ICRC1 "./icrc1-types";
 import Types "./types";
+import Nat32 "mo:base/Nat32";
+
 
 module Utils {
 
   type Account = Types.Account;
+  public type Subaccount = Blob;
+  // 32-byte array.
+  public type AccountIdentifier = Blob;
 
- public func toSubaccount(p : Principal) : ICRC1.Subaccount {
-    // p blob size can vary, but 29 bytes as most. We preserve it'subaccount size in result blob
-    // and it'subaccount data itself so it can be deserialized back to p
-    let bytes = Blob.toArray(Principal.toBlob(p));
-    let size = bytes.size();
-
-    assert size <= 29;
-
-    let a = Array.tabulate<Nat8>(
-      32,
-      func(i : Nat) : Nat8 {
-        if (i + size < 31) {
-          0;
-        } else if (i + size == 31) {
-          Nat8.fromNat(size);
-        } else {
-          bytes[i + size - 32];
-        };
-      },
-    );
-    Blob.fromArray(a);
-  };
-
-    public func createSubAccount({ caller : Principal; canister : Principal }) : Types.Account {
-    {
-      owner = canister;
-      subaccount = ?toSubaccount(caller);
-    };
-  };
-  public func toAccount({ caller : Principal }) : Types.Account {
-    {
-      owner = caller;
-      subaccount = null;
-    };
-  };
 
   /** Decodes an ICRC1 account from text if valid, otherwise returns #InvalidAddressText. */
   func icrc1AccountFromText(textAddress : Text) : Result.Result<Account, ()> {
@@ -83,4 +53,53 @@ module Utils {
   }) : Types.Account {
     { owner = canisterId; subaccount = ?(computeUserSubaccountAccount(user)) };
   };
+
+    public func getDefaultSubaccount({
+    user : Principal;
+    canister : Principal;
+  }) : Types.Account {
+    { owner = canister;
+     subaccount = ?toSubaccount(user); };
+  };
+
+
+  public func toSubaccount(p : Principal) : Subaccount {
+    // p blob size can vary, but 29 bytes as most. We preserve it'subaccount size in result blob
+    // and it'subaccount data itself so it can be deserialized back to p
+    let bytes = Blob.toArray(Principal.toBlob(p));
+    let size = bytes.size();
+
+    assert size <= 29;
+
+    let a = Array.tabulate<Nat8>(
+      32,
+      func(i : Nat) : Nat8 {
+        if (i + size < 31) {
+          0;
+        } else if (i + size == 31) {
+          Nat8.fromNat(size);
+        } else {
+          bytes[i + size - 32];
+        };
+      },
+    );
+    Blob.fromArray(a);
+  };
+
+  public func toAccount({ caller : Principal; canister : Principal }) : Types.Account {
+    {
+      owner = canister;
+      subaccount = ?toSubaccount(caller);
+    };
+  };
+
+
+  // public func createInvoice(to : Types.Account, amount : Nat) : Types.Invoice {
+  //   {
+  //     to;
+  //     amount;
+  //   };
+  // };
+
+
 };

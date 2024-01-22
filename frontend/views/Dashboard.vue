@@ -10,10 +10,10 @@ let response = ref(0)
 //   response.value = await res
 // })
 
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.get_account_payments()
-  response.value = await res
-})
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.get_account_payments()
+//   response.value = await res
+// })
 
 </script>
 <template>

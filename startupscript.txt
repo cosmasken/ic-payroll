@@ -46,9 +46,9 @@ dfx canister call backend set_icrc1_token_canister '( "mxzaz-hqaaa-aaaar-qaada-c
 dfx canister --network local call icrc1_ledger icrc1_transfer '
   (record {
     to=(record {
-      owner=(principal "d7njd-37rc3-doolf-tqqu7-2c2ac-2ygh3-dxiah-smibj-a635u-2stsf-sae")
+      owner=(principal "xy2p2-e57gf-kk2xk-e3avm-tqbny-o5sjy-zxh4y-75v2s-nkk7z-3ux4i-cqe")
     });
-    amount=100_000_000
+    amount=100_000_000_000
   })
 '
 

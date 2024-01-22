@@ -1,8 +1,10 @@
 import { defineStore } from "pinia"
 import { AuthClient } from "@dfinity/auth-client"
+//import { createActor, canisterId } from "../../src/declarations/backend"
 import { createActor, canisterId } from "../../src/declarations/backend"
 import { toRaw } from "vue"
 import router from "../router"
+import { Principal } from "@dfinity/principal"
 
 
 
@@ -28,7 +30,8 @@ const defaultOptions = {
 }
 
 function actorFromIdentity(identity) {
-  return createActor(canisterId, {
+  return createActor(
+    canisterId, {
     agentOptions: {
       identity,
     },
@@ -71,6 +74,7 @@ export const useAuthStore = defineStore("auth", {
       const authClient = toRaw(this.authClient)
       authClient.login({
         ...defaultOptions.loginOptions,
+        maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
         onSuccess: async () => {
           this.isAuthenticated = await authClient.isAuthenticated()
           this.identity = this.isAuthenticated ? authClient.getIdentity() : null
@@ -91,9 +95,6 @@ export const useAuthStore = defineStore("auth", {
     },
 
 
-
-
-   
   },
 
 })

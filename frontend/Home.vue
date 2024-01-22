@@ -1,20 +1,35 @@
 <script setup>
 import { ref ,watchEffect} from "vue"
-import { decodeIcrcAccount } from '@dfinity/ledger';
+import { storeToRefs } from "pinia"
 import useClipboard from 'vue-clipboard3'
-import { useAuthStore } from "./store/auth"
-import { useCompanyStore } from "./store/company"
+import { useledger } from "./store/useledger"
 import router from "./router/"
-const authStore = useAuthStore()
-const companyStore = useCompanyStore()
-const darkmode = ref(false)
-let subaccountaddress = ref("")
-let subaccountbalance = ref("")
-let accountbalance = ref("")
-let accountaddress = ref("")
-let identity = ref('')
+import { Principal } from "@dfinity/principal"
+// import { IcrcLedgerCanister ,decodeIcrcAccount} from "@dfinity/ledger";
 
-const balance = ref("")
+const ledger = useledger()
+const { isReady, isAuthenticated } = storeToRefs(ledger)
+
+const darkmode = ref(false)
+let address = ref("")
+let canister = ref("")
+let balance = ref("")
+let accountbalance = ref("")
+let total_supply = ref('')
+let mybalance = ref('')
+let identity = authStore.whoamiActor
+let totalTokensSupply = ref("")
+
+//watchEffect(async () => {
+// const ledgerCanister = IcrcLedgerCanister.create({
+//          identity,
+//         canisterId: Principal.fromText(
+//           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+//           "mxzaz-hqaaa-aaaar-qaada-cai"
+//         ),
+//       });
+
+//    })
 const logout = () => {
   router.push("/auth")
   authStore.logout()
@@ -30,42 +45,99 @@ const { toClipboard } = useClipboard()
         console.error(e)
       }
     }
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.get_account_address()
-  subaccountaddress.value = await res
+
+    watchEffect(async () => {
+      const { isReady, isAuthenticated } = storeToRefs(authStore)
+if (isReady.value === true && isAuthenticated === true) {
+  ledger.init()
+  console.log("is init")
+}
+
+  // const res = await ledger.identity();
+  // address.value = await res
 })
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getMyAccountBalance()
-  console.log("balance is " + res)
-  const myNumber = Number(res);
- accountbalance.value = await res /100000000
-})
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getSubAccountBalance()
-  console.log("balance is " + res)
-  const myNumber = Number(res);
- subaccountbalance.value = await myNumber
+
+    watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getDepositAddress()
+  canister.value = await res
 })
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.whoami()
-  identity.value = await res
+  address.value = await res
 })
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.get_account_payments()
-  accountaddress.value = await res
+  const res = await await ledgerCanister.transactionFee(
+   { certified:false,
+  
+  }
+  )
+  balance.value = await res
 })
+watchEffect(async () => {
+  const res = await ledgerCanister.totalTokensSupply(
+   { certified:false,}
+  )
+  totalTokensSupply.value = await res
+})
+// const res = await ICPLedger.accountBalance({
+//     accountIdentifier: accIdentifier,
+//     certified: false,
+//   })
+
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.icrc1_total_supply()
+//   console.log("balance is " + res)
+//  total_supply.value = await res 
+// })
+
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.whoami().getSubAccountBalance()
+
+ 
+//   console.log("balance is " + res)
+//   const myNumber = Number(res);
+//  subaccountbalance.value = await res
+// })
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.get_account_address()
+  
+//   identity.value = await res
+// })
 
 
 
+const transfer =  async () => {
+  try {
+      const response = await ledgerCanister.transfer({
+        to: {
+          owner: Principal.fromText("4l65c-5qman-4zmsj-c4pst-ym76w-ng2j3-n6b4i-2kqbm-ulxjx-plp2y-yqe"),
+          subaccount: [],
+        },
+        amount: BigInt(1000000),
+      });
+      console.log("what");
+
+      if (response) {
+        console.log("Transfer successful.");
+        setTimeout(() => {
+          navigate({ to: "/home/transfer" });
+        }, 500);
+      } else {
+        console.log("An error occurred.");
+      }
+    } catch (error) {
+      console.log(error);
+      console.error("failed");
+    } 
+ // console.log("transfer " + res)
+ // transfer.value = await res
+}
 
 
 
 const walletAddress = "0x1234567890123456789012345678901234567890"
 
 //const accountType = companyStore.getAccountType();
-const toggleModes = () =>{
-  companyStore.toggleAccountType
-}
 
 const toggleDarkMode = () => {
   darkmode.value = !darkmode.value
@@ -400,23 +472,26 @@ const toggleDarkMode = () => {
           </div>
           <div class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
                           <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           Account: {{ identity }}
+                           address: {{ canister }}
                           </p>
                           <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           SubAccount : {{ subaccountaddress }}
+                           Balance : {{ balance }}
+                          </p>
+                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                           principal : {{ address }}
                           </p>
                           <div class="flex flex-row justify-between">
                             <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                              SubAccount Balance  {{ subaccountbalance  }} CKBTC
+                              My Balance  {{ mybalance  }} CKBTC
                             </p>
                             <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                              Account Balance  {{ accountbalance  }} CKBTC
+                              Total  {{ totalTokensSupply  }} CKBTC
                             </p>
                             <!--p class="text-sm leading-6 font-semibold text-[#919DB5]">
                               {{ accountbalance }} CKBTC
                             </p-->
                             <div 
-                           
+                           @click="transfer"
                               class="h-6 w-6 rounded-md bg-[#E0ECFE] flex items-center justify-center cursor-pointer"
                             >
                               <svg

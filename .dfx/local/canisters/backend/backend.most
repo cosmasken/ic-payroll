@@ -1,4 +1,6 @@
 // Version: 1.0.0
+type Account__1 = {owner : Principal; subaccount : ?Blob};
 actor {
-  
+  stable var ledgerActor :
+    actor {icrc1_balance_of : shared Account__1 -> async Nat}
 };
