@@ -4,7 +4,7 @@
       "main": "canisters/backend/main.mo",
       "type": "motoko",
       "dependencies": [
-        "icrc1_ledger"
+        "ckbtc_ledger"
       ],
       "declarations": {
         "node_compatibility": true
@@ -27,14 +27,14 @@
       "type": "pull",
       "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
     },
-    "icrc1_ledger": {
-      "type": "custom",
-      "id": "mxzaz-hqaaa-aaaar-qaada-cai",
-      "candid": "https://raw.githubusercontent.com/dfinity/ic/95787355499f3be929f2ab302ed44cdad7c64061/rs/rosetta-api/icrc1/ledger/ledger.did",
-      "wasm": "https://download.dfinity.systems/ic/95787355499f3be929f2ab302ed44cdad7c64061/canisters/ic-icrc1-ledger.wasm.gz",
+    "ckbtc_ledger" : {
+      "type" : "custom",
+      "candid" : "icrc1.public.did",
+      "wasm" : "icrc1.wasm",
       "remote": {
+        "candid": "icrc1.public.did",
         "id": {
-          "ic": "mxzaz-hqaaa-aaaar-qaada-cai"
+          "ic" : "mxzaz-hqaaa-aaaar-qaada-cai"
         }
       }
     },

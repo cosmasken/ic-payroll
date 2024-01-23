@@ -1,5 +1,23 @@
+type Subaccount = blob;
+type Result = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type Account = 
+ record {
+   owner: principal;
+   subaccount: opt Subaccount;
+ };
 service : {
-  getBalance: () -> (nat);
-  getDepositAddress: () -> (text);
+  getCanisterAddress: () -> (text);
+  getCanisterBalance: () -> (text);
+  getFundingAddress: () -> (text);
+  getFundingBalance: () -> (text);
+  getInvoice: () -> (Account);
+  getTradingAddress: () -> (text);
+  getTradingBalance: () -> (text);
+  transferToCanister: () -> (Result);
+  transferToUserFromCanister: () -> (Result);
   whoami: () -> (principal);
 }

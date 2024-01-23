@@ -7,11 +7,11 @@ dfx deps deploy
 dfx identity use minter
 export OWNER=$(dfx identity get-principal)
 
-dfx deploy --network local --specified-id mxzaz-hqaaa-aaaar-qaada-cai icrc1_ledger --argument '
+dfx deploy ckbtc_ledger --argument '
   (variant {
     Init = record {
       token_name = "Local ckBTC";
-      token_symbol = "LCKBTC";
+      token_symbol = "CKBTC";
       minting_account = record {
         owner = principal "'${OWNER}'";
       };
@@ -43,12 +43,13 @@ dfx deploy --network local icrc1_index --argument '
 
 dfx canister call backend set_icrc1_token_canister '( "mxzaz-hqaaa-aaaar-qaada-cai" )'
 
-dfx canister --network local call icrc1_ledger icrc1_transfer '
+dfx canister --network local call ckbtc_ledger icrc1_transfer '
   (record {
     to=(record {
-      owner=(principal "xy2p2-e57gf-kk2xk-e3avm-tqbny-o5sjy-zxh4y-75v2s-nkk7z-3ux4i-cqe")
+      owner=(principal "um3r2-a4kik-cwqu6-4rznr-udnbq-2a757-h54bf-p6pid-bsxl2-5ny4t-uqe");
+      subaccount = [ "0,0,29,96,127,192,42,34,255,94,89,74,141,3,194,243,78,157,16,212,91,123,71,121,200,188,218,48,174,248,27,2" ]
     });
-    amount=100_000_000_000
+    amount=100
   })
 '
 

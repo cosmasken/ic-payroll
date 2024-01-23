@@ -1,7 +1,20 @@
 export const idlFactory = ({ IDL }) => {
+  const Subaccount = IDL.Vec(IDL.Nat8);
+  const Account = IDL.Record({
+    'owner' : IDL.Principal,
+    'subaccount' : IDL.Opt(Subaccount),
+  });
+  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   return IDL.Service({
-    'getBalance' : IDL.Func([], [IDL.Nat], []),
-    'getDepositAddress' : IDL.Func([], [IDL.Text], []),
+    'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
+    'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
+    'getFundingAddress' : IDL.Func([], [IDL.Text], []),
+    'getFundingBalance' : IDL.Func([], [IDL.Text], []),
+    'getInvoice' : IDL.Func([], [Account], []),
+    'getTradingAddress' : IDL.Func([], [IDL.Text], []),
+    'getTradingBalance' : IDL.Func([], [IDL.Text], []),
+    'transferToCanister' : IDL.Func([], [Result], []),
+    'transferToUserFromCanister' : IDL.Func([], [Result], []),
     'whoami' : IDL.Func([], [IDL.Principal], []),
   });
 };
