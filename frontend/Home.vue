@@ -73,8 +73,9 @@ watchEffect(async () => {
 // })
 
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.transferToUserFromCanister()
-  console.log("account is "+res)
+  const res = await authStore.whoamiActor?.transferFromSubAccountToSubAccount( "rpqz7-3bs4d-anos4-a4dyz-jrjc7-pfbcp-tvzrw-l3dnj-cdqd6-q435a-eae",
+   10 )
+  console.log("from subaccount to is "+res)
   tradingresult.value = await res
 })
 

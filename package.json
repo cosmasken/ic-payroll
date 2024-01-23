@@ -1,7 +1,6 @@
 {
   "name": "ic-payroll",
   "version": "0.0.0",
-
   "scripts": {
     "dev": "vite",
     "deploy:identity": "dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy",
@@ -17,14 +16,13 @@
     "serve": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --write frontend/"
-},
-
+  },
   "dependencies": {
     "@dfinity/agent": "^0.19.2",
     "@dfinity/auth-client": "^0.20.2",
     "@dfinity/candid": "^0.19.2",
     "@dfinity/identity": "^0.19.2",
-    "@dfinity/ledger": "^0.0.15",
+    "@dfinity/ledger-icrc": "^2.1.0",
     "@dfinity/principal": "^0.19.2",
     "@dfinity/utils": "^0.0.22",
     "@headlessui/vue": "^1.7.17",

@@ -13,8 +13,13 @@ export const idlFactory = ({ IDL }) => {
     'getInvoice' : IDL.Func([], [Account], []),
     'getTradingAddress' : IDL.Func([], [IDL.Text], []),
     'getTradingBalance' : IDL.Func([], [IDL.Text], []),
+    'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),
+    'transferFromSubAccountToSubAccount' : IDL.Func(
+        [IDL.Text, IDL.Nat],
+        [Result],
+        [],
+      ),
     'transferToCanister' : IDL.Func([], [Result], []),
-    'transferToUserFromCanister' : IDL.Func([], [Result], []),
     'whoami' : IDL.Func([], [IDL.Principal], []),
   });
 };

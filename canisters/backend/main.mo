@@ -198,9 +198,9 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
   };
 
 
-  //transfer funds from the canister to the user
+  //transfer funds from the default canister subaccount to the user subaccount
   //Works
-  public shared ({ caller }) func transferToUserFromCanister(): async Result.Result<Text, Text> {
+  public shared ({ caller }) func transferFromCanistertoSubAccount(): async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -246,6 +246,55 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
 
     return #ok("🥠: " # cookies[Int.abs(Time.now() / 1000 % 50)]);
   };  
+
+  //transfer from one subaccount to another
+//works
+  public shared ({ caller }) func transferFromSubAccountToSubAccount(receiver:Text,amount:Nat): async Result.Result<Text, Text> {
+
+    // check ckBTC balance of the callers dedicated account
+    let balance = await CkBtcLedger.icrc1_balance_of(
+       {
+        owner = Principal.fromActor(Backend);
+        subaccount = ?toSubaccount(caller);
+      }
+    );
+
+    if (balance < 100) {
+      return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
+    };
+
+       Debug.print(" su acc balance:  is  " # debug_show(balance));
+
+    try {
+      // if enough funds were sent, move them to the canisters default account
+      let transferResult = await CkBtcLedger.icrc1_transfer(
+        {
+          amount = amount;
+          from_subaccount = ?toSubaccount(caller);
+          created_at_time = null;
+          fee = ?10;
+          memo = null;
+          to = {
+            owner = Principal.fromActor(Backend);
+            subaccount = ?toSubaccount(Principal.fromText(receiver));
+          };
+        }
+      );
+
+         Debug.print("fom subaccount transferresult:  is  " # debug_show(transferResult));
+
+      switch (transferResult) {
+        case (#Err(transferError)) {
+          return #err("Couldn't transfer funds to default account:\n" # debug_show (transferError));
+        };
+        case (_) {};
+      };
+    } catch (error : Error) {
+      return #err("Reject message: " # Error.message(error));
+    };
+
+    return #ok("🥠: " # cookies[Int.abs(Time.now() / 1000 % 50)]);
+  };
 
 
   

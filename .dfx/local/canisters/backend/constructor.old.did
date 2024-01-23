@@ -17,7 +17,8 @@ service : {
   getInvoice: () -> (Account);
   getTradingAddress: () -> (text);
   getTradingBalance: () -> (text);
+  transferFromCanistertoSubAccount: () -> (Result);
+  transferFromSubAccountToSubAccount: (text, nat) -> (Result);
   transferToCanister: () -> (Result);
-  transferToUserFromCanister: () -> (Result);
   whoami: () -> (principal);
 }
