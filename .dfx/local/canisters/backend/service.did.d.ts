@@ -16,8 +16,8 @@ export interface _SERVICE {
   'getInvoice' : ActorMethod<[], Account>,
   'getTradingAddress' : ActorMethod<[], string>,
   'getTradingBalance' : ActorMethod<[], string>,
+  'transferFromAccToCanister' : ActorMethod<[], Result>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
   'transferFromSubAccountToSubAccount' : ActorMethod<[string, bigint], Result>,
-  'transferToCanister' : ActorMethod<[], Result>,
   'whoami' : ActorMethod<[], Principal>,
 }

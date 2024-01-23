@@ -149,8 +149,8 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
 };
   
    
-
-  public shared ({ caller }) func transferToCanister(): async Result.Result<Text, Text> {
+//transfer from account to subaccount on the canister
+  public shared ({ caller }) func transferFromAccToCanister(): async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -164,7 +164,7 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
       return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
     };
 
-       Debug.print("balance to transfer to subaccount :  is  " # debug_show(balance));
+       Debug.print("balance to transfer to subaccount on canister :  is  " # debug_show(balance));
 
     try {
       // if enough funds were sent, move them to the canisters default account
@@ -177,12 +177,12 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
           memo = null;
           to = {
             owner = Principal.fromActor(Backend);
-            subaccount = null;
+            subaccount = ?toSubaccount(caller);
           };
         }
       );
 
-      Debug.print("transferresult:  is  " # debug_show(transferResult));
+      Debug.print("transferresult to canister subaccount:  is  " # debug_show(transferResult));
 
       switch (transferResult) {
         case (#Err(transferError)) {
@@ -247,8 +247,8 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
     return #ok("🥠: " # cookies[Int.abs(Time.now() / 1000 % 50)]);
   };  
 
-  //transfer from one subaccount to another
-//works
+      //transfer from one subaccount to another
+    //works
   public shared ({ caller }) func transferFromSubAccountToSubAccount(receiver:Text,amount:Nat): async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
