@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 
 defineProps({
   designation: String,
@@ -8,9 +8,9 @@ defineProps({
   type: String,
   remote: String,
   salary: String,
-})
+});
 
-const count = ref(0)
+const count = ref(0);
 </script>
 
 <template>

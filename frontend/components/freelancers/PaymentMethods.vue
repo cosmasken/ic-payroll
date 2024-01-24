@@ -1,7 +1,7 @@
 <script setup>
-import TextInput from "./TextInput.vue"
-import Button from "../../components/Button.vue"
-import ButtonWhite from "../../components/ButtonWhite.vue"
+import TextInput from "./TextInput.vue";
+import Button from "../../components/Button.vue";
+import ButtonWhite from "../../components/ButtonWhite.vue";
 </script>
 
 <template>
@@ -31,15 +31,13 @@ import ButtonWhite from "../../components/ButtonWhite.vue"
       </svg>
     </div>
 
-    <div class="grid grid-cols-1  gap-5">
+    <div class="grid grid-cols-1 gap-5">
       <TextInput label="icpaddress" placeholder="ICP Adress" />
       <TextInput label="ckbtcadress" placeholder="CKBT Address" />
       <TextInput label="ethadress" placeholder="ETH adress" />
       <TextInput label="mobilemoney" placeholder="Mobile Money number" />
     </div>
-  
-   
-  
+
     <div class="flex flex-row justify-end space-x-5 pt-[10px]">
       <Button title="Next" />
       <ButtonWhite title="Cancel" />

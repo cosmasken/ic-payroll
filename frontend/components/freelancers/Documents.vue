@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from "vue"
-import AssetUpload from "../AssetUpload.vue"
+import { ref } from "vue";
+import AssetUpload from "../AssetUpload.vue";
 
 defineProps({
   msg: String,
-})
+});
 
 const tabs = [
   {
@@ -19,15 +19,15 @@ const tabs = [
   },
   { name: "Documents", href: "/home/add-employee/documents", current: true },
   { name: "Account Access", href: "/account-access", current: false },
-]
+];
 
 const changeTab = (index) => {
   tabs.forEach((tab, i) => {
-    tab.current = i === index
-  })
-}
+    tab.current = i === index;
+  });
+};
 
-const count = ref(0)
+const count = ref(0);
 </script>
 
 <template>

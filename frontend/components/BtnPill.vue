@@ -16,12 +16,12 @@
           fill="#4C98FF"
         />
       </svg>
-      <span :style="{ color: textcolor}" >
+      <span :style="{ color: textcolor }">
         {{ props.text }}
       </span>
     </button>
   </div>
 </template>
 <script setup>
-const props = defineProps(['text', 'bgColor', 'textcolor'])
+const props = defineProps(["text", "bgColor", "textcolor"]);
 </script>

@@ -1,6 +1,6 @@
 // stores/counter.js
-import { defineStore } from "pinia"
-import { useAuthStore } from "./auth"
+import { defineStore } from "pinia";
+import { useAuthStore } from "./auth";
 
 export const useCompanyStore = defineStore("company", {
   state: () => {
@@ -11,52 +11,53 @@ export const useCompanyStore = defineStore("company", {
       departments: [],
       employees: [],
       identity: null,
-    }
+    };
   },
   getters: {
     getAccountType() {
-      return this.accountType
+      return this.accountType;
     },
     getIsInitialized() {
-      return this.isInitialized
+      return this.isInitialized;
     },
     getStoreName() {
-      return this.storeName
+      return this.storeName;
     },
     getDepartments() {
-      return this.departments
+      return this.departments;
     },
     getEmployees() {
-      return this.employees
+      return this.employees;
     },
     getIdentity() {
-      return this.identity
+      return this.identity;
     },
   },
   // could also be defined as
   // state: () => ({ count: 0 })
   actions: {
     async setupStore(storeName, departments, employees) {
-      const authStore = useAuthStore()
+      const authStore = useAuthStore();
       if (authStore.isAuthenticated) {
-        this.isInitialized = true
-        this.storeName = storeName
-        this.departments = departments
-        employees = employees
+        this.isInitialized = true;
+        this.storeName = storeName;
+        this.departments = departments;
+        employees = employees;
       } else {
-        throw new Error("User must be authenticated")
+        throw new Error("User must be authenticated");
       }
-      this.isInitialized = true
+      this.isInitialized = true;
     },
     setAccountType(type) {
       if (type === "Individual" || type === "Company") {
-        this.accountType = type
+        this.accountType = type;
       } else {
-        throw new Error("Invalid account type")
+        throw new Error("Invalid account type");
       }
     },
     toggleAccountType() {
-      this.accountType = this.accountType === "Individual" ? "Company" : "Individual"
+      this.accountType =
+        this.accountType === "Individual" ? "Company" : "Individual";
     },
   },
-})
+});

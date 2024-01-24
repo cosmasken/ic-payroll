@@ -1,6 +1,6 @@
 <script setup>
-import SettingsCard from "../components/SettingsCard.vue"
-import NotificationCard from "../components/NotificationCard.vue"
+import SettingsCard from "../components/SettingsCard.vue";
+import NotificationCard from "../components/NotificationCard.vue";
 </script>
 <template>
   <div class="flex flex-col p-5 divide-y divide-[#A2A1A81A]">

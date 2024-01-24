@@ -1,9 +1,9 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 defineProps({
   label: String,
   placeholder: String,
-})
+});
 </script>
 
 <template>

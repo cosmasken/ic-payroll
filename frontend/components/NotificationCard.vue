@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from "vue"
-import { Switch } from "@headlessui/vue"
+import { ref } from "vue";
+import { Switch } from "@headlessui/vue";
 
-const enabled = ref(false)
+const enabled = ref(false);
 defineProps({
   heading: String,
   subtitle: String,
   active: Boolean,
-})
+});
 </script>
 <template>
   <div class="flex flex-row justify-between">

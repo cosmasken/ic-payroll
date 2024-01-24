@@ -1,7 +1,7 @@
 <script setup>
-import TextInput from "./TextInput.vue"
-import Button from "../../components/Button.vue"
-import ButtonWhite from "../../components/ButtonWhite.vue"
+import TextInput from "./TextInput.vue";
+import Button from "../../components/Button.vue";
+import ButtonWhite from "../../components/ButtonWhite.vue";
 </script>
 
 <template>
@@ -31,7 +31,7 @@ import ButtonWhite from "../../components/ButtonWhite.vue"
       </svg>
     </div>
 
-    <div class="grid grid-cols-1  gap-5">
+    <div class="grid grid-cols-1 gap-5">
       <TextInput label="FullName" placeholder="FullName" />
       <TextInput label="Email" placeholder="Email" />
       <TextInput label="Phone" placeholder="Phone" />
@@ -44,8 +44,7 @@ import ButtonWhite from "../../components/ButtonWhite.vue"
       <Gender />
       <Nationality />
     </div>
-   
-  
+
     <div class="flex flex-row justify-end space-x-5 pt-[10px]">
       <Button title="Next" />
       <ButtonWhite title="Cancel" />

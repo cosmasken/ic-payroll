@@ -1,7 +1,7 @@
 <script setup>
-import TextInput from "./TextInput.vue"
-import Button from "../../components/Button.vue"
-import ButtonWhite from "../../components/ButtonWhite.vue"
+import TextInput from "./TextInput.vue";
+import Button from "../../components/Button.vue";
+import ButtonWhite from "../../components/ButtonWhite.vue";
 </script>
 
 <template>

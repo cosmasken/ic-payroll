@@ -1,16 +1,16 @@
 <script setup>
-import { ref } from "vue"
-import EmployeeDepartmentCard from "./EmployeeDepartmentCard.vue"
-import router from "../router"
+import { ref } from "vue";
+import EmployeeDepartmentCard from "./EmployeeDepartmentCard.vue";
+import router from "../router";
 
 defineProps({
   msg: String,
-})
+});
 
-const count = ref(0)
+const count = ref(0);
 const gotoViewDepartment = () => {
-  router.push("/view-department")
-}
+  router.push("/view-department");
+};
 </script>
 
 <template>

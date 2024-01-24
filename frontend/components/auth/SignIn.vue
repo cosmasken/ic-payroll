@@ -1,7 +1,7 @@
 <script setup>
-import { useAuthStore } from "../../store/auth"
+import { useAuthStore } from "../../store/auth";
 
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 </script>
 <template>
   <div class="flex min-h-full flex-1">

@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 defineProps({
   title: String,
   iconUrl: String,
   bgcolor: String,
-})
+});
 </script>
 
 <template>

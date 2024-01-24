@@ -12,7 +12,7 @@ const tabs = [
   },
   { name: "Documents", href: "/documents", current: true },
   { name: "Account Access", href: "/account-access", current: false },
-]
+];
 </script>
 <template>
   <!--MultiStepForm :steps="['Personal information 👶','Series 📺','Feedback 🌟']"/-->

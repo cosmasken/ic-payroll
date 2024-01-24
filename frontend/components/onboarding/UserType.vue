@@ -61,19 +61,19 @@ const companyStore = useCompanyStore()
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 import {
   RadioGroup,
   RadioGroupDescription,
   RadioGroupLabel,
   RadioGroupOption,
-} from "@headlessui/vue"
-import { CheckCircleIcon } from "@heroicons/vue/20/solid"
+} from "@headlessui/vue";
+import { CheckCircleIcon } from "@heroicons/vue/20/solid";
 
 const mailingLists = [
   { id: 1, title: "Business" },
   { id: 2, title: "Individual" },
-]
+];
 
-const selectedMailingLists = ref(mailingLists[0])
+const selectedMailingLists = ref(mailingLists[0]);
 </script>

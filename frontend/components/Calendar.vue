@@ -141,9 +141,9 @@
 </template>
 
 <script setup>
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid"
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue"
-import { EllipsisVerticalIcon } from "@heroicons/vue/24/outline"
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { EllipsisVerticalIcon } from "@heroicons/vue/24/outline";
 
 const days = [
   { date: "2021-12-27" },
@@ -188,7 +188,7 @@ const days = [
   { date: "2022-02-04" },
   { date: "2022-02-05" },
   { date: "2022-02-06" },
-]
+];
 const meetings = [
   {
     id: 1,
@@ -211,5 +211,5 @@ const meetings = [
     endDatetime: "2022-01-21T14:30",
   },
   // More meetings...
-]
+];
 </script>

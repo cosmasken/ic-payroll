@@ -1,12 +1,12 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 
 defineProps({
   name: String,
   role: String,
-})
+});
 
-const count = ref(0)
+const count = ref(0);
 </script>
 
 <template>

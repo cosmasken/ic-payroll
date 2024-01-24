@@ -1,6 +1,6 @@
 <script setup>
-import JobCardVue from "../components/JobCard.vue"
-import Searchbar from "../components/Searchbar.vue"
+import JobCardVue from "../components/JobCard.vue";
+import Searchbar from "../components/Searchbar.vue";
 </script>
 <template>
   <div class="flex flex-col space-y-[30px] p-5">

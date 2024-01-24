@@ -1,23 +1,22 @@
 // registrationStore.js
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
+import router from "../router/index.js";
 
-import router from '../router/index.js'
-
-export const useRegistrationStore = defineStore('registration', {
+export const useRegistrationStore = defineStore("registration", {
   state: () => ({
     registrationData: {},
-    identity : String,
+    identity: String,
   }),
   actions: {
     updateRegistrationData(data) {
-      this.registrationData = { ...this.registrationData, ...data }
+      this.registrationData = { ...this.registrationData, ...data };
     },
     clearRegistrationData() {
-      this.registrationData = {}
+      this.registrationData = {};
     },
     setUserInfo(identity) {
-      this.identity =identity;
+      this.identity = identity;
     },
     async registration(
       usertype,
@@ -33,14 +32,14 @@ export const useRegistrationStore = defineStore('registration', {
       password,
       phone
     ) {
-      this.loading = true
+      this.loading = true;
       //const response = await axios.post('https://concerned-plum-gazelle.cyclic.app/api/user/login', { 'dev@waiafrica.com', password });
       const response = await axios({
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        method: 'post',
-        url: 'https://concerned-plum-gazelle.cyclic.app/api/user',
+        method: "post",
+        url: "https://concerned-plum-gazelle.cyclic.app/api/user",
         data: {
           usertype: usertype,
           firstname: firstname,
@@ -53,21 +52,24 @@ export const useRegistrationStore = defineStore('registration', {
           expirydate: expirydate,
           email: email,
           password: password,
-          phone: phone
-        }
-      })
+          phone: phone,
+        },
+      });
 
       if (response.status === 200) {
-        console.log('Registered', response)
-        this.setUserInfo(JSON.stringify(response))
-        console.log(response)
-        this.user = response.data.user
-        this.error = null
-        router.push('/auth/login')
+        console.log("Registered", response);
+        this.setUserInfo(JSON.stringify(response));
+        console.log(response);
+        this.user = response.data.user;
+        this.error = null;
+        router.push("/auth/login");
       } else {
-        this.error = response.data.message
-        console.log('An error occurred during Registration:', response.data.message)
+        this.error = response.data.message;
+        console.log(
+          "An error occurred during Registration:",
+          response.data.message
+        );
       }
-    }
-  }
-})
+    },
+  },
+});

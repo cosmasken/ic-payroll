@@ -1,14 +1,14 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 const tabs = [
   { name: "Married", current: false },
   { name: "Single", current: false },
   { name: "Divorced", current: false },
-]
+];
 
 defineProps({
   tabs: Array,
-})
+});
 </script>
 <template>
   <div>

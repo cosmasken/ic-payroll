@@ -1,4 +1,42 @@
 // Version: 1.0.0
+type AssocList<K, V> = List<(K, V)>;
+type AssocList__1<K, V> = AssocList<K, V>;
+type Branch<K, V> = {left : Trie<K, V>; right : Trie<K, V>; size : Nat};
+type Hash = Nat32;
+type Key__1<K> = {hash : Hash; key : K};
+type Leaf<K, V> = {keyvals : AssocList__1<Key__1<K>, V>; size : Nat};
+type List<T> = ?(T, List<T>);
+type Transaction =
+  {
+    amount : Nat;
+    created_at : Int;
+    from : Principal;
+    memo : Text;
+    to : Principal
+  };
+type TransactionId = Nat32;
+type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
+type User =
+  {
+    created_at : Int;
+    email : Text;
+    email_notifications : Bool;
+    id : Nat;
+    name : Text;
+    phone : Text;
+    phone_notifications : Bool;
+    wallet : Principal
+  };
+type UserId = Nat32;
 actor {
-  
+  stable var next : Nat32;
+  stable var nextTransaction : Nat32;
+  stable var transactions :
+    {
+      #branch : Branch<TransactionId, Transaction>;
+      #empty;
+      #leaf : Leaf<TransactionId, Transaction>
+    };
+  stable var users :
+    {#branch : Branch<UserId, User>; #empty; #leaf : Leaf<UserId, User>}
 };

@@ -1,100 +1,92 @@
 <script setup>
-import { ref ,watchEffect} from "vue"
-import useClipboard from 'vue-clipboard3'
-import {useAuthStore} from "./store/auth"
-import router from "./router/"
+import { ref, watchEffect } from "vue";
+import useClipboard from "vue-clipboard3";
+import { useAuthStore } from "./store/auth";
+import router from "./router/";
 
-const authStore = useAuthStore()
-const darkmode = ref(false)
-let tradingaddress = ref("")
-let fundingaddress = ref("")
-let tradingbalance = ref("")
-let fundingbalance = ref("")
-let tradingresult = ref("")
-let canisteraddress = ref("")
-let canisterbalance = ref("")
-let invoice = ref({})
-
+const authStore = useAuthStore();
+const darkmode = ref(false);
+let tradingaddress = ref("");
+let fundingaddress = ref("");
+let tradingbalance = ref("");
+let fundingbalance = ref("");
+let tradingresult = ref("");
+let canisteraddress = ref("");
+let canisterbalance = ref("");
+let invoice = ref({});
 
 const logout = () => {
-  router.push("/auth")
-  authStore.logout()
-}
+  router.push("/auth");
+  authStore.logout();
+};
 
-const { toClipboard } = useClipboard()
-  const copy = async () => {
-      try {
-        await toClipboard(response.value)
-        console.log('Copied to clipboard')
-      //  console.log(balance)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-
-
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getCanisterAddress()
-  canisteraddress.value = await res
-})
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getCanisterBalance()
-  canisterbalance.value = await res
-})
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getTradingAddress()
-  tradingaddress.value = await res
-})
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getFundingAddress()
-  fundingaddress.value = await res
-})
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getTradingBalance()
-  tradingbalance.value = await res
-})
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getFundingBalance()
-  fundingbalance.value = await res
-})
+const { toClipboard } = useClipboard();
+const copy = async () => {
+  try {
+    await toClipboard(response.value);
+    console.log("Copied to clipboard");
+    //  console.log(balance)
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getInvoice()
-  console.log("account is "+res)
-  invoice.value = await res
-})
-
-
+  const res = await authStore.whoamiActor?.getCanisterAddress();
+  canisteraddress.value = await res;
+});
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getCanisterBalance();
+  canisterbalance.value = await res;
+});
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getTradingAddress();
+  tradingaddress.value = await res;
+});
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getFundingAddress();
+  fundingaddress.value = await res;
+});
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getTradingBalance();
+  tradingbalance.value = await res;
+});
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getFundingBalance();
+  fundingbalance.value = await res;
+});
 
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.transferFromAccToCanister()
-  console.log("account is "+res)
-  tradingresult.value = await res
-})
+  const res = await authStore.whoamiActor?.getInvoice();
+  console.log("account is " + res);
+  invoice.value = await res;
+});
 
 // watchEffect(async () => {
-//   const res = await authStore.whoamiActor?.transferFromSubAccountToSubAccount( "rpqz7-3bs4d-anos4-a4dyz-jrjc7-pfbcp-tvzrw-l3dnj-cdqd6-q435a-eae",
-//    10 )
-//   console.log("from subaccount to is "+res)
+//   const res = await authStore.whoamiActor?.selfTransfer()
+//   console.log("account is "+res)
 //   tradingresult.value = await res
 // })
 
+//watchEffect(async () => {
+//const res = await authStore.whoamiActor?.transferFromSubAccountToSubAccount( "u2jhk-75uw6-jkzd5-n5h4y-eeakm-nlnrb-f2rn3-bllzh-fpjmj-763la-6qe",
+//  10 )
+// console.log("from subaccount to is "+res)
+// tradingresult.value = await res
+//})
 
-
-
-
-const walletAddress = "0x1234567890123456789012345678901234567890"
+const walletAddress = "0x1234567890123456789012345678901234567890";
 
 //const accountType = companyStore.getAccountType();
 
 const toggleDarkMode = () => {
-  darkmode.value = !darkmode.value
+  darkmode.value = !darkmode.value;
   if (darkmode.value) {
-    document.documentElement.classList.add("dark")
+    document.documentElement.classList.add("dark");
   } else {
-    document.documentElement.classList.remove("dark")
+    document.documentElement.classList.remove("dark");
   }
-}
+};
 </script>
 
 <template class="font-lexend h-full w-full">
@@ -105,9 +97,7 @@ const toggleDarkMode = () => {
       class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-screen"
     >
       <div class="flex flex-col justify-between h-full">
-       
         <div>
-
           <div v-if="darkmode">
             <img src="./assets/darklogo.png" class="h-[50px]" />
           </div>
@@ -251,9 +241,10 @@ const toggleDarkMode = () => {
           </div>
         </div>
 
-        <button @click="logout"
-        class="border border-gray-300 rounded-[10px] p-5">
-     
+        <button
+          @click="logout"
+          class="border border-gray-300 rounded-[10px] p-5"
+        >
           Log out
         </button>
         <nav class="flex rounded-[10px] align-bottom" aria-label="Tabs">
@@ -356,8 +347,6 @@ const toggleDarkMode = () => {
           <p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p>
         </div>
         <div class="flex flex-row justify-evenly items-center space-x-5">
-          
-
           <div class="cursor-pointer">
             <div v-if="darkmode">
               <svg
@@ -419,59 +408,35 @@ const toggleDarkMode = () => {
             </div>
           </div>
           <div class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
-                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           TradingAddress : {{ tradingaddress }}
-                          </p>
-                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           TradingBalance : {{ tradingbalance }}
-                          </p>
+            <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+              FundingAddress : {{ fundingaddress }}
+            </p>
 
-                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           FundingAddress : {{ fundingaddress }}
-                          </p>
-                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           FundingBalance : {{ fundingbalance }}
-                          </p>
-                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           Canister Address : {{ canisteraddress }}
-                          </p>
-                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           Canister Balance : {{ canisterbalance }}
-                          </p>
-                          <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                           Invoice : {{ invoice }}
-                          </p>
-                          
-                         
-                          <div class="flex flex-row justify-between">
-                          
-                            <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                              Total  {{ totalTokensSupply  }} CKBTC
-                            </p>
-                            <!--p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                              {{ accountbalance }} CKBTC
-                            </p-->
-                            <div 
-                              class="h-6 w-6 rounded-md bg-[#E0ECFE] flex items-center justify-center cursor-pointer"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="12"
-                                height="12"
-                                viewBox="0 0 12 12"
-                                fill="none"
-                              >
-                                <path
-                                  d="M7.875 9.75V10.5312C7.875 10.7901 7.66514 11 7.40625 11H2.09375C1.83486 11 1.625 10.7901 1.625 10.5312V3.34375C1.625 3.08486 1.83486 2.875 2.09375 2.875H3.5V8.65625C3.5 9.25936 3.99064 9.75 4.59375 9.75H7.875ZM7.875 3.03125V1H4.59375C4.33486 1 4.125 1.20986 4.125 1.46875V8.65625C4.125 8.91514 4.33486 9.125 4.59375 9.125H9.90625C10.1651 9.125 10.375 8.91514 10.375 8.65625V3.5H8.34375C8.08594 3.5 7.875 3.28906 7.875 3.03125ZM10.2377 2.42521L8.94979 1.13729C8.86188 1.04938 8.74265 1 8.61834 1H8.5V2.875H10.375V2.75666C10.375 2.63234 10.3256 2.51312 10.2377 2.42521Z"
-                                  fill="#227BF6"
-                                />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-
-    
-
+            <div class="flex flex-row justify-between">
+              <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                TradingBalance : {{ tradingbalance }}
+              </p>
+              <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                FundingBalance : {{ fundingbalance }}
+              </p>
+              <div
+                class="h-6 w-6 rounded-md bg-[#E0ECFE] flex items-center justify-center cursor-pointer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                >
+                  <path
+                    d="M7.875 9.75V10.5312C7.875 10.7901 7.66514 11 7.40625 11H2.09375C1.83486 11 1.625 10.7901 1.625 10.5312V3.34375C1.625 3.08486 1.83486 2.875 2.09375 2.875H3.5V8.65625C3.5 9.25936 3.99064 9.75 4.59375 9.75H7.875ZM7.875 3.03125V1H4.59375C4.33486 1 4.125 1.20986 4.125 1.46875V8.65625C4.125 8.91514 4.33486 9.125 4.59375 9.125H9.90625C10.1651 9.125 10.375 8.91514 10.375 8.65625V3.5H8.34375C8.08594 3.5 7.875 3.28906 7.875 3.03125ZM10.2377 2.42521L8.94979 1.13729C8.86188 1.04938 8.74265 1 8.61834 1H8.5V2.875H10.375V2.75666C10.375 2.63234 10.3256 2.51312 10.2377 2.42521Z"
+                    fill="#227BF6"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

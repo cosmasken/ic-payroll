@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 const tabs = [
   { name: "Male", current: true },
   { name: "Female", current: false },
-]
+];
 
 defineProps({
   tabs: Array,
-})
+});
 </script>
 <template>
   <div>

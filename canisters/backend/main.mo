@@ -5,80 +5,134 @@ import Int "mo:base/Int";
 import Time "mo:base/Time";
 import CkBtcLedger "canister:ckbtc_ledger";
 import Types "./types";
-import { toAccount; toSubaccount; createInvoice } "./utils";
+import { toAccount; toSubaccount; } "./utils";
 import Error "mo:base/Error";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
 import Utils "utils";
-
+import HashMap "mo:base/HashMap";
+import List "mo:base/List";
+import Nat64 "mo:base/Nat64";
+import Option "mo:base/Option";
+import Trie "mo:base/Trie";
+import Nat32 "mo:base/Nat32";
 
 actor Backend {
 
-
-    let cookies = [
-    "A journey of a thousand miles begins with a single step.",
-    "Your greatest fortune is the friends you keep.",
-    "Good things come to those who wait.",
-    "The best way to predict the future is to create it.",
-    "Opportunity knocks on your door every day. Be ready to answer.",
-    "Success is the sum of small efforts repeated day in and day out.",
-    "Believe in yourself, and others will too.",
-    "A smile is the universal language of kindness.",
-    "Your dreams are within reach. Pursue them with passion.",
-    "Kindness is a gift that keeps on giving.",
-    "Patience is the key to unlocking life's greatest treasures.",
-    "Fortune favors the bold.",
-    "Success is not final, failure is not fatal: It is the courage to continue that counts.",
-    "The greatest risk is not taking any risks at all.",
-    "Your positive attitude will lead to positive outcomes.",
-    "In every ending, there is a new beginning.",
-    "Happiness is not a destination, but a way of life.",
-    "Success is not measured by wealth, but by the impact you make on others.",
-    "Embrace change, for it leads to growth.",
-    "The best lessons are learned from mistakes.",
-    "Your creative ideas will lead to great achievements.",
-    "The secret to happiness is to count your blessings.",
-    "Love and laughter are the keys to a joyful heart.",
-    "Success comes to those who work for it.",
-    "You have the power to make a difference in the world.",
-    "Cherish the present moment, for it is a gift.",
-    "Persistence and determination will bring you closer to your goals.",
-    "A kind word can change someone's entire day.",
-    "The only limit is the one you set for yourself.",
-    "Take the road less traveled, and you will discover new horizons.",
-    "Your greatest strength lies within you.",
-    "Luck is what happens when preparation meets opportunity.",
-    "Every setback is a setup for a comeback.",
-    "A grateful heart attracts abundance.",
-    "The best is yet to come.",
-    "The harder you work, the luckier you get.",
-    "Life is a beautiful journey. Enjoy every step.",
-    "Your passion will lead you to success.",
-    "Every problem has a solution. Keep a positive mindset.",
-    "Wisdom is knowing what to do; virtue is doing it.",
-    "You are capable of achieving great things.",
-    "A kind gesture can change someone's entire day.",
-    "Great things take time. Be patient.",
-    "Believe in yourself, and others will believe in you.",
-    "Your generosity will be rewarded tenfold.",
-    "Keep your face always toward the sunshine, and shadows will fall behind you.",
-    "Success is not just about reaching the destination, but enjoying the journey.",
-    "An open mind is an opportunity magnet.",
-    "The world is full of endless possibilities. Embrace them.",
-    "Your potential is limitless. Believe in yourself and aim high.",
-  ];
-let addressConverter_ = Utils.addressConverter;
   
+  let addressConverter_ = Utils.addressConverter;
+  public type Payments = List.List<Types.Transaction>;
+  public type Users = List.List<Types.User>;
+  public type Posts = List.List<Types.Invoice>;
+    // The type of a user identifier.
+  public type UserId = Nat32;
+    public type TransactionId = Nat32;
 
-   public shared ({ caller }) func whoami() : async Principal {
-return caller;
- };
+  // The next available user identifier.
+  private stable var next : UserId = 0;
 
-public shared ({ caller }) func getInvoice() : async Types.Account {
-  
-  return  toAccount({ caller; canister = Principal.fromActor(Backend) });
- // Debug.print(Debug_show(toAccount({ caller; canister = Principal.fromActor(Backend) })));
+   private stable var nextTransaction : TransactionId = 0;
+
+  // The superhero data store.
+  private stable var users : Trie.Trie<UserId, Types.User> = Trie.empty();
+  private stable var transactions : Trie.Trie<TransactionId, Types.Transaction> = Trie.empty();
+
+/**
+   * High-Level API
+   */
+
+  // Create a superhero.
+  public func create(user : Types.User) : async UserId {
+    let userId = next;
+    next += 1;
+    users := Trie.replace(
+      users,
+      key(userId),
+      eq,
+      ?user,
+    ).0;
+    return userId;
   };
+
+  //create a transaction
+  public func saveTransaction(transaction : Types.Transaction) : async TransactionId {
+    let transactionId = nextTransaction;
+    nextTransaction += 1;
+    transactions := Trie.replace(
+      transactions,
+      key(transactionId),
+      eq,
+      ?transaction,
+    ).0;
+    return transactionId;
+  };
+
+
+  // Read a superhero.
+  public query func read(userId : UserId) : async ?Types.User {
+    let result = Trie.find(users, key(userId), eq);
+    return result;
+  };
+
+  // Update a superhero.
+  public func update(userId : UserId, user : Types.User) : async Bool {
+    let result = Trie.find(users, key(userId), eq);
+    let exists = Option.isSome(result);
+    if (exists) {
+      users := Trie.replace(
+        users,
+        key(userId),
+        eq,
+        ?user,
+      ).0;
+    };
+    return exists;
+  };
+
+  // Delete a superhero.
+  public func delete(userId : UserId) : async Bool {
+    let result = Trie.find(users, key(userId), eq);
+    let exists = Option.isSome(result);
+    if (exists) {
+      users := Trie.replace(
+        users,
+        key(userId),
+        eq,
+        null,
+      ).0;
+    };
+    return exists;
+  };
+
+  //get all heroes
+  public query func getAllUsers() : async Trie.Trie<UserId, Types.User> {
+   
+    return users;
+  };
+
+  //no of users
+  public query func userLength() : async Text {
+   var size = Trie.size(users); 
+    return Nat.toText(size);
+  };
+
+  //no of transactions
+  public query func transactionsLength() : async Text {
+   var size = Trie.size(transactions); 
+    return Nat.toText(size);
+  };
+
+  public shared ({ caller }) func whoami() : async Principal {
+    return caller;
+  };
+
+  public shared ({ caller }) func getInvoice() : async Types.Account {
+
+    return toAccount({ caller; canister = Principal.fromActor(Backend) });
+    // Debug.print(Debug_show(toAccount({ caller; canister = Principal.fromActor(Backend) })));
+  };
+
+ 
 
   public shared ({ caller }) func getFundingBalance() : async Text {
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -86,125 +140,74 @@ public shared ({ caller }) func getInvoice() : async Types.Account {
       {
         owner = caller;
         subaccount = null;
-      }
-    //  toAccount({ caller; canister = Principal.fromActor(Backend) })
+      },
+      //  toAccount({ caller; canister = Principal.fromActor(Backend) })
     );
     return Nat.toText(balance);
   };
 
   public shared ({ caller }) func getTradingBalance() : async Text {
-     let balance = await CkBtcLedger.icrc1_balance_of(
+    let balance = await CkBtcLedger.icrc1_balance_of(
 
       {
         owner = Principal.fromActor(Backend);
         subaccount = ?toSubaccount(caller);
-      }
-    //  toAccount({ caller; canister = Principal.fromActor(Backend) })
-    // owner = Principal.fromActor(Backend) ;
-    //  subaccount = ?toSubaccount(caller);
+      },
+      //  toAccount({ caller; canister = Principal.fromActor(Backend) })
+      // owner = Principal.fromActor(Backend) ;
+      //  subaccount = ?toSubaccount(caller);
     );
-     return Nat.toText(balance);
+    return Nat.toText(balance);
   };
 
-    public shared ({ caller }) func getCanisterBalance() : async Text {
-     let balance = await CkBtcLedger.icrc1_balance_of(
+  public shared ({ caller }) func getCanisterBalance() : async Text {
+    let balance = await CkBtcLedger.icrc1_balance_of(
 
       {
         owner = Principal.fromActor(Backend);
         subaccount = null;
-      }
-    //  toAccount({ caller; canister = Principal.fromActor(Backend) })
-    // owner = Principal.fromActor(Backend) ;
-    //  subaccount = ?toSubaccount(caller);
+      },
+      //  toAccount({ caller; canister = Principal.fromActor(Backend) })
+      // owner = Principal.fromActor(Backend) ;
+      //  subaccount = ?toSubaccount(caller);
     );
-     return Nat.toText(balance);
+    return Nat.toText(balance);
   };
 
-public shared ({caller}) func getFundingAddress() : async Text {
-  let acc : Types.Account = {
-    owner = caller;
-    subaccount = null;
-  };
-  let address = addressConverter_.toText(acc);
-  return address;
-};
-
-
-public shared ({ caller }) func getTradingAddress() : async Text {
-  let acc : Types.Account = {
-    owner = Principal.fromActor(Backend);
-    subaccount = ?toSubaccount(caller);
-  };
-  let address = addressConverter_.toText(acc);
-  return address;
-};
-
-public shared ({ caller }) func getCanisterAddress() : async Text {
-  let acc : Types.Account = {
-    owner = Principal.fromActor(Backend);
-    subaccount = null;
-  };
-  let address = addressConverter_.toText(acc);
-  return address;
-};
-  
-   
-//transfer from account to subaccount on the canister
-  public shared ({ caller }) func transferFromAccToCanister(): async Result.Result<Text, Text> {
-
-    // check ckBTC balance of the callers dedicated account
-    let balance = await CkBtcLedger.icrc1_balance_of(
-       {
-        owner = caller;
-        subaccount = null;
-      }
-    );
-
-    if (balance < 100) {
-      return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
+  public shared ({ caller }) func getFundingAddress() : async Text {
+    let acc : Types.Account = {
+      owner = caller;
+      subaccount = null;
     };
-
-       Debug.print("balance to transfer to subaccount on canister :  is  " # debug_show(balance));
-
-    try {
-      // if enough funds were sent, move them to the canisters default account
-      let transferResult = await CkBtcLedger.icrc1_transfer(
-        {
-          amount = balance -10;
-          from_subaccount = null;
-          created_at_time = null;
-          fee = ?10;
-          memo = null;
-          to = {
-            owner = Principal.fromActor(Backend);
-            subaccount = ?toSubaccount(caller);
-          };
-        }
-      );
-
-      Debug.print("transferresult to canister subaccount:  is  " # debug_show(transferResult));
-
-      switch (transferResult) {
-        case (#Err(transferError)) {
-          return #err("Couldn't transfer funds to default account:\n" # debug_show (transferError));
-        };
-        case (_) {};
-      };
-    } catch (error : Error) {
-      return #err("Reject message: " # Error.message(error));
-    };
-
-    return #ok("🥠: " # cookies[Int.abs(Time.now() / 1000 % 50)]);
+    let address = addressConverter_.toText(acc);
+    return address;
   };
 
+  public shared ({ caller }) func getTradingAddress() : async Text {
+    let acc : Types.Account = {
+      owner = Principal.fromActor(Backend);
+      subaccount = ?toSubaccount(caller);
+    };
+    let address = addressConverter_.toText(acc);
+    return address;
+  };
+
+  public shared ({ caller }) func getCanisterAddress() : async Text {
+    let acc : Types.Account = {
+      owner = Principal.fromActor(Backend);
+      subaccount = null;
+    };
+    let address = addressConverter_.toText(acc);
+    return address;
+  };
 
   //transfer funds from the default canister subaccount to the user subaccount
   //Works
-  public shared ({ caller }) func transferFromCanistertoSubAccount(): async Result.Result<Text, Text> {
+  public shared ({ caller }) func transferFromCanistertoSubAccount() : async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
-       {
+      {
         owner = Principal.fromActor(Backend);
         subaccount = null;
       }
@@ -214,7 +217,7 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
       return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
     };
 
-       Debug.print("balance:  is  " # debug_show(balance));
+    Debug.print("balance:  is  " # debug_show (balance));
 
     try {
       // if enough funds were sent, move them to the canisters default account
@@ -232,7 +235,7 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
         }
       );
 
-         Debug.print("transferresult:  is  " # debug_show(transferResult));
+      Debug.print("transferresult:  is  " # debug_show (transferResult));
 
       switch (transferResult) {
         case (#Err(transferError)) {
@@ -244,16 +247,16 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
       return #err("Reject message: " # Error.message(error));
     };
 
-    return #ok("🥠: " # cookies[Int.abs(Time.now() / 1000 % 50)]);
-  };  
+    return #ok("🥠: " # "success");
+  };
 
-      //transfer from one subaccount to another
-    //works
-  public shared ({ caller }) func transferFromSubAccountToSubAccount(receiver:Text,amount:Nat): async Result.Result<Text, Text> {
+  //transfer from one subaccount to another
+  //works
+  public shared ({ caller }) func transferFromSubAccountToSubAccount(receiver : Text, amount : Nat) : async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
-       {
+      {
         owner = Principal.fromActor(Backend);
         subaccount = ?toSubaccount(caller);
       }
@@ -263,7 +266,7 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
       return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
     };
 
-       Debug.print(" su acc balance:  is  " # debug_show(balance));
+    Debug.print(" su acc balance:  is  " # debug_show (balance));
 
     try {
       // if enough funds were sent, move them to the canisters default account
@@ -281,7 +284,7 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
         }
       );
 
-         Debug.print("fom subaccount transferresult:  is  " # debug_show(transferResult));
+      Debug.print("fom subaccount transferresult:  is  " # debug_show (transferResult));
 
       switch (transferResult) {
         case (#Err(transferError)) {
@@ -293,10 +296,22 @@ public shared ({ caller }) func getCanisterAddress() : async Text {
       return #err("Reject message: " # Error.message(error));
     };
 
-    return #ok("🥠: " # cookies[Int.abs(Time.now() / 1000 % 50)]);
+  return #ok("🥠: " # "success");
+  };
+
+/**
+   * Utilities
+   */
+
+  // Test two superhero identifiers for equality.
+  private func eq(x : UserId, y : UserId) : Bool {
+    return x == y;
+  };
+
+  // Create a trie key from a superhero identifier.
+  private func key(x : UserId) : Trie.Key<UserId> {
+    return { hash = x; key = x };
   };
 
 
-  
-
-}
+};

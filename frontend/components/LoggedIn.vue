@@ -66,55 +66,55 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from "vue"
-import { useAuthStore } from "../store/auth"
-import { useCompanyStore } from "../store/company"
-import UserType from "./onboarding/UserType.vue"
+import { ref, watchEffect } from "vue";
+import { useAuthStore } from "../store/auth";
+import { useCompanyStore } from "../store/company";
+import UserType from "./onboarding/UserType.vue";
 
-import router from "../router"
+import router from "../router";
 
-const companyStore = useCompanyStore()
+const companyStore = useCompanyStore();
 
-const authStore = useAuthStore()
-let response = ref("")
+const authStore = useAuthStore();
+let response = ref("");
 
-const balance = ref("")
-const paymentres = ref("")
-
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.whoami()
-  response.value = await res
-})
+const balance = ref("");
+const paymentres = ref("");
 
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getBalance()
-  balance.value = await res
-})
+  const res = await authStore.whoamiActor?.whoami();
+  response.value = await res;
+});
+
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getBalance();
+  balance.value = await res;
+});
 
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.makeTransfer(
     "inhle-3bt2j-k3bn6-kp5my-33r3q-lpe4j-s4c57-fpzvm-up5rx-smpre-5qe",
-    500,
-  )
-  paymentres.value = await res
-})
+    500
+  );
+  paymentres.value = await res;
+});
 
 function gotoDashboard() {
-  router.push("/home/dashboard")
+  router.push("/home/dashboard");
 }
 
 // -> logs 0
 
-const storeSetup = companyStore.isInitialized
+const storeSetup = companyStore.isInitialized;
 function sendMulla() {
   authStore.whoamiActor
     ?.makeTransfer(
       "inhle-3bt2j-k3bn6-kp5my-33r3q-lpe4j-s4c57-fpzvm-up5rx-smpre-5qe",
-      500,
+      500
     )
     .then((res) => {
-      response.value = res
-    })
+      response.value = res;
+    });
 }
 </script>
 

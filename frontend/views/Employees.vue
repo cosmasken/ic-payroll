@@ -1,18 +1,23 @@
 <script setup>
-import { ref } from "vue"
-import Searchbar from "../components/Searchbar.vue"
-import router from "../router/"
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid"
-
-
-const isEmpty = ref(true)
+import { ref , watchEffect } from "vue";
+import Searchbar from "../components/Searchbar.vue";
+import router from "../router/";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
+import { useAuthStore } from "../store/auth";
+const authStore = useAuthStore();
+let response = ref(0);
+let users = ref([]);
+watchEffect(async () => {
+  const res = await authStore.whoamiActor?.getAllUsers()
+  users.value = await res
+})
+const isEmpty = ref(true);
 
 const gotoaddemployee = () => {
-  router.push("/home/add-employee")
-}
+  router.push("/home/add-employee");
+};
 
-const employees = [];
-const employees1 = [
+const employees = [
   {
     name: "Lindsay Walton",
     designation: "Front-end Developer",
@@ -63,6 +68,7 @@ const employees1 = [
     status: "Permannet",
   },
 ]
+
 </script>
 <template>
   <div class="p-5 flex flex-col">
@@ -74,10 +80,9 @@ const employees1 = [
           class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
-          <p class="text-base font-light text-white">Add New </p>
+          <p class="text-base font-light text-white">Add New</p>
         </button>
         <div
-          
           class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
@@ -99,31 +104,31 @@ const employees1 = [
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  Employee Name
+                  Name
                 </th>
                 <th
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  Employee ID
+                  EmpID
                 </th>
                 <th
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  Department
+                  Email
                 </th>
                 <th
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  Designation
+                  Phone
                 </th>
                 <th
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  Type
+                Status
                 </th>
                 <th
                   scope="col"
@@ -155,22 +160,22 @@ const employees1 = [
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
-                  {{ person.department }}
+                  {{ person.email }}
                 </td>
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
-                  {{ person.designation }}
+                  {{ person.phone }}
                 </td>
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
-                  {{ person.type }}
+                  {{ person.phone }}
                 </td>
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
-                  {{ person.status }}
+                  {{ person.wallet }}
                 </td>
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"

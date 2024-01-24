@@ -6,10 +6,12 @@ import Nat8 "mo:base/Nat8";
 import Nat32 "mo:base/Nat32";
 import Result "mo:base/Result";
 import Text "mo:base/Text";
+import Prelude "mo:base/Prelude";
+import Time "mo:base/Time";
 import ICRC1_AccountConverter "./icrc1-account-converter";
 import Sha256 "mo:sha2/Sha256";
-import CRC32     "./CRC32";
-import SHA224    "./SHA224";
+import CRC32 "./CRC32";
+import SHA224 "./SHA224";
 
 module {
 
@@ -45,14 +47,16 @@ module {
     };
   };
 
-  public func createInvoice(to : Types.Account, amount : Nat) : Types.Invoice {
-    {
-      to;
-      amount;
-    };
-  };
+  // public func createInvoice(from:Principal, to: Principal, amount : Nat, memo:Text) : Types.Invoice {
+  //   {
+  //     from;
+  //     to;
+  //     amount;
+  //     memo;
+  //   };
+  // };
 
-    /** Decodes an ICRC1 account from text if valid, otherwise returns #InvalidAddressText. */
+  /** Decodes an ICRC1 account from text if valid, otherwise returns #InvalidAddressText. */
   func icrc1AccountFromText(textAddress : Text) : Result.Result<Types.Account, ()> {
     switch (ICRC1_AccountConverter.fromText(textAddress)) {
       case (#ok(account)) #ok(account);
@@ -68,7 +72,6 @@ module {
     toText = ICRC1_AccountConverter.toText;
     fromText = icrc1AccountFromText;
   };
-
 
   /** **Computes the constant subaccount of an end-user used to create the corresponding ICRC1 account and its textual address**.
     Deposits to the address of the account of the subaccount computed from the principal `p` passed will **credit** the
@@ -86,17 +89,15 @@ module {
     { owner = canisterId; subaccount = ?(computeUserSubaccountAccount(user)) };
   };
 
-
- func beBytes(n: Nat32) : [Nat8] {
-    func byte(n: Nat32) : Nat8 {
-      Nat8.fromNat(Nat32.toNat(n & 0xff))
+  func beBytes(n : Nat32) : [Nat8] {
+    func byte(n : Nat32) : Nat8 {
+      Nat8.fromNat(Nat32.toNat(n & 0xff));
     };
-    [byte(n >> 24), byte(n >> 16), byte(n >> 8), byte(n)]
+    [byte(n >> 24), byte(n >> 16), byte(n >> 8), byte(n)];
   };
 
   public func defaultSubaccount() : Types.Subaccount {
-    Blob.fromArrayMut(Array.init(32, 0 : Nat8))
+    Blob.fromArrayMut(Array.init(32, 0 : Nat8));
   };
-
 
 };

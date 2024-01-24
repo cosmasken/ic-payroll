@@ -3,7 +3,7 @@ defineProps({
   text: String,
   backgroundColor: String,
   onTime: Boolean,
-})
+});
 </script>
 <template>
   <div

@@ -1,5 +1,5 @@
 <script setup>
-import { BeakerIcon, ChevronDownIcon } from "@heroicons/vue/24/solid"
+import { BeakerIcon, ChevronDownIcon } from "@heroicons/vue/24/solid";
 defineProps({
   heading: String,
   subtitle: String,
@@ -7,7 +7,7 @@ defineProps({
   type: String,
   remote: String,
   salary: String,
-})
+});
 </script>
 <template>
   <div class="flex flex-row justify-between">

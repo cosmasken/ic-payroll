@@ -1,17 +1,17 @@
 {
   "__Candid_UI": {
-    "local": "be2us-64aaa-aaaaa-qaabq-cai"
+    "local": "bd3sg-teaaa-aaaaa-qaaba-cai"
   },
   "assets": {
     "local": "br5f7-7uaaa-aaaaa-qaaca-cai"
   },
   "backend": {
-    "local": "bd3sg-teaaa-aaaaa-qaaba-cai"
+    "local": "bw4dl-smaaa-aaaaa-qaacq-cai"
   },
   "ckbtc_ledger": {
     "local": "bkyz2-fmaaa-aaaaa-qaaaq-cai"
   },
   "icrc1_index": {
-    "local": "bw4dl-smaaa-aaaaa-qaacq-cai"
+    "local": "be2us-64aaa-aaaaa-qaabq-cai"
   }
 }
