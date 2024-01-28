@@ -8,7 +8,7 @@ type User =
    name: text;
    phone: text;
    phone_notifications: bool;
-   wallet: principal;
+   wallet: text;
  };
 type Trie = 
  variant {
@@ -30,6 +30,13 @@ type Result =
  variant {
    err: text;
    ok: text;
+ };
+type Response = 
+ record {
+   data: opt text;
+   error_text: opt text;
+   status: nat16;
+   status_text: text;
  };
 type List = 
  opt record {
@@ -56,6 +63,29 @@ type Branch =
    right: Trie;
    size: nat;
  };
+type Backend = 
+ service {
+   create: (User) -> (UserId);
+   delete: (UserId) -> (bool);
+   getAllUsers: () -> (Trie) query;
+   getCanisterAddress: () -> (text);
+   getCanisterBalance: () -> (text);
+   getFundingAddress: () -> (text);
+   getFundingBalance: () -> (text);
+   getInvoice: () -> (Account);
+   getLogs: () -> (vec text) query;
+   getTradingAddress: () -> (text);
+   getTradingBalance: () -> (text);
+   read: (UserId) -> (opt User) query;
+   saveTransaction: (Transaction) -> (TransactionId);
+   setCourierApiKey: (text) -> (Response);
+   transactionsLength: () -> (text) query;
+   transferFromCanistertoSubAccount: () -> (Result);
+   transferFromSubAccountToSubAccount: (text, nat) -> (Result);
+   update: (UserId, User) -> (bool);
+   userLength: () -> (text) query;
+   whoami: () -> (principal);
+ };
 type AssocList = 
  opt record {
        record {
@@ -69,23 +99,4 @@ type Account =
    owner: principal;
    subaccount: opt Subaccount;
  };
-service : {
-  create: (User) -> (UserId);
-  delete: (UserId) -> (bool);
-  getAllUsers: () -> (Trie) query;
-  getCanisterAddress: () -> (text);
-  getCanisterBalance: () -> (text);
-  getFundingAddress: () -> (text);
-  getFundingBalance: () -> (text);
-  getInvoice: () -> (Account);
-  getTradingAddress: () -> (text);
-  getTradingBalance: () -> (text);
-  read: (UserId) -> (opt User) query;
-  saveTransaction: (Transaction) -> (TransactionId);
-  transactionsLength: () -> (text) query;
-  transferFromCanistertoSubAccount: () -> (Result);
-  transferFromSubAccountToSubAccount: (text, nat) -> (Result);
-  update: (UserId, User) -> (bool);
-  userLength: () -> (text) query;
-  whoami: () -> (principal);
-}
+service : (nat) -> Backend

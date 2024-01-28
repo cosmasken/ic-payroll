@@ -35,6 +35,12 @@ function actorFromIdentity(identity) {
   });
 }
 
+const getTime = () => {
+  const date = new Date();
+  const time = date.getTime();
+  return time;
+};
+
 export const useAuthStore = defineStore("auth", {
   id: "auth",
   state: () => {
@@ -49,6 +55,8 @@ export const useAuthStore = defineStore("auth", {
       currentBalanceBaseUnits: null,
       createdCount: null,
       payments: null,
+      registrationData: {},
+      userInfo: String,
     };
   },
   actions: {
@@ -77,7 +85,6 @@ export const useAuthStore = defineStore("auth", {
           this.whoamiActor = this.identity
             ? actorFromIdentity(this.identity)
             : null;
-
           // router.push("/home/dashboard")
         },
       });
@@ -88,6 +95,28 @@ export const useAuthStore = defineStore("auth", {
       this.isAuthenticated = false;
       this.identity = null;
       this.whoamiActor = null;
+    },
+    updateRegistrationData(data) {
+      this.registrationData = { ...this.registrationData, ...data };
+    },
+    clearRegistrationData() {
+      this.registrationData = {};
+    },
+    setUserInfo(userInfo) {
+      this.userInfo = userInfo;
+    },
+    async registration(firstname, lastname, email, phone, address) {
+      this.loading = true;
+      const response = await this.whoamiActor.create({
+        id: 0,
+        name: firstname + " " + lastname,
+        email: email,
+        email_notifications: false,
+        phone: phone,
+        phone_notifications: false,
+        wallet: address,
+        created_at: getTime(),
+      });
     },
   },
 });

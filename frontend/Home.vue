@@ -2,6 +2,7 @@
 import { ref, watchEffect } from "vue";
 import useClipboard from "vue-clipboard3";
 import { useAuthStore } from "./store/auth";
+import { useledger } from "./store/useledger";
 import router from "./router/";
 
 const authStore = useAuthStore();
@@ -10,35 +11,13 @@ let tradingaddress = ref("");
 let fundingaddress = ref("");
 let tradingbalance = ref("");
 let fundingbalance = ref("");
-let tradingresult = ref("");
-let canisteraddress = ref("");
-let canisterbalance = ref("");
-let invoice = ref({});
+let subacc = ref("");
 
 const logout = () => {
   router.push("/auth");
   authStore.logout();
 };
 
-const { toClipboard } = useClipboard();
-const copy = async () => {
-  try {
-    await toClipboard(response.value);
-    console.log("Copied to clipboard");
-    //  console.log(balance)
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getCanisterAddress();
-  canisteraddress.value = await res;
-});
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getCanisterBalance();
-  canisterbalance.value = await res;
-});
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.getTradingAddress();
   tradingaddress.value = await res;
@@ -56,16 +35,24 @@ watchEffect(async () => {
   fundingbalance.value = await res;
 });
 
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getInvoice();
-  console.log("account is " + res);
-  invoice.value = await res;
-});
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.getInvoice();
+//   console.log("account is " + res);
+//   invoice.value = await res;
+// });
 
 // watchEffect(async () => {
-//   const res = await authStore.whoamiActor?.selfTransfer()
-//   console.log("account is "+res)
-//   tradingresult.value = await res
+//   //const res = await authStore.whoamiActor?.transfertoCurrentAccount()
+//   //console.log("account is "+res)
+//   const balance = await ledger.totalTokensSupply(
+//         {
+//           certified: false,
+//         }
+//       );
+
+// // const balance = await ledger.balance;
+//  console.log("init is "+balance)
+//   subacc.value = await balance
 // })
 
 //watchEffect(async () => {
@@ -342,9 +329,9 @@ const toggleDarkMode = () => {
           <p
             class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
           >
-            Hello Cosmas 👋🏻
+            Hello {{ fundingaddress }} 👋🏻
           </p>
-          <p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p>
+          <!--p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p-->
         </div>
         <div class="flex flex-row justify-evenly items-center space-x-5">
           <div class="cursor-pointer">

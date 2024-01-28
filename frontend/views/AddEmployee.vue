@@ -20,10 +20,11 @@
             >
             <div class="mt-2">
               <input
+                v-model="registrationData.first_name"
                 type="text"
                 name="first-name"
                 id="first-name"
-                autocomplete="given-name"
+                autocomplete="first-name"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 dark:placeholder:text-white focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -37,16 +38,17 @@
             >
             <div class="mt-2">
               <input
+                v-model="registrationData.last_name"
                 type="text"
                 name="last-name"
                 id="last-name"
-                autocomplete="family-name"
+                autocomplete="last-name"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
 
-          <div class="sm:col-span-3">
+          <!--div class="sm:col-span-3">
             <label
               for="designation"
               class="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -54,6 +56,7 @@
             >
             <div class="mt-2">
               <input
+                v-model="registrationData.designation"
                 type="text"
                 name="designation"
                 id="designation"
@@ -61,7 +64,7 @@
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
-          </div>
+          </div-->
 
           <div class="sm:col-span-4">
             <label
@@ -71,6 +74,7 @@
             >
             <div class="mt-2">
               <input
+                v-model="registrationData.email"
                 id="email"
                 name="email"
                 type="email"
@@ -80,7 +84,7 @@
             </div>
           </div>
 
-          <div class="sm:col-span-3">
+          <!--div class="sm:col-span-3">
             <label
               for="country"
               class="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -88,6 +92,7 @@
             >
             <div class="mt-2">
               <select
+                v-model="registrationData.country"
                 id="country"
                 name="country"
                 autocomplete="country-name"
@@ -99,7 +104,7 @@
                 <option>Nigeria</option>
               </select>
             </div>
-          </div>
+          </div-->
 
           <div class="col-span-full">
             <label
@@ -109,8 +114,9 @@
             >
             <div class="mt-2">
               <input
+                v-model="registrationData.wallet_address"
                 type="text"
-                name="street-address"
+                name="wallet-address"
                 id="wallet-address"
                 autocomplete="wallet-address"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -118,14 +124,22 @@
             </div>
           </div>
 
-          <div class="col-span-full">
+          <div class="sm:col-span-3">
             <label
-              for="wallet-address"
+              for="phone-number"
               class="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
-              >Wallet address</label
+              >Phone</label
             >
-
-            {{ response }} is address
+            <div class="mt-2">
+              <input
+                v-model="registrationData.phone_number"
+                type="text"
+                name="phone-number"
+                id="phone-number"
+                autocomplete="phone-number"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -139,7 +153,8 @@
         Cancel
       </button>
       <button
-        @click="getBalance()"
+        type="button"
+        @click="addData()"
         class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
         Save
@@ -148,4 +163,42 @@
   </form>
 </template>
 
-<script setup></script>
+<script setup>
+import { useAuthStore } from "../store/auth";
+
+const authStore = useAuthStore();
+
+import { ref } from "vue";
+//get currwnt time to int
+const getTime = () => {
+  const date = new Date();
+  const time = date.getTime();
+  return time;
+};
+
+const registrationData = {
+  first_name: "",
+  last_name: "",
+  created_at: getTime(),
+  email: "",
+  phone_number: "",
+  wallet_address: "",
+};
+
+const addData = () => {
+  authStore.updateRegistrationData(registrationData);
+  const firstname = authStore.registrationData.first_name;
+  const lastname = authStore.registrationData.last_name;
+  const createdat = authStore.registrationData.created_at;
+  const email = authStore.registrationData.email;
+  const phone = authStore.registrationData.phone_number;
+  const address = authStore.registrationData.wallet_address;
+
+  console.log(firstname, lastname, createdat, email, phone, address);
+
+  const response = authStore.registration(firstname, lastname, email, phone, address);
+  console.log(response);
+};
+
+// save data
+</script>

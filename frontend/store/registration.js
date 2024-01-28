@@ -1,12 +1,13 @@
 // registrationStore.js
 import { defineStore } from "pinia";
+import axios from "axios";
 
 import router from "../router/index.js";
 
 export const useRegistrationStore = defineStore("registration", {
   state: () => ({
     registrationData: {},
-    identity: String,
+    userInfo: String,
   }),
   actions: {
     updateRegistrationData(data) {
@@ -15,22 +16,17 @@ export const useRegistrationStore = defineStore("registration", {
     clearRegistrationData() {
       this.registrationData = {};
     },
-    setUserInfo(identity) {
-      this.identity = identity;
+    setUserInfo(userInfo) {
+      this.userInfo = userInfo;
     },
     async registration(
-      usertype,
       firstname,
       lastname,
-      idno,
-      dob,
-      gender,
-      birthplace,
-      issuedate,
-      expirydate,
       email,
-      password,
-      phone
+      phone,
+      address,
+      country,
+      designation
     ) {
       this.loading = true;
       //const response = await axios.post('https://concerned-plum-gazelle.cyclic.app/api/user/login', { 'dev@waiafrica.com', password });

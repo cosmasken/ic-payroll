@@ -1,16 +1,19 @@
 <script setup>
-import { ref , watchEffect } from "vue";
+import { ref, watchEffect } from "vue";
 import Searchbar from "../components/Searchbar.vue";
 import router from "../router/";
+import { fromList , toList , fromOptional , toOptional} from "../utils/idl.js";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
 import { useAuthStore } from "../store/auth";
 const authStore = useAuthStore();
 let response = ref(0);
 let users = ref([]);
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getAllUsers()
-  users.value = await res
-})
+  const res = await authStore.whoamiActor?.getAllUsers();
+  const goodlist = await toList(res);
+  console.log("good list is " + goodlist);
+  users.value = await goodlist;
+});
 const isEmpty = ref(true);
 
 const gotoaddemployee = () => {
@@ -67,8 +70,7 @@ const employees = [
     type: "office",
     status: "Permannet",
   },
-]
-
+];
 </script>
 <template>
   <div class="p-5 flex flex-col">
@@ -76,7 +78,7 @@ const employees = [
       <Searchbar />
       <div class="flex flex-row space-x-5">
         <button
-          @click="gotoaddemployee()"
+          @click="gotoaddemployee"
           class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
@@ -128,7 +130,7 @@ const employees = [
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                Status
+                  Status
                 </th>
                 <th
                   scope="col"
@@ -146,7 +148,7 @@ const employees = [
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-300">
-              <tr v-for="person in employees" :key="person.id">
+              <tr v-for="person in users" :key="person.id">
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >

@@ -8,7 +8,7 @@ export const idlFactory = ({ IDL }) => {
     'email_notifications' : IDL.Bool,
     'created_at' : IDL.Int,
     'email' : IDL.Text,
-    'wallet' : IDL.Principal,
+    'wallet' : IDL.Text,
     'phone' : IDL.Text,
   });
   const UserId = IDL.Nat32;
@@ -38,8 +38,14 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Nat,
   });
   const TransactionId = IDL.Nat32;
+  const Response = IDL.Record({
+    'status' : IDL.Nat16,
+    'data' : IDL.Opt(IDL.Text),
+    'status_text' : IDL.Text,
+    'error_text' : IDL.Opt(IDL.Text),
+  });
   const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
-  return IDL.Service({
+  const Backend = IDL.Service({
     'create' : IDL.Func([User], [UserId], []),
     'delete' : IDL.Func([UserId], [IDL.Bool], []),
     'getAllUsers' : IDL.Func([], [Trie], ['query']),
@@ -48,10 +54,12 @@ export const idlFactory = ({ IDL }) => {
     'getFundingAddress' : IDL.Func([], [IDL.Text], []),
     'getFundingBalance' : IDL.Func([], [IDL.Text], []),
     'getInvoice' : IDL.Func([], [Account], []),
+    'getLogs' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'getTradingAddress' : IDL.Func([], [IDL.Text], []),
     'getTradingBalance' : IDL.Func([], [IDL.Text], []),
     'read' : IDL.Func([UserId], [IDL.Opt(User)], ['query']),
     'saveTransaction' : IDL.Func([Transaction], [TransactionId], []),
+    'setCourierApiKey' : IDL.Func([IDL.Text], [Response], []),
     'transactionsLength' : IDL.Func([], [IDL.Text], ['query']),
     'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),
     'transferFromSubAccountToSubAccount' : IDL.Func(
@@ -63,5 +71,6 @@ export const idlFactory = ({ IDL }) => {
     'userLength' : IDL.Func([], [IDL.Text], ['query']),
     'whoami' : IDL.Func([], [IDL.Principal], []),
   });
+  return Backend;
 };
 export const init = ({ IDL }) => { return []; };

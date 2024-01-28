@@ -28,19 +28,24 @@ module {
     memo : Text;
     created_at : Int;
   };
- 
+
   // New type for User
   public type User = {
-    id: Nat;
-    name: Text;
-    email: Text;
+    id : Nat;
+    name : Text;
+    email : Text;
     email_notifications : Bool;
-    phone: Text;
+    phone : Text;
     phone_notifications : Bool;
-    wallet: Principal;
-    created_at: Int;
+    wallet : Text;
+    created_at : Int;
   };
 
-
+  public type Response<T> = {
+    status : Nat16;
+    status_text : Text;
+    data : ?T;
+    error_text : ?Text;
+  };
 
 };

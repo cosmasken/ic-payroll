@@ -7,9 +7,9 @@ const authStore = useAuthStore();
 let response = ref(0);
 let transactions = ref(0);
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.transactionsLength()
-  transactions.value = await res
-})
+  const res = await authStore.whoamiActor?.transactionsLength();
+  transactions.value = await res;
+});
 
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.userLength();

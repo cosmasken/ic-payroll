@@ -1,0 +1,58 @@
+type Account = record { owner : principal; subaccount : opt Subaccount };
+type AssocList = opt record { record { Key; User }; List };
+type Backend = service {
+  create : (User) -> (UserId);
+  delete : (UserId) -> (bool);
+  getAllUsers : () -> (Trie) query;
+  getCanisterAddress : () -> (text);
+  getCanisterBalance : () -> (text);
+  getFundingAddress : () -> (text);
+  getFundingBalance : () -> (text);
+  getInvoice : () -> (Account);
+  getLogs : () -> (vec text) query;
+  getTradingAddress : () -> (text);
+  getTradingBalance : () -> (text);
+  read : (UserId) -> (opt User) query;
+  saveTransaction : (Transaction) -> (TransactionId);
+  setCourierApiKey : (text) -> (Response);
+  transactionsLength : () -> (text) query;
+  transferFromCanistertoSubAccount : () -> (Result);
+  transferFromSubAccountToSubAccount : (text, nat) -> (Result);
+  update : (UserId, User) -> (bool);
+  userLength : () -> (text) query;
+  whoami : () -> (principal);
+};
+type Branch = record { left : Trie; size : nat; right : Trie };
+type Hash = nat32;
+type Key = record { key : UserId; hash : Hash };
+type Leaf = record { size : nat; keyvals : AssocList };
+type List = opt record { record { Key; User }; List };
+type Response = record {
+  status : nat16;
+  data : opt text;
+  status_text : text;
+  error_text : opt text;
+};
+type Result = variant { ok : text; err : text };
+type Subaccount = vec nat8;
+type Transaction = record {
+  to : principal;
+  from : principal;
+  memo : text;
+  created_at : int;
+  amount : nat;
+};
+type TransactionId = nat32;
+type Trie = variant { branch : Branch; leaf : Leaf; "empty" };
+type User = record {
+  id : nat;
+  phone_notifications : bool;
+  name : text;
+  email_notifications : bool;
+  created_at : int;
+  email : text;
+  wallet : text;
+  phone : text;
+};
+type UserId = nat32;
+service : Backend

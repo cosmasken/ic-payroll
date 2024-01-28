@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
-import { createActor, canisterId } from "../../src/declarations/icrc1_ledger";
-import { IcrcLedgerCanister } from "@dfinity/ledger";
+import { createActor, canisterId } from "../../src/declarations/backend";
+import { IcrcLedgerCanister } from "@dfinity/ledger-icrc";
 import { Principal } from "@dfinity/principal";
 
 const defaultOptions = {
@@ -56,27 +56,21 @@ export const useledger = defineStore("ledger", {
       const whoamiActor = identity ? actorFromIdentity(identity) : null;
 
       const ledger = IcrcLedgerCanister.create({
-        identity: actorFromIdentity(identity),
+        agent: whoamiActor,
         canisterId: "mxzaz-hqaaa-aaaar-qaada-cai",
       });
 
       this.ledger = await ledger;
-      const data = await ledger.metadata({});
-      console.log(data);
-      this.metadata = data;
+      const balance = await ledger.totalTokensSupply({
+        certified: false,
+      });
+      // const data = await ledger.metadata({});
+      console.log("totaltokensupply is ", balance);
+      this.balance = balance;
       this.isAuthenticated = isAuthenticated;
       this.identity = identity;
       this.whoamiActor = whoamiActor;
       this.isReady = true;
-    },
-    async transfer() {
-      const transfer = await this.ledger.transfer({
-        to: Principal.fromText(
-          "4l65c-5qman-4zmsj-c4pst-ym76w-ng2j3-n6b4i-2kqbm-ulxjx-plp2y-yqe"
-        ),
-        amount: BigInt(10000000000),
-      });
-      console.log(transfer);
     },
   },
 });
