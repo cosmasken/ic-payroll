@@ -8,12 +8,13 @@ import Blob "mo:base/Blob";
 import Char "mo:base/Char";
 import CkBtcLedger "canister:ckbtc_ledger";
 import Types "./types";
-import { toAccount; toSubaccount } "./utils";
+import { toAccount; toSubaccount;defaultSubaccount } "./utils";
 import Error "mo:base/Error";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
 import Utils "utils";
 import HashMap "mo:base/HashMap";
+import TrieMap "mo:base/TrieMap";
 import List "mo:base/List";
 import Nat64 "mo:base/Nat64";
 import Option "mo:base/Option";
@@ -23,34 +24,87 @@ import HttpTypes "http/http.types";
 import Cycles "mo:base/ExperimentalCycles";
 import Buffer "mo:base/Buffer";
 
+
+
 shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
   let addressConverter_ = Utils.addressConverter;
-  public type Payments = List.List<Types.Transaction>;
-  public type Users = List.List<Types.User>;
-  public type Posts = List.List<Types.Invoice>;
-  // The type of a user identifier.
+ // The type of a user identifier.
   public type UserId = Nat32;
   public type TransactionId = Nat32;
-
   private stable var latestTransactionIndex : Nat = 0;
   private stable var courierApiKey : Text = "";
   private var logData = Buffer.Buffer<Text>(0);
-
-  // The next available user identifier.
   private stable var next : UserId = 0;
+  
 
-  private stable var nextTransaction : TransactionId = 0;
+  //create a list of users in motoko
+  //each employer has a list of freelancers
+let map = HashMap.HashMap<Principal, Types.User>(1, Principal.equal, Principal.hash);
 
-  // The superhero data store.
+public shared ({ caller }) func addemployer(employer : Types.User) : async Principal {
+  map.put(Principal.fromText(employer.wallet), employer);
+
+return Principal.fromText(employer.wallet);
+};
+
+public shared ({ caller }) func register(
+     id : Nat,
+    name : Text,
+    email : Text,
+    email_notifications : Bool,
+    phone : Text,
+    phone_notifications : Bool,
+    wallet : Text,
+    created_at : Int,
+  ) : async () {
+    if(Principal.isAnonymous(caller)){
+        // Dont register if caller is anonymous
+        return;
+    };
+
+    let user : Types.User = {
+        id = id;
+        name;
+        email;
+        email_notifications;
+        phone;
+        phone_notifications;
+        wallet;
+        created_at;
+        
+    };
+    
+    map.put(Principal.fromText(wallet), user);
+};
+
+//get single user
+public query func getUser(p : Principal) : async ?Types.User {
+map.get(p);
+};
+
+// get all users .using .vals()
+public query func getUsers() : async [Types.User] {
+  let buffer = Buffer.Buffer<Types.User>(100);
+// let users : [Types.User] = [];
+  for (value in map.vals()) {
+  buffer.add(value);
+};
+return buffer.toArray();
+};
+
+  // The user data store.
   private stable var users : Trie.Trie<UserId, Types.User> = Trie.empty();
   private stable var transactions : Trie.Trie<TransactionId, Types.Transaction> = Trie.empty();
+
 
   /**
    * High-Level API
    */
 
-  // Create a superhero.
+
+
+  // Create a user.
   public func create(user : Types.User) : async UserId {
     let userId = next;
     next += 1;
@@ -61,19 +115,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       ?user,
     ).0;
     return userId;
-  };
-
-  //create a transaction
-  public func saveTransaction(transaction : Types.Transaction) : async TransactionId {
-    let transactionId = nextTransaction;
-    nextTransaction += 1;
-    transactions := Trie.replace(
-      transactions,
-      key(transactionId),
-      eq,
-      ?transaction,
-    ).0;
-    return transactionId;
   };
 
   // Read a superhero.
@@ -112,11 +153,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     return exists;
   };
 
-  //get all heroes
-  public query func getAllUsers() : async Trie.Trie<UserId, Types.User> {
-
-    return users;
-  };
 
   //no of users
   public query func userLength() : async Text {
@@ -305,9 +341,68 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     return #ok("🥠: " # "success");
   };
 
+
+  //transfer from account to canister subaccount
+  //works
+  public shared ({ caller }) func transferFromSubAccountToCanister(amount : Nat) : async Result.Result<Text, Text> {
+
+    // check ckBTC balance of the callers dedicated account
+    let balance = await CkBtcLedger.icrc1_balance_of(
+      {
+        owner = caller;
+        subaccount = null;
+      }
+    );
+
+    if (balance < 100) {
+      return #err("Not enough funds available in Personal  Account. Make sure you send at least 100 ckSats.");
+    };
+
+    Debug.print("Personal Account Balance:  is  " # debug_show (balance));
+
+    try {
+      // if enough funds were sent, move them to the canisters default account
+      let transferResult = await CkBtcLedger.icrc1_transfer(
+        {
+          amount = balance -10;
+          from_subaccount = ?toSubaccount(caller);
+          created_at_time = null;
+          fee = ?10;
+          memo = null;
+          to = {
+            owner = Principal.fromActor(this);
+            subaccount = ?toSubaccount(caller);
+          };
+        }
+      );
+
+      Debug.print("fom personal account to trading account balance is :  " # debug_show (transferResult));
+
+      switch (transferResult) {
+        case (#Err(transferError)) {
+          return #err("Couldn't transfer funds to trading account:\n" # debug_show (transferError));
+        };
+        case (_) {};
+      };
+    } catch (error : Error) {
+      return #err("Reject message: " # Error.message(error));
+    };
+
+    return #ok("🥠: " # "success");
+  };
+
   /**
    * Utilities
    */
+
+
+ private func toledger() : Blob {
+      let principal = Principal.fromText("un4fu-tqaaa-aaaab-qadjq-cai");
+let subAccount : Blob = "\4A\8D\3F\2B\6E\01\C8\7D\9E\03\B4\56\7C\F8\9A\01\D2\34\56\78\9A\BC\DE\F0\12\34\56\78\9A\BC\DE\F0";
+let account = Principal.toBlob(principal); 
+// => \8C\5C\20\C6\15\3F\7F\51\E2\0D\0F\0F\B5\08\51\5B\47\65\63\A9\62\B4\A9\91\5F\4F\02\70\8A\ED\4F\82
+return account;
+  };
 
   // Test two superhero identifiers for equality.
   private func eq(x : UserId, y : UserId) : Bool {
@@ -474,5 +569,9 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     // Make sure we start to montitor transactions from the block set on deployment
     latestTransactionIndex := _startBlock;
   };
+
+ //get list of users to json format
+
+
 
 };

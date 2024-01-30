@@ -10,21 +10,6 @@ type User =
    phone_notifications: bool;
    wallet: text;
  };
-type Trie = 
- variant {
-   branch: Branch;
-   "empty";
-   leaf: Leaf;
- };
-type TransactionId = nat32;
-type Transaction = 
- record {
-   amount: nat;
-   created_at: int;
-   from: principal;
-   memo: text;
-   to: principal;
- };
 type Subaccount = blob;
 type Result = 
  variant {
@@ -38,48 +23,15 @@ type Response =
    status: nat16;
    status_text: text;
  };
-type List = 
- opt record {
-       record {
-         Key;
-         User;
-       };
-       List;
-     };
-type Leaf = 
- record {
-   keyvals: AssocList;
-   size: nat;
- };
-type Key = 
- record {
-   hash: Hash;
-   key: UserId;
- };
-type Hash = nat32;
-type Branch = 
- record {
-   left: Trie;
-   right: Trie;
-   size: nat;
- };
-type AssocList = 
- opt record {
-       record {
-         Key;
-         User;
-       };
-       List;
-     };
 type Account = 
  record {
    owner: principal;
    subaccount: opt Subaccount;
  };
 service : {
+  addemployer: (User) -> (principal);
   create: (User) -> (UserId);
   delete: (UserId) -> (bool);
-  getAllUsers: () -> (Trie) query;
   getCanisterAddress: () -> (text);
   getCanisterBalance: () -> (text);
   getFundingAddress: () -> (text);
@@ -88,11 +40,13 @@ service : {
   getLogs: () -> (vec text) query;
   getTradingAddress: () -> (text);
   getTradingBalance: () -> (text);
+  getUser: (principal) -> (opt User) query;
   read: (UserId) -> (opt User) query;
-  saveTransaction: (Transaction) -> (TransactionId);
+  register: (nat, text, text, bool, text, bool, text, int) -> ();
   setCourierApiKey: (text) -> (Response);
   transactionsLength: () -> (text) query;
   transferFromCanistertoSubAccount: () -> (Result);
+  transferFromSubAccountToCanister: (nat) -> (Result);
   transferFromSubAccountToSubAccount: (text, nat) -> (Result);
   update: (UserId, User) -> (bool);
   userLength: () -> (text) query;

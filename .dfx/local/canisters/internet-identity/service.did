@@ -115,7 +115,11 @@ type GetDelegationResponse = variant {
   no_such_delegation;
   signed_delegation : SignedDelegation;
 };
-type GetIdAliasError = variant { Unauthorized; NoSuchCredentials : text };
+type GetIdAliasError = variant {
+  InternalCanisterError : text;
+  Unauthorized : principal;
+  NoSuchCredentials : text;
+};
 type GetIdAliasRequest = record {
   rp_id_alias_jwt : text;
   issuer : FrontendHostname;
@@ -155,6 +159,18 @@ type IdentityInfo = record {
   metadata : MetadataMapV2;
   authn_method_registration : opt AuthnMethodRegistrationInfo;
 };
+type IdentityInfoError = variant {
+  InternalCanisterError : text;
+  Unauthorized : principal;
+};
+type IdentityMetadataReplaceError = variant {
+  InternalCanisterError : text;
+  Unauthorized : principal;
+  StorageSpaceExceeded : record {
+    space_required : nat64;
+    space_available : nat64;
+  };
+};
 type IdentityNumber = nat64;
 type IdentityRegisterError = variant {
   BadCaptcha;
@@ -193,7 +209,10 @@ type MetadataMapV2 = vec record {
   text;
   variant { Map : MetadataMapV2; String : text; Bytes : vec nat8 };
 };
-type PrepareIdAliasError = variant { Unauthorized };
+type PrepareIdAliasError = variant {
+  InternalCanisterError : text;
+  Unauthorized : principal;
+};
 type PrepareIdAliasRequest = record {
   issuer : FrontendHostname;
   relying_party : FrontendHostname;
@@ -306,9 +325,11 @@ service : {
   identity_authn_info : (IdentityNumber) -> (
       variant { Ok : IdentityAuthnInfo; Err },
     ) query;
-  identity_info : (IdentityNumber) -> (variant { Ok : IdentityInfo; Err });
+  identity_info : (IdentityNumber) -> (
+      variant { Ok : IdentityInfo; Err : IdentityInfoError },
+    );
   identity_metadata_replace : (IdentityNumber, MetadataMapV2) -> (
-      variant { Ok; Err },
+      variant { Ok; Err : IdentityMetadataReplaceError },
     );
   identity_register : (AuthnMethodData, CaptchaResult, opt principal) -> (
       variant { Ok : IdentityNumber; Err : IdentityRegisterError },

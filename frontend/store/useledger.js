@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
 import { createActor, canisterId } from "../../src/declarations/backend";
-import { IcrcLedgerCanister } from "@dfinity/ledger-icrc";
+import { IcrcLedgerCanister } from "@dfinity/ledger";
 import { Principal } from "@dfinity/principal";
 
 const defaultOptions = {
@@ -72,5 +72,41 @@ export const useledger = defineStore("ledger", {
       this.whoamiActor = whoamiActor;
       this.isReady = true;
     },
+
+    async transfer() {
+      const ledger = IcrcLedgerCanister.create({
+        agent: this.whoamiActor,
+        canisterId: "mxzaz-hqaaa-aaaar-qaada-cai",
+      });
+
+      this.ledger = await ledger;
+
+      try {
+        const transfer = await this.ledger.transfer({
+          to: {
+            owner: Principal.fromText("htlof-dqkyj-2ryqt-ua2mo-itmd5-bsved-3zred-hvak6-s5k5n-iijix-pqe"),
+            subaccount: [],
+          },
+          amount: 100,
+          fee: 0,
+          memo: [],
+          from_subaccount: [],
+          created_at_time: null,
+        });
+            
+      console.log("transfer is ", transfer);
+      }
+      catch (err) {
+        console.log("error is ", err);
+      }
+  
+     
+    },
   },
 });
+
+// to: {
+//   owner: toPrincipal,
+//   subaccount: [],
+// },
+// amount: amountBigInt,

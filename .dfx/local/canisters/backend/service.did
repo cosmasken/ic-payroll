@@ -1,9 +1,8 @@
 type Account = record { owner : principal; subaccount : opt Subaccount };
-type AssocList = opt record { record { Key; User }; List };
 type Backend = service {
+  addemployer : (User) -> (principal);
   create : (User) -> (UserId);
   delete : (UserId) -> (bool);
-  getAllUsers : () -> (Trie) query;
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
   getFundingAddress : () -> (text);
@@ -12,21 +11,19 @@ type Backend = service {
   getLogs : () -> (vec text) query;
   getTradingAddress : () -> (text);
   getTradingBalance : () -> (text);
+  getUser : (principal) -> (opt User) query;
+  getUsers : () -> (vec User) query;
   read : (UserId) -> (opt User) query;
-  saveTransaction : (Transaction) -> (TransactionId);
+  register : (nat, text, text, bool, text, bool, text, int) -> ();
   setCourierApiKey : (text) -> (Response);
   transactionsLength : () -> (text) query;
   transferFromCanistertoSubAccount : () -> (Result);
+  transferFromSubAccountToCanister : (nat) -> (Result);
   transferFromSubAccountToSubAccount : (text, nat) -> (Result);
   update : (UserId, User) -> (bool);
   userLength : () -> (text) query;
   whoami : () -> (principal);
 };
-type Branch = record { left : Trie; size : nat; right : Trie };
-type Hash = nat32;
-type Key = record { key : UserId; hash : Hash };
-type Leaf = record { size : nat; keyvals : AssocList };
-type List = opt record { record { Key; User }; List };
 type Response = record {
   status : nat16;
   data : opt text;
@@ -35,15 +32,6 @@ type Response = record {
 };
 type Result = variant { ok : text; err : text };
 type Subaccount = vec nat8;
-type Transaction = record {
-  to : principal;
-  from : principal;
-  memo : text;
-  created_at : int;
-  amount : nat;
-};
-type TransactionId = nat32;
-type Trie = variant { branch : Branch; leaf : Leaf; "empty" };
 type User = record {
   id : nat;
   phone_notifications : bool;

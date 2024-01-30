@@ -51,6 +51,7 @@
 
     <div>
       <button
+      @click="transfer()"
         type="button"
         class="inline-flex w-1/5 items-center gap-x-1.5 justify-between rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
@@ -83,7 +84,11 @@
 </template>
 <script setup>
 import { ref, watchEffect } from "vue";
-import { useAuthStore } from "../store/auth";
-const authStore = useAuthStore();
+import { useledger } from "../store/useledger";
+const ledger = useledger();
 let res = ref("");
+
+const transfer = async () => {
+  res.value = await ledger.transfer();
+};
 </script>

@@ -8,10 +8,8 @@ import Result "mo:base/Result";
 import Text "mo:base/Text";
 import Prelude "mo:base/Prelude";
 import Time "mo:base/Time";
-import ICRC1_AccountConverter "./icrc1-account-converter";
 import Sha256 "mo:sha2/Sha256";
-import CRC32 "./CRC32";
-import SHA224 "./SHA224";
+import ICRC1_AccountConverter "./icrc1-account-converter";
 
 module {
 
@@ -99,5 +97,6 @@ module {
   public func defaultSubaccount() : Types.Subaccount {
     Blob.fromArrayMut(Array.init(32, 0 : Nat8));
   };
+
 
 };

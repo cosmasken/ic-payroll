@@ -9,17 +9,18 @@ const authStore = useAuthStore();
 let response = ref(0);
 let users = ref([]);
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getAllUsers();
-  const goodlist = await toList(res);
-  console.log("good list is " + goodlist);
-  users.value = await goodlist;
+  const res = await authStore.whoamiActor?.getUsers();
+ // const goodlist = await fromList(res);
+ //parse array of key value pairs into array of objects
+  users.value = await res;
+  console.log("no i on list is  " + res[0]);
 });
 const isEmpty = ref(true);
+
 
 const gotoaddemployee = () => {
   router.push("/home/add-employee");
 };
-
 const employees = [
   {
     name: "Lindsay Walton",
@@ -71,6 +72,13 @@ const employees = [
     status: "Permannet",
   },
 ];
+//import data by pointing users to static employee data for now
+const importdata = () => {
+  users.value = employees;
+};
+
+
+
 </script>
 <template>
   <div class="p-5 flex flex-col">
@@ -85,6 +93,7 @@ const employees = [
           <p class="text-base font-light text-white">Add New</p>
         </button>
         <div
+        @click="importdata"
           class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
@@ -92,7 +101,13 @@ const employees = [
         </div>
       </div>
     </div>
+<div v-if="users.length === 0"
+ class="animate-spin rounded-full justify-center h-10 w-10 border-t-2 border-b-2 border-gray-900 dark:border-white">
 
+
+</div>
+
+<div v-else>
     <!-- Table-->
     <div class="flow-root">
       <div class="overflow-x-auto">
@@ -280,5 +295,6 @@ const employees = [
         </nav>
       </div>
     </div>
+  </div>
   </div>
 </template>

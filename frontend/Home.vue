@@ -3,6 +3,7 @@ import { ref, watchEffect } from "vue";
 import useClipboard from "vue-clipboard3";
 import { useAuthStore } from "./store/auth";
 import { useledger } from "./store/useledger";
+import { BellAlertIcon } from "@heroicons/vue/20/solid";
 import router from "./router/";
 
 const authStore = useAuthStore();
@@ -35,36 +36,16 @@ watchEffect(async () => {
   fundingbalance.value = await res;
 });
 
-// watchEffect(async () => {
-//   const res = await authStore.whoamiActor?.getInvoice();
-//   console.log("account is " + res);
-//   invoice.value = await res;
-// });
-
-// watchEffect(async () => {
-//   //const res = await authStore.whoamiActor?.transfertoCurrentAccount()
-//   //console.log("account is "+res)
-//   const balance = await ledger.totalTokensSupply(
-//         {
-//           certified: false,
-//         }
-//       );
-
-// // const balance = await ledger.balance;
-//  console.log("init is "+balance)
-//   subacc.value = await balance
-// })
-
-//watchEffect(async () => {
-//const res = await authStore.whoamiActor?.transferFromSubAccountToSubAccount( "u2jhk-75uw6-jkzd5-n5h4y-eeakm-nlnrb-f2rn3-bllzh-fpjmj-763la-6qe",
-//  10 )
-// console.log("from subaccount to is "+res)
-// tradingresult.value = await res
-//})
+watchEffect(async () => {
+  const approved = await authStore.whoamiActor?.transferFromSubAccountToCanister();
+console.log(approved);
+  if (approved) {
+    const res = await authStore.whoamiActor?.getTradingBalance();
+    tradingbalance.value = await res;
+  }
+});
 
 const walletAddress = "0x1234567890123456789012345678901234567890";
-
-//const accountType = companyStore.getAccountType();
 
 const toggleDarkMode = () => {
   darkmode.value = !darkmode.value;
@@ -334,79 +315,27 @@ const toggleDarkMode = () => {
           <!--p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p-->
         </div>
         <div class="flex flex-row justify-evenly items-center space-x-5">
-          <div class="cursor-pointer">
-            <div v-if="darkmode">
-              <svg
-                width="50"
-                height="50"
-                viewBox="0 0 50 50"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect
-                  width="50"
-                  height="50"
-                  rx="10"
-                  fill="#A2A1A8"
-                  fill-opacity="0.1"
-                />
-                <path
-                  d="M18.6796 21.794C19.0538 18.4909 21.7709 16 25 16C28.2291 16 30.9462 18.4909 31.3204 21.794L31.6652 24.8385C31.7509 25.595 32.0575 26.3069 32.5445 26.88C33.5779 28.0964 32.7392 30 31.1699 30H18.8301C17.2608 30 16.4221 28.0964 17.4555 26.88C17.9425 26.3069 18.2491 25.595 18.3348 24.8385L18.6796 21.794Z"
-                  stroke="#16151C"
-                  stroke-width="1.5"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M28 32C27.5633 33.1652 26.385 34 25 34C23.615 34 22.4367 33.1652 22 32"
-                  stroke="#16151C"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </div>
-            <div v-else>
-              <svg
-                width="50"
-                height="50"
-                viewBox="0 0 50 50"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect
-                  width="50"
-                  height="50"
-                  rx="10"
-                  fill="#A2A1A8"
-                  fill-opacity="0.1"
-                />
-                <path
-                  d="M18.6796 21.794C19.0538 18.4909 21.7709 16 25 16C28.2291 16 30.9462 18.4909 31.3204 21.794L31.6652 24.8385C31.7509 25.595 32.0575 26.3069 32.5445 26.88C33.5779 28.0964 32.7392 30 31.1699 30H18.8301C17.2608 30 16.4221 28.0964 17.4555 26.88C17.9425 26.3069 18.2491 25.595 18.3348 24.8385L18.6796 21.794Z"
-                  stroke="#16151C"
-                  stroke-width="1.5"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M28 32C27.5633 33.1652 26.385 34 25 34C23.615 34 22.4367 33.1652 22 32"
-                  stroke="#16151C"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
-            <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-              FundingAddress : {{ fundingaddress }}
-            </p>
+         
+          <div v-if="fundingaddress.length === 0"
+          class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900 dark:border-white"
+          >
 
-            <div class="flex flex-row justify-between">
-              <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+          </div>
+          <div v-else class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
+            <!--p class="text-sm leading-6 font-semibold text-[#919DB5]">
+              FundingAddress : {{ fundingaddress }}
+            </p-->
+
+            <p class="text-sm leading-6 font-semibold text-[#919DB5]">
                 TradingBalance : {{ tradingbalance }}
               </p>
               <p class="text-sm leading-6 font-semibold text-[#919DB5]">
                 FundingBalance : {{ fundingbalance }}
               </p>
-              <div
+
+            <div class="flex flex-row justify-between">
+             
+              <!--div
                 class="h-6 w-6 rounded-md bg-[#E0ECFE] flex items-center justify-center cursor-pointer"
               >
                 <svg
@@ -421,7 +350,7 @@ const toggleDarkMode = () => {
                     fill="#227BF6"
                   />
                 </svg>
-              </div>
+              </div-->
             </div>
           </div>
         </div>
@@ -435,3 +364,4 @@ const toggleDarkMode = () => {
 </template>
 
 <style scoped></style>
+

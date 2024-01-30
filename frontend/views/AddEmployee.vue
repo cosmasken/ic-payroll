@@ -1,4 +1,6 @@
 <template>
+
+    <div v-if="!isLoading">
   <form>
     <div class="space-y-12 p-5">
       <div class="border-b border-gray-900/10 pb-12">
@@ -161,11 +163,19 @@
       </button>
     </div>
   </form>
+</div>
+<div v-else>
+      <div class="flex justify-center items-center h-screen">
+        <div
+          class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"
+        ></div>
+      </div>
+    </div>
 </template>
 
 <script setup>
 import { useAuthStore } from "../store/auth";
-
+const isLoading = ref(false);
 const authStore = useAuthStore();
 
 import { ref } from "vue";
@@ -186,6 +196,7 @@ const registrationData = {
 };
 
 const addData = () => {
+  isLoading.value == true;
   authStore.updateRegistrationData(registrationData);
   const firstname = authStore.registrationData.first_name;
   const lastname = authStore.registrationData.last_name;
@@ -198,6 +209,7 @@ const addData = () => {
 
   const response = authStore.registration(firstname, lastname, email, phone, address);
   console.log(response);
+  isLoading.value == false;
 };
 
 // save data
