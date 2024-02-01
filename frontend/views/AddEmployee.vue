@@ -207,7 +207,7 @@ const addData = () => {
 
   console.log(firstname, lastname, createdat, email, phone, address);
 
-  const response = authStore.registration(firstname, lastname, email, phone, address);
+  const response = authStore.addemployer(firstname, lastname, email, phone, address);
   console.log(response);
   isLoading.value == false;
 };

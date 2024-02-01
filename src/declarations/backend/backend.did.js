@@ -26,6 +26,7 @@ export const idlFactory = ({ IDL }) => {
     'addemployer' : IDL.Func([User], [IDL.Principal], []),
     'create' : IDL.Func([User], [UserId], []),
     'delete' : IDL.Func([UserId], [IDL.Bool], []),
+    'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
     'getFundingAddress' : IDL.Func([], [IDL.Text], []),

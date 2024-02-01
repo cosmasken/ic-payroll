@@ -12,7 +12,7 @@ let tradingaddress = ref("");
 let fundingaddress = ref("");
 let tradingbalance = ref("");
 let fundingbalance = ref("");
-let subacc = ref("");
+let invoice = ref("");
 
 const logout = () => {
   router.push("/auth");
@@ -23,6 +23,7 @@ watchEffect(async () => {
   const res = await authStore.whoamiActor?.getTradingAddress();
   tradingaddress.value = await res;
 });
+
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.getFundingAddress();
   fundingaddress.value = await res;
@@ -312,6 +313,12 @@ const toggleDarkMode = () => {
           >
             Hello {{ fundingaddress }} 👋🏻
           </p>
+          <p
+            class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
+          >
+            Trading {{ tradingaddress }} 👋🏻
+          </p>
+         
           <!--p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p-->
         </div>
         <div class="flex flex-row justify-evenly items-center space-x-5">

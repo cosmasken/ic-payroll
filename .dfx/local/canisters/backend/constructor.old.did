@@ -32,6 +32,7 @@ service : {
   addemployer: (User) -> (principal);
   create: (User) -> (UserId);
   delete: (UserId) -> (bool);
+  getAddress: () -> (text);
   getCanisterAddress: () -> (text);
   getCanisterBalance: () -> (text);
   getFundingAddress: () -> (text);
@@ -41,6 +42,7 @@ service : {
   getTradingAddress: () -> (text);
   getTradingBalance: () -> (text);
   getUser: (principal) -> (opt User) query;
+  getUsers: () -> (vec User) query;
   read: (UserId) -> (opt User) query;
   register: (nat, text, text, bool, text, bool, text, int) -> ();
   setCourierApiKey: (text) -> (Response);

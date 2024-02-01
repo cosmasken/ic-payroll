@@ -28,6 +28,7 @@ type Backend =
    addemployer: (User) -> (principal);
    create: (User) -> (UserId);
    delete: (UserId) -> (bool);
+   getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);
    getFundingAddress: () -> (text);

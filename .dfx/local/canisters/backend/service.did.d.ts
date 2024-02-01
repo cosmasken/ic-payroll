@@ -9,6 +9,7 @@ export interface Backend {
   'addemployer' : ActorMethod<[User], Principal>,
   'create' : ActorMethod<[User], UserId>,
   'delete' : ActorMethod<[UserId], boolean>,
+  'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
   'getFundingAddress' : ActorMethod<[], string>,

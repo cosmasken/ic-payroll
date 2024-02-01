@@ -13,7 +13,7 @@ watchEffect(async () => {
  // const goodlist = await fromList(res);
  //parse array of key value pairs into array of objects
   users.value = await res;
-  console.log("no i on list is  " + res[0]);
+  console.log("no i on list is  " + users.value[0]);
 });
 const isEmpty = ref(true);
 
@@ -73,8 +73,9 @@ const employees = [
   },
 ];
 //import data by pointing users to static employee data for now
-const importdata = () => {
-  users.value = employees;
+async function importdata()  {
+  const res = await authStore.whoamiActor?.getUsers();
+  users.value = res;
 };
 
 
@@ -127,7 +128,7 @@ const importdata = () => {
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  EmpID
+                  ID
                 </th>
                 <th
                   scope="col"
@@ -145,13 +146,13 @@ const importdata = () => {
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  Status
+                  Currency
                 </th>
                 <th
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
-                  Status
+                  Wallet
                 </th>
 
                 <th
@@ -187,7 +188,7 @@ const importdata = () => {
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
-                  {{ person.phone }}
+                  ckBtc
                 </td>
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"

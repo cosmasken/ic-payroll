@@ -32,6 +32,12 @@ actor {
   stable var courierApiKey : Text;
   stable var latestTransactionIndex : Nat;
   stable var next : Nat32;
+  stable var stabUsers :
+    {
+      #branch : Branch<Principal, User>;
+      #empty;
+      #leaf : Leaf<Principal, User>
+    };
   stable var transactions :
     {
       #branch : Branch<TransactionId, Transaction>;

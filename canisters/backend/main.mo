@@ -23,6 +23,9 @@ import Nat32 "mo:base/Nat32";
 import HttpTypes "http/http.types";
 import Cycles "mo:base/ExperimentalCycles";
 import Buffer "mo:base/Buffer";
+import Nat8 "mo:base/Nat8";
+import SHA224    "./SHA224";
+import CRC32     "./CRC32";
 
 
 
@@ -36,11 +39,14 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   private stable var courierApiKey : Text = "";
   private var logData = Buffer.Buffer<Text>(0);
   private stable var next : UserId = 0;
+  // let buffer = Buffer.Buffer<Types.User>(100);
+   private stable var stabUsers : Trie.Trie<Principal,Types.User> = Trie.empty();
   
 
   //create a list of users in motoko
   //each employer has a list of freelancers
-let map = HashMap.HashMap<Principal, Types.User>(1, Principal.equal, Principal.hash);
+let  map = HashMap.HashMap<Principal, Types.User>(1, Principal.equal, Principal.hash);
+//private stable var stableUsers : TrieMap.TrieMap<Principal, Types.User> = TrieMap.empty<Principal, Types.User>(Principal.hash, Principal.equal);
 
 public shared ({ caller }) func addemployer(employer : Types.User) : async Principal {
   map.put(Principal.fromText(employer.wallet), employer);
@@ -93,14 +99,27 @@ public query func getUsers() : async [Types.User] {
 return buffer.toArray();
 };
 
+
+public shared ({ caller }) func getAddress() : async Text {
+  let acc : Types.Account = {
+    owner = Principal.fromActor(this);
+    subaccount = ?toSubaccount(caller);
+  };
+  let address = addressConverter_.toText(acc);
+  Debug.print("address:  is  " # debug_show (address));
+  return address;
+};
+
+
   // The user data store.
   private stable var users : Trie.Trie<UserId, Types.User> = Trie.empty();
   private stable var transactions : Trie.Trie<TransactionId, Types.Transaction> = Trie.empty();
 
-
   /**
    * High-Level API
    */
+
+// get all users .using .vals()
 
 
 
@@ -171,9 +190,9 @@ return buffer.toArray();
   };
 
   public shared ({ caller }) func getInvoice() : async Types.Account {
-
+   //  Debug.print(Debug_show(toAccount({ caller; canister = Principal.fromActor(Backend) })));
     return toAccount({ caller; canister = Principal.fromActor(this) });
-    // Debug.print(Debug_show(toAccount({ caller; canister = Principal.fromActor(Backend) })));
+
   };
 
   public shared ({ caller }) func getFundingBalance() : async Text {
@@ -390,6 +409,24 @@ return buffer.toArray();
 
     return #ok("🥠: " # "success");
   };
+
+
+  //use follwing pseudocode to create the function
+//   decodeAccount(text) = case Principal.fromText(text) of
+//   | (prefix · [n, 0x7f]) where Blob.size(prefix) < n ⇒ raise Error
+//   | (prefix · [n, 0x7f]) where n > 32 orelse n = 0 ⇒ raise Error
+//   | (prefix · suffix · [n, 0x7f]) where Blob.size(suffix) = n ⇒
+//     if suffix[0] = 0
+//     then raise Error
+//     else { owner = Principal.fromBlob(prefix); subaccount = Some(expand(suffix)) }
+//   | raw_bytes ⇒ { owner = Principal.fromBlob(raw_bytes); subaccount = None }
+
+// expand(bytes) = if Blob.size(bytes) < 32
+//                 then expand(0x00 :: bytes)
+//                 else bytes
+
+
+
 
   /**
    * Utilities
