@@ -1,8 +1,6 @@
 type Account = record { owner : principal; subaccount : opt Subaccount };
 type Backend = service {
-  addemployer : (User) -> (principal);
-  create : (User) -> (UserId);
-  delete : (UserId) -> (bool);
+  deleteUser : (text) -> (Response_1);
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
@@ -12,20 +10,24 @@ type Backend = service {
   getLogs : () -> (vec text) query;
   getTradingAddress : () -> (text);
   getTradingBalance : () -> (text);
-  getUser : (principal) -> (opt User) query;
-  getUsers : () -> (vec User) query;
-  read : (UserId) -> (opt User) query;
-  register : (nat, text, text, bool, text, bool, text, int) -> ();
-  setCourierApiKey : (text) -> (Response);
+  getUser : () -> (Response) query;
+  getUsersList : () -> (vec record { text; User }) query;
+  setCourierApiKey : (text) -> (Response_1);
   transactionsLength : () -> (text) query;
   transferFromCanistertoSubAccount : () -> (Result);
   transferFromSubAccountToCanister : (nat) -> (Result);
   transferFromSubAccountToSubAccount : (text, nat) -> (Result);
-  update : (UserId, User) -> (bool);
+  updateUser : (User) -> (Response);
   userLength : () -> (text) query;
   whoami : () -> (principal);
 };
 type Response = record {
+  status : nat16;
+  data : opt User;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_1 = record {
   status : nat16;
   data : opt text;
   status_text : text;
@@ -34,7 +36,6 @@ type Response = record {
 type Result = variant { ok : text; err : text };
 type Subaccount = vec nat8;
 type User = record {
-  id : nat;
   phone_notifications : bool;
   name : text;
   email_notifications : bool;
@@ -43,5 +44,4 @@ type User = record {
   wallet : text;
   phone : text;
 };
-type UserId = nat32;
 service : Backend

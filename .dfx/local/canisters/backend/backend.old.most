@@ -14,30 +14,27 @@ type Transaction =
     memo : Text;
     to : Principal
   };
-type TransactionId = Nat32;
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
 type User =
   {
     created_at : Int;
     email : Text;
     email_notifications : Bool;
-    id : Nat;
     name : Text;
     phone : Text;
     phone_notifications : Bool;
     wallet : Text
   };
-type UserId = Nat32;
 actor {
   stable var courierApiKey : Text;
   stable var latestTransactionIndex : Nat;
   stable var next : Nat32;
   stable var transactions :
     {
-      #branch : Branch<TransactionId, Transaction>;
+      #branch : Branch<Text, Transaction>;
       #empty;
-      #leaf : Leaf<TransactionId, Transaction>
+      #leaf : Leaf<Text, Transaction>
     };
-  stable var users :
-    {#branch : Branch<UserId, User>; #empty; #leaf : Leaf<UserId, User>}
+  stable var userStore :
+    {#branch : Branch<Text, User>; #empty; #leaf : Leaf<Text, User>}
 };

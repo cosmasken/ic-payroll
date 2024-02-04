@@ -1,6 +1,6 @@
 <template>
-
-    <div v-if="!isLoading">
+<div>
+    <div v-show="isLoading === false">
   <form>
     <div class="space-y-12 p-5">
       <div class="border-b border-gray-900/10 pb-12">
@@ -156,35 +156,41 @@
       </button>
       <button
         type="button"
+        
         @click="addData()"
         class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
-        Save
+        Submit
       </button>
+      
     </div>
   </form>
 </div>
-<div v-else>
+<div v-show="isLoading === true">
       <div class="flex justify-center items-center h-screen">
         <div
           class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"
         ></div>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
+import { ref , watchEffect } from "vue";
 import { useAuthStore } from "../store/auth";
 const isLoading = ref(false);
 const authStore = useAuthStore();
 
-import { ref } from "vue";
-//get currwnt time to int
+
+//get currEnt time to int
 const getTime = () => {
   const date = new Date();
   const time = date.getTime();
   return time;
 };
+
+
 
 const registrationData = {
   first_name: "",
@@ -196,7 +202,7 @@ const registrationData = {
 };
 
 const addData = () => {
-  isLoading.value == true;
+ 
   authStore.updateRegistrationData(registrationData);
   const firstname = authStore.registrationData.first_name;
   const lastname = authStore.registrationData.last_name;
@@ -207,9 +213,18 @@ const addData = () => {
 
   console.log(firstname, lastname, createdat, email, phone, address);
 
-  const response = authStore.addemployer(firstname, lastname, email, phone, address);
-  console.log(response);
-  isLoading.value == false;
+  try {
+    isLoading.value == true;
+    const response = authStore.registration(firstname, lastname, email, phone, address);
+  } catch (error) {
+    console.error('Error submitting data:', error);
+  } finally {
+    isLoading.value = false;
+  }
+  
+  // const response = authStore.registration(firstname, lastname, email, phone, address);
+  // console.log(response);
+  // isLoading.value == false;
 };
 
 // save data

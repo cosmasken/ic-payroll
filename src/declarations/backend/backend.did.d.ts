@@ -6,9 +6,7 @@ export interface Account {
   'subaccount' : [] | [Subaccount],
 }
 export interface Backend {
-  'addemployer' : ActorMethod<[User], Principal>,
-  'create' : ActorMethod<[User], UserId>,
-  'delete' : ActorMethod<[UserId], boolean>,
+  'deleteUser' : ActorMethod<[string], Response_1>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
@@ -18,23 +16,24 @@ export interface Backend {
   'getLogs' : ActorMethod<[], Array<string>>,
   'getTradingAddress' : ActorMethod<[], string>,
   'getTradingBalance' : ActorMethod<[], string>,
-  'getUser' : ActorMethod<[Principal], [] | [User]>,
-  'getUsers' : ActorMethod<[], Array<User>>,
-  'read' : ActorMethod<[UserId], [] | [User]>,
-  'register' : ActorMethod<
-    [bigint, string, string, boolean, string, boolean, string, bigint],
-    undefined
-  >,
-  'setCourierApiKey' : ActorMethod<[string], Response>,
+  'getUser' : ActorMethod<[], Response>,
+  'getUsersList' : ActorMethod<[], Array<[string, User]>>,
+  'setCourierApiKey' : ActorMethod<[string], Response_1>,
   'transactionsLength' : ActorMethod<[], string>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
   'transferFromSubAccountToCanister' : ActorMethod<[bigint], Result>,
   'transferFromSubAccountToSubAccount' : ActorMethod<[string, bigint], Result>,
-  'update' : ActorMethod<[UserId, User], boolean>,
+  'updateUser' : ActorMethod<[User], Response>,
   'userLength' : ActorMethod<[], string>,
   'whoami' : ActorMethod<[], Principal>,
 }
 export interface Response {
+  'status' : number,
+  'data' : [] | [User],
+  'status_text' : string,
+  'error_text' : [] | [string],
+}
+export interface Response_1 {
   'status' : number,
   'data' : [] | [string],
   'status_text' : string,
@@ -44,7 +43,6 @@ export type Result = { 'ok' : string } |
   { 'err' : string };
 export type Subaccount = Uint8Array | number[];
 export interface User {
-  'id' : bigint,
   'phone_notifications' : boolean,
   'name' : string,
   'email_notifications' : boolean,
@@ -53,5 +51,4 @@ export interface User {
   'wallet' : string,
   'phone' : string,
 }
-export type UserId = number;
 export interface _SERVICE extends Backend {}

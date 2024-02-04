@@ -4,6 +4,7 @@ import useClipboard from "vue-clipboard3";
 import { useAuthStore } from "./store/auth";
 import { useledger } from "./store/useledger";
 import { BellAlertIcon } from "@heroicons/vue/20/solid";
+import SkeletonLoader from "./components/SkeletonLoader.vue";
 import router from "./router/";
 
 const authStore = useAuthStore();
@@ -12,6 +13,7 @@ let tradingaddress = ref("");
 let fundingaddress = ref("");
 let tradingbalance = ref("");
 let fundingbalance = ref("");
+let transferresponse = ref("");
 let invoice = ref("");
 
 const logout = () => {
@@ -38,13 +40,16 @@ watchEffect(async () => {
 });
 
 watchEffect(async () => {
-  const approved = await authStore.whoamiActor?.transferFromSubAccountToCanister();
-console.log(approved);
-  if (approved) {
-    const res = await authStore.whoamiActor?.getTradingBalance();
-    tradingbalance.value = await res;
-  }
+  const res = await authStore.whoamiActor?.getInvoice();
+  invoice.value = await res;
 });
+
+const getTestTokens = async () => {
+  const response = authStore.whoamiActor.transferFromCanistertoSubAccount();
+  console.log(response);
+  transferresponse.value = await response;
+};
+
 
 const walletAddress = "0x1234567890123456789012345678901234567890";
 
@@ -146,7 +151,7 @@ const toggleDarkMode = () => {
               />
               <span>Payroll</span>
             </router-link>
-            <!--router-link
+            <router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/jobs"
@@ -157,7 +162,7 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Jobs</span>
-            </router-link-->
+            </router-link>
 
             <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -171,6 +176,18 @@ const toggleDarkMode = () => {
               />
               <span>Candidates</span>
             </router-link-->
+            <router-link
+              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
+              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
+              to="/home/candidates"
+            >
+              <img
+                src="./assets/candidates.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
+              <span>Notifications</span>
+            </router-link>
             <!--router-link
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -308,16 +325,23 @@ const toggleDarkMode = () => {
       <!-- Header-->
       <div class="w-full sticky flex flex-row justify-between">
         <div class="flex flex-col">
-          <p
+          <div v-if="fundingaddress.length === 0">
+            <SkeletonLoader class="w-16 h-5" />
+            </div>
+            <div v-else>
+              <p
+            
             class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
           >
             Hello {{ fundingaddress }} 👋🏻
           </p>
-          <p
+            </div>
+         
+          <!--p
             class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
           >
             Trading {{ tradingaddress }} 👋🏻
-          </p>
+          </p-->
          
           <!--p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p-->
         </div>
@@ -332,13 +356,19 @@ const toggleDarkMode = () => {
             <!--p class="text-sm leading-6 font-semibold text-[#919DB5]">
               FundingAddress : {{ fundingaddress }}
             </p-->
-
-            <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                TradingBalance : {{ tradingbalance }}
-              </p>
+          
               <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                FundingBalance : {{ fundingbalance }}
+                TradingBalance : {{ tradingbalance }} cksats
               </p>
+           
+           
+              <p class="text-sm leading-6 font-semibold text-[#919DB5]">
+                FundingBalance : {{ BigInt(Math.round(fundingbalance / 100_000_000)) }} ckbtc
+              </p>
+
+              <button  @click="getTestTokens"
+              class="bg-blue-700 p-2 text-sm rounded-[10px]"
+              >Get Test Tokens</button>
 
             <div class="flex flex-row justify-between">
              

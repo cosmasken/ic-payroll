@@ -56,6 +56,7 @@ export const useAuthStore = defineStore("auth", {
       createdCount: null,
       payments: null,
       registrationData: {},
+      transferArgs: {},
       userInfo: String,
     };
   },
@@ -99,16 +100,24 @@ export const useAuthStore = defineStore("auth", {
     updateRegistrationData(data) {
       this.registrationData = { ...this.registrationData, ...data };
     },
+
+    updateTranferArgs(data) {
+      this.transferArgs = { ...this.transferArgs, ...data };
+    },
+
     clearRegistrationData() {
       this.registrationData = {};
     },
+
+    clearTransferArgs() {
+      this.transferArgs = {};
+    },
+
     setUserInfo(userInfo) {
       this.userInfo = userInfo;
     },
     async registration(firstname, lastname, email, phone, address) {
-      this.loading = true;
-      const response = await this.whoamiActor.create({
-        id: 0,
+      const response = await this.whoamiActor.updateUser({
         name: firstname + " " + lastname,
         email: email,
         email_notifications: false,
@@ -117,6 +126,10 @@ export const useAuthStore = defineStore("auth", {
         wallet: address,
         created_at: getTime(),
       });
+
+      console.log(response);
     },
+
+
   },
 });

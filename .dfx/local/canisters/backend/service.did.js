@@ -1,6 +1,16 @@
 export const idlFactory = ({ IDL }) => {
+  const Response_1 = IDL.Record({
+    'status' : IDL.Nat16,
+    'data' : IDL.Opt(IDL.Text),
+    'status_text' : IDL.Text,
+    'error_text' : IDL.Opt(IDL.Text),
+  });
+  const Subaccount = IDL.Vec(IDL.Nat8);
+  const Account = IDL.Record({
+    'owner' : IDL.Principal,
+    'subaccount' : IDL.Opt(Subaccount),
+  });
   const User = IDL.Record({
-    'id' : IDL.Nat,
     'phone_notifications' : IDL.Bool,
     'name' : IDL.Text,
     'email_notifications' : IDL.Bool,
@@ -9,23 +19,15 @@ export const idlFactory = ({ IDL }) => {
     'wallet' : IDL.Text,
     'phone' : IDL.Text,
   });
-  const UserId = IDL.Nat32;
-  const Subaccount = IDL.Vec(IDL.Nat8);
-  const Account = IDL.Record({
-    'owner' : IDL.Principal,
-    'subaccount' : IDL.Opt(Subaccount),
-  });
   const Response = IDL.Record({
     'status' : IDL.Nat16,
-    'data' : IDL.Opt(IDL.Text),
+    'data' : IDL.Opt(User),
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
   });
   const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const Backend = IDL.Service({
-    'addemployer' : IDL.Func([User], [IDL.Principal], []),
-    'create' : IDL.Func([User], [UserId], []),
-    'delete' : IDL.Func([UserId], [IDL.Bool], []),
+    'deleteUser' : IDL.Func([IDL.Text], [Response_1], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
@@ -35,24 +37,13 @@ export const idlFactory = ({ IDL }) => {
     'getLogs' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'getTradingAddress' : IDL.Func([], [IDL.Text], []),
     'getTradingBalance' : IDL.Func([], [IDL.Text], []),
-    'getUser' : IDL.Func([IDL.Principal], [IDL.Opt(User)], ['query']),
-    'getUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
-    'read' : IDL.Func([UserId], [IDL.Opt(User)], ['query']),
-    'register' : IDL.Func(
-        [
-          IDL.Nat,
-          IDL.Text,
-          IDL.Text,
-          IDL.Bool,
-          IDL.Text,
-          IDL.Bool,
-          IDL.Text,
-          IDL.Int,
-        ],
+    'getUser' : IDL.Func([], [Response], ['query']),
+    'getUsersList' : IDL.Func(
         [],
-        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, User))],
+        ['query'],
       ),
-    'setCourierApiKey' : IDL.Func([IDL.Text], [Response], []),
+    'setCourierApiKey' : IDL.Func([IDL.Text], [Response_1], []),
     'transactionsLength' : IDL.Func([], [IDL.Text], ['query']),
     'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),
     'transferFromSubAccountToCanister' : IDL.Func([IDL.Nat], [Result], []),
@@ -61,7 +52,7 @@ export const idlFactory = ({ IDL }) => {
         [Result],
         [],
       ),
-    'update' : IDL.Func([UserId, User], [IDL.Bool], []),
+    'updateUser' : IDL.Func([User], [Response], []),
     'userLength' : IDL.Func([], [IDL.Text], ['query']),
     'whoami' : IDL.Func([], [IDL.Principal], []),
   });

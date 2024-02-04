@@ -24,6 +24,7 @@ import HttpTypes "http/http.types";
 import Cycles "mo:base/ExperimentalCycles";
 import Buffer "mo:base/Buffer";
 import Nat8 "mo:base/Nat8";
+import Iter "mo:base/Iter";
 import SHA224    "./SHA224";
 import CRC32     "./CRC32";
 
@@ -39,66 +40,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   private stable var courierApiKey : Text = "";
   private var logData = Buffer.Buffer<Text>(0);
   private stable var next : UserId = 0;
-  // let buffer = Buffer.Buffer<Types.User>(100);
-   private stable var stabUsers : Trie.Trie<Principal,Types.User> = Trie.empty();
-  
-
-  //create a list of users in motoko
-  //each employer has a list of freelancers
-let  map = HashMap.HashMap<Principal, Types.User>(1, Principal.equal, Principal.hash);
-//private stable var stableUsers : TrieMap.TrieMap<Principal, Types.User> = TrieMap.empty<Principal, Types.User>(Principal.hash, Principal.equal);
-
-public shared ({ caller }) func addemployer(employer : Types.User) : async Principal {
-  map.put(Principal.fromText(employer.wallet), employer);
-
-return Principal.fromText(employer.wallet);
-};
-
-public shared ({ caller }) func register(
-     id : Nat,
-    name : Text,
-    email : Text,
-    email_notifications : Bool,
-    phone : Text,
-    phone_notifications : Bool,
-    wallet : Text,
-    created_at : Int,
-  ) : async () {
-    if(Principal.isAnonymous(caller)){
-        // Dont register if caller is anonymous
-        return;
-    };
-
-    let user : Types.User = {
-        id = id;
-        name;
-        email;
-        email_notifications;
-        phone;
-        phone_notifications;
-        wallet;
-        created_at;
-        
-    };
-    
-    map.put(Principal.fromText(wallet), user);
-};
-
-//get single user
-public query func getUser(p : Principal) : async ?Types.User {
-map.get(p);
-};
-
-// get all users .using .vals()
-public query func getUsers() : async [Types.User] {
-  let buffer = Buffer.Buffer<Types.User>(100);
-// let users : [Types.User] = [];
-  for (value in map.vals()) {
-  buffer.add(value);
-};
-return buffer.toArray();
-};
-
 
 public shared ({ caller }) func getAddress() : async Text {
   let acc : Types.Account = {
@@ -112,71 +53,97 @@ public shared ({ caller }) func getAddress() : async Text {
 
 
   // The user data store.
-  private stable var users : Trie.Trie<UserId, Types.User> = Trie.empty();
-  private stable var transactions : Trie.Trie<TransactionId, Types.Transaction> = Trie.empty();
+  //private stable var users : Trie.Trie<UserId, Types.User> = Trie.empty();
+  private stable var userStore : Trie.Trie<Text, Types.User> = Trie.empty();
+  private stable var transactions : Trie.Trie<Text, Types.Transaction> = Trie.empty();
+
+ // private stable var userlist : TrieMap.TrieMap<Principal, Types.User>(1, Principal.equal, Principal.hash);
 
   /**
    * High-Level API
    */
 
-// get all users .using .vals()
+  /**
+    *  Get the merchant's information
+    */
+  public query (context) func getUser() : async Types.Response<Types.User> {
+    let caller : Principal = context.caller;
 
+    switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
+      case (?user) {
+        {
+          status = 200;
+          status_text = "OK";
+          data = ?user;
+          error_text = null;
+        };
+      };
+      case null {
+        {
+          status = 404;
+          status_text = "Not Found";
+          data = null;
+          error_text = ?("User with principal ID: " # Principal.toText(caller) # " not found.");
+        };
+      };
+    };
+  };
 
+ /**
+    * Update the merchant's information
+    */
+  public shared (context) func updateUser(user : Types.User) : async Types.Response<Types.User> {
 
-  // Create a user.
-  public func create(user : Types.User) : async UserId {
-    let userId = next;
-    next += 1;
-    users := Trie.replace(
-      users,
-      key(userId),
-      eq,
+    let caller : Principal = context.caller;
+    userStore := Trie.replace(
+      userStore,
+      userKey(user.wallet),
+      Text.equal,
       ?user,
     ).0;
-    return userId;
-  };
-
-  // Read a superhero.
-  public query func read(userId : UserId) : async ?Types.User {
-    let result = Trie.find(users, key(userId), eq);
-    return result;
-  };
-
-  // Update a superhero.
-  public func update(userId : UserId, user : Types.User) : async Bool {
-    let result = Trie.find(users, key(userId), eq);
-    let exists = Option.isSome(result);
-    if (exists) {
-      users := Trie.replace(
-        users,
-        key(userId),
-        eq,
-        ?user,
-      ).0;
+    {
+      status = 200;
+      status_text = "OK";
+      data = ?user;
+      error_text = null;
     };
-    return exists;
   };
 
-  // Delete a superhero.
-  public func delete(userId : UserId) : async Bool {
-    let result = Trie.find(users, key(userId), eq);
+ /**
+    * Delete the users's information
+    */
+  public shared (context) func deleteUser(wallet : Text) : async Types.Response<Text> {
+   // let caller : Principal = context.caller;
+       let result = Trie.find(userStore, userKey(wallet), Text.equal);
     let exists = Option.isSome(result);
     if (exists) {
-      users := Trie.replace(
-        users,
-        key(userId),
-        eq,
+      userStore := Trie.replace(
+        userStore,
+        userKey(wallet),
+        Text.equal,
         null,
       ).0;
     };
-    return exists;
+    {
+      status = 200;
+      status_text = "OK";
+      data = ?"User deleted";
+      error_text = null;
+    };
+    
+   
   };
-
 
   //no of users
   public query func userLength() : async Text {
-    var size = Trie.size(users);
+    var size = Trie.size(userStore);
     return Nat.toText(size);
+  };
+
+  public query func getUsersList() : async [(Text, Types.User)] {
+    let usersArray : [(Text, Types.User)] = Iter.toArray(Trie.iter(userStore));
+      Debug.print(debug_show(usersArray));
+    return usersArray;
   };
 
   //no of transactions
@@ -190,10 +157,11 @@ public shared ({ caller }) func getAddress() : async Text {
   };
 
   public shared ({ caller }) func getInvoice() : async Types.Account {
-   //  Debug.print(Debug_show(toAccount({ caller; canister = Principal.fromActor(Backend) })));
+     Debug.print(debug_show(toAccount({ caller; canister = Principal.fromActor(this) })));
     return toAccount({ caller; canister = Principal.fromActor(this) });
 
   };
+
 
   public shared ({ caller }) func getFundingBalance() : async Text {
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -209,14 +177,10 @@ public shared ({ caller }) func getAddress() : async Text {
 
   public shared ({ caller }) func getTradingBalance() : async Text {
     let balance = await CkBtcLedger.icrc1_balance_of(
-
-      {
+    {
         owner = Principal.fromActor(this);
         subaccount = ?toSubaccount(caller);
       },
-      //  toAccount({ caller; canister = Principal.fromActor(Backend) })
-      // owner = Principal.fromActor(Backend) ;
-      //  subaccount = ?toSubaccount(caller);
     );
     return Nat.toText(balance);
   };
@@ -228,9 +192,6 @@ public shared ({ caller }) func getAddress() : async Text {
         owner = Principal.fromActor(this);
         subaccount = null;
       },
-      //  toAccount({ caller; canister = Principal.fromActor(Backend) })
-      // owner = Principal.fromActor(Backend) ;
-      //  subaccount = ?toSubaccount(caller);
     );
     return Nat.toText(balance);
   };
@@ -284,7 +245,7 @@ public shared ({ caller }) func getAddress() : async Text {
       // if enough funds were sent, move them to the canisters default account
       let transferResult = await CkBtcLedger.icrc1_transfer(
         {
-          amount = balance -10;
+          amount = 5000;
           from_subaccount = null;
           created_at_time = null;
           fee = ?10;
@@ -410,45 +371,20 @@ public shared ({ caller }) func getAddress() : async Text {
     return #ok("🥠: " # "success");
   };
 
-
-  //use follwing pseudocode to create the function
-//   decodeAccount(text) = case Principal.fromText(text) of
-//   | (prefix · [n, 0x7f]) where Blob.size(prefix) < n ⇒ raise Error
-//   | (prefix · [n, 0x7f]) where n > 32 orelse n = 0 ⇒ raise Error
-//   | (prefix · suffix · [n, 0x7f]) where Blob.size(suffix) = n ⇒
-//     if suffix[0] = 0
-//     then raise Error
-//     else { owner = Principal.fromBlob(prefix); subaccount = Some(expand(suffix)) }
-//   | raw_bytes ⇒ { owner = Principal.fromBlob(raw_bytes); subaccount = None }
-
-// expand(bytes) = if Blob.size(bytes) < 32
-//                 then expand(0x00 :: bytes)
-//                 else bytes
-
-
-
-
   /**
    * Utilities
    */
 
-
- private func toledger() : Blob {
-      let principal = Principal.fromText("un4fu-tqaaa-aaaab-qadjq-cai");
-let subAccount : Blob = "\4A\8D\3F\2B\6E\01\C8\7D\9E\03\B4\56\7C\F8\9A\01\D2\34\56\78\9A\BC\DE\F0\12\34\56\78\9A\BC\DE\F0";
-let account = Principal.toBlob(principal); 
-// => \8C\5C\20\C6\15\3F\7F\51\E2\0D\0F\0F\B5\08\51\5B\47\65\63\A9\62\B4\A9\91\5F\4F\02\70\8A\ED\4F\82
-return account;
-  };
-
-  // Test two superhero identifiers for equality.
+  // Test two user identifiers for equality.
   private func eq(x : UserId, y : UserId) : Bool {
     return x == y;
   };
 
-  // Create a trie key from a superhero identifier.
-  private func key(x : UserId) : Trie.Key<UserId> {
-    return { hash = x; key = x };
+   /**
+    * Generate a Trie key based on a merchant's principal ID
+    */
+  private func userKey(x : Text) : Trie.Key<Text> {
+    return { hash = Text.hash(x); key = x };
   };
 
   /**
@@ -497,118 +433,115 @@ return account;
     * Check for new transactions and notify the merchant if a new transaction is found.
     * This function is called by the global timer.
     */
-  // system func timer(setGlobalTimer : Nat64 -> ()) : async () {
-  //   let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
-  //   setGlobalTimer(next);
-  //   await notify();
-  // };
+  system func timer(setGlobalTimer : Nat64 -> ()) : async () {
+    let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
+    setGlobalTimer(next);
+    await notify();
+  };
 
   /**
     * Notify the merchant if a new transaction is found.
     */
-  // private func notify() : async () {
-  //   var start : Nat = _startBlock;
-  //   if (latestTransactionIndex > 0) {
-  //     start := latestTransactionIndex + 1;
-  //   };
+  private func notify() : async () {
+    var start : Nat = _startBlock;
+    if (latestTransactionIndex > 0) {
+      start := latestTransactionIndex + 1;
+    };
 
-  //   var response = await CkBtcLedger.get_transactions({
-  //     start = start;
-  //     length = 1;
-  //   });
+    var response = await CkBtcLedger.get_transactions({
+      start = start;
+      length = 1;
+    });
 
-  //   if (Array.size(response.transactions) > 0) {
-  //     latestTransactionIndex := start;
+    if (Array.size(response.transactions) > 0) {
+      latestTransactionIndex := start;
 
-  //     if (response.transactions[0].kind == "transfer") {
-  //       let t = response.transactions[0];
-  //       switch (t.transfer) {
-  //         case (?transfer) {
-  //           let to = transfer.to.owner;
-  //           switch (Trie.get(users, key(Principal.toText(to)), Text.equal)) {
-  //             case (?user) {
-  //               if (user.email_notifications or merchant.phone_notifications) {
-  //                 log("Sending notification to: " # debug_show (merchant.email_address));
-  //                 await sendNotification(user, t);
-  //               };
-  //             };
-  //             case null {
-  //               // No action required if merchant not found
-  //             };
-  //           };
-  //         };
-  //         case null {
-  //           // No action required if transfer is null
-  //         };
-  //       };
-  //     };
-  //   };
-  // };
+      if (response.transactions[0].kind == "transfer") {
+        let t = response.transactions[0];
+        switch (t.transfer) {
+          case (?transfer) {
+            let to = transfer.to.owner;
+            switch (Trie.get(userStore, userKey(Principal.toText(to)), Text.equal)) {
+              case (?user) {
+                if (user.email_notifications or user.phone_notifications) {
+                  log("Sending notification to: " # debug_show (user.email));
+                  await sendNotification(user, t);
+                };
+              };
+              case null {
+                // No action required if merchant not found
+              };
+            };
+          };
+          case null {
+            // No action required if transfer is null
+          };
+        };
+      };
+    };
+  };
+
 
   /**
     * Send a notification to a merchant about a received payment
     */
-  // private func sendNotification(merchant : Types.User, transaction : CkBtcLedger.Transaction) : async () {
-  //   // Managment canister
-  //   let ic : HttpTypes.IC = actor ("aaaaa-aa");
+  private func sendNotification(user : Types.User, transaction : CkBtcLedger.Transaction) : async () {
+    // Managment canister
+    let ic : HttpTypes.IC = actor ("aaaaa-aa");
 
-  //   // Create request body
-  //   var amount = "0";
-  //   var from = "";
-  //   switch (transaction.transfer) {
-  //     case (?transfer) {
-  //       amount := Nat.toText(transfer.amount);
-  //       from := Principal.toText(transfer.from.owner);
-  //     };
-  //     case null {};
-  //   };
-  //   let idempotencyKey : Text = Text.concat(user.name, Nat64.toText(transaction.timestamp));
-  //   let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # user.email_address # "\", \"phone\": \"" # user.phone_number # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # from # "\"}";
-  //   let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
-  //   let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
+    // Create request body
+    var amount = "0";
+    var from = "";
+    switch (transaction.transfer) {
+      case (?transfer) {
+        amount := Nat.toText(transfer.amount);
+        from := Principal.toText(transfer.from.owner);
+      };
+      case null {};
+    };
+    let idempotencyKey : Text = Text.concat(user.name, Nat64.toText(transaction.timestamp));
+    let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # user.email # "\", \"phone\": \"" # user.phone # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # from # "\"}";
+    let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
+    let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
 
-  //   // Setup request
-  //   let httpRequest : HttpTypes.HttpRequestArgs = {
-  //     // The notification service is hosted on Netlify and the URL is hardcoded
-  //     // in this example. In a real application, the URL would be configurable.
-  //     url = "https://icpos-notifications.xyz/.netlify/functions/notify";
-  //     max_response_bytes = ?Nat64.fromNat(1000);
-  //     headers = [
-  //       { name = "Content-Type"; value = "application/json" },
-  //     ];
-  //     body = ?requestBodyAsNat8;
-  //     method = #post;
-  //     transform = null;
-  //   };
+    // Setup request
+    let httpRequest : HttpTypes.HttpRequestArgs = {
+      // The notification service is hosted on Netlify and the URL is hardcoded
+      // in this example. In a real application, the URL would be configurable.
+      url = "https://icpos-notifications.xyz/.netlify/functions/notify";
+      max_response_bytes = ?Nat64.fromNat(1000);
+      headers = [
+        { name = "Content-Type"; value = "application/json" },
+      ];
+      body = ?requestBodyAsNat8;
+      method = #post;
+      transform = null;
+    };
 
-  //   // Cycle cost of sending a notification
-  //   // 49.14M + 5200 * request_size + 10400 * max_response_bytes
-  //   // 49.14M + (5200 * 1000) + (10400 * 1000) = 64.74M
-  //   Cycles.add(70_000_000);
+    // Cycle cost of sending a notification
+    // 49.14M + 5200 * request_size + 10400 * max_response_bytes
+    // 49.14M + (5200 * 1000) + (10400 * 1000) = 64.74M
+    Cycles.add(70_000_000);
 
-  //   // Send the request
-  //   let httpResponse : HttpTypes.HttpResponsePayload = await ic.http_request(httpRequest);
+    // Send the request
+    let httpResponse : HttpTypes.HttpResponsePayload = await ic.http_request(httpRequest);
 
-  //   // Check the response
-  //   if (httpResponse.status > 299) {
-  //     let response_body : Blob = Blob.fromArray(httpResponse.body);
-  //     let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
-  //       case (null) { "No value returned" };
-  //       case (?y) { y };
-  //     };
-  //     log("Error sending notification: " # decoded_text);
-  //   } else {
-  //     log("Notification sent");
-  //   };
-  // };
+    // Check the response
+    if (httpResponse.status > 299) {
+      let response_body : Blob = Blob.fromArray(httpResponse.body);
+      let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
+        case (null) { "No value returned" };
+        case (?y) { y };
+      };
+      log("Error sending notification: " # decoded_text);
+    } else {
+      log("Notification sent");
+    };
+  };
 
   system func postupgrade() {
     // Make sure we start to montitor transactions from the block set on deployment
     latestTransactionIndex := _startBlock;
   };
-
- //get list of users to json format
-
-
 
 };

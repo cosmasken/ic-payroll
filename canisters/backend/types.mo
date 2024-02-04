@@ -1,5 +1,6 @@
 import Principal "mo:base/Principal";
 import Time "mo:base/Time";
+import Nat32 "mo:base/Nat32";
 module {
   public type Subaccount = Blob;
   public type Account = {
@@ -17,8 +18,9 @@ module {
     to : Principal;
     amount : Nat;
     memo : Text;
-    status : Text;
+    status : InvoiceStatus;
     created_at : Int;
+    modified_at : Int;
   };
 
   public type Transaction = {
@@ -31,7 +33,6 @@ module {
 
   // New type for User
   public type User = {
-    id : Nat;
     name : Text;
     email : Text;
     email_notifications : Bool;
@@ -46,6 +47,12 @@ module {
     status_text : Text;
     data : ?T;
     error_text : ?Text;
+  };
+
+  public type Notification = {
+    receiver : Text;
+    amount : Nat;
+    time : Text;
   };
 
 };

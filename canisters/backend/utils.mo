@@ -98,5 +98,4 @@ module {
     Blob.fromArrayMut(Array.init(32, 0 : Nat8));
   };
 
-
 };

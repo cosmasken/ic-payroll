@@ -10,23 +10,25 @@
           Amount
         </label>
         <input
+        v-model="transferArgs.amount"
           type="text"
           class="w-full h-10 rounded-md border bg-transparent border-[#16151C] dark:border-white dark:bg-[#16151C] dark:text-white"
         />
       </div>
 
-      <div class="w-full space-y-2">
+      <!--div class="w-full space-y-2">
         <label class="text-sm text-[#16151C] dark:text-white font-semibold">
           Transaction Priority
         </label>
         <select
+        v-model="transferArgs.memo"
           class="w-full h-10 rounded-md border bg-transparent border-[#16151C] dark:border-white dark:bg-[#16151C] dark:text-white"
         >
           <option>End of Day</option>
           <option selected="">Immediately</option>
           <option>Pay Date</option>
         </select>
-      </div>
+      </div-->
     </div>
 
     <div class="space-y-2">
@@ -34,6 +36,7 @@
         Address Paste in or select from Address book
       </label>
       <input
+        v-model="transferArgs.address"
         type="text"
         class="w-full h-10 rounded-md border bg-transparent border-[#16151C] dark:border-white dark:bg-[#16151C] dark:text-white"
       />
@@ -44,6 +47,7 @@
         Description (Optional)
       </label>
       <input
+        v-model="transferArgs.memo"
         type="text"
         class="w-full h-10 rounded-md border bg-transparent border-[#16151C] dark:border-white dark:bg-[#16151C] dark:text-white"
       />
@@ -51,7 +55,7 @@
 
     <div>
       <button
-      @click="transfer()"
+     @click="transfer"
         type="button"
         class="inline-flex w-1/5 items-center gap-x-1.5 justify-between rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
@@ -84,11 +88,50 @@
 </template>
 <script setup>
 import { ref, watchEffect } from "vue";
-import { useledger } from "../store/useledger";
-const ledger = useledger();
-let res = ref("");
-
-const transfer = async () => {
-  res.value = await ledger.transfer();
+import { useAuthStore } from "../store/auth";
+const transferres = ref("");
+const isTransferring = ref(false);
+const getTime = () => {
+  const date = new Date();
+  const time = date.getTime();
+  return time;
 };
+
+const authStore = useAuthStore();
+let transferresponse = ref("");
+const transferArgs = {
+  address: "",
+  memo: "",
+  created_at: getTime(),
+  amount: "60",
+};
+
+
+    const transfer = async () => {
+isTransferring.value = true;
+      authStore.updateTranferArgs(transferArgs);
+      const address = authStore.transferArgs.address;
+      const amount = authStore.transferArgs.amount;
+      const memo = authStore.transferArgs.memo;
+      const created_at = authStore.transferArgs.created_at;
+      try{
+        const response = await authStore.whoamiActor.transferFromSubAccountToSubAccount(
+        address,
+        BigInt(Math.round(amount * 100_000_000)),
+      );
+      console.log(response);
+      transferresponse.value = response;
+      } catch (error) {
+    console.error('Error fetching data:', error);
+  } finally {
+    isTransferring.value = false;
+   
+  }
+
+      
+     
+     // return response;
+    };
+
+
 </script>

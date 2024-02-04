@@ -1,10 +1,8 @@
-type UserId = nat32;
 type User = 
  record {
    created_at: int;
    email: text;
    email_notifications: bool;
-   id: nat;
    name: text;
    phone: text;
    phone_notifications: bool;
@@ -16,18 +14,23 @@ type Result =
    err: text;
    ok: text;
  };
-type Response = 
+type Response_1 = 
  record {
    data: opt text;
    error_text: opt text;
    status: nat16;
    status_text: text;
  };
+type Response = 
+ record {
+   data: opt User;
+   error_text: opt text;
+   status: nat16;
+   status_text: text;
+ };
 type Backend = 
  service {
-   addemployer: (User) -> (principal);
-   create: (User) -> (UserId);
-   delete: (UserId) -> (bool);
+   deleteUser: (text) -> (Response_1);
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);
@@ -37,16 +40,17 @@ type Backend =
    getLogs: () -> (vec text) query;
    getTradingAddress: () -> (text);
    getTradingBalance: () -> (text);
-   getUser: (principal) -> (opt User) query;
-   getUsers: () -> (vec User) query;
-   read: (UserId) -> (opt User) query;
-   register: (nat, text, text, bool, text, bool, text, int) -> ();
-   setCourierApiKey: (text) -> (Response);
+   getUser: () -> (Response) query;
+   getUsersList: () -> (vec record {
+                              text;
+                              User;
+                            }) query;
+   setCourierApiKey: (text) -> (Response_1);
    transactionsLength: () -> (text) query;
    transferFromCanistertoSubAccount: () -> (Result);
    transferFromSubAccountToCanister: (nat) -> (Result);
    transferFromSubAccountToSubAccount: (text, nat) -> (Result);
-   update: (UserId, User) -> (bool);
+   updateUser: (User) -> (Response);
    userLength: () -> (text) query;
    whoami: () -> (principal);
  };

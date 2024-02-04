@@ -7,75 +7,69 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
 import { useAuthStore } from "../store/auth";
 const authStore = useAuthStore();
 let response = ref(0);
+let userlength = ref(0);
 let users = ref([]);
+
 watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getUsers();
- // const goodlist = await fromList(res);
- //parse array of key value pairs into array of objects
-  users.value = await res;
-  console.log("no i on list is  " + users.value[0]);
+  try {
+    const res = await authStore.whoamiActor?.getUsersList();
+    let usersArray = [];
+    console.log("backend array:", usersArray);
+
+    // Loop through the result and create an array of objects
+    for (let i = 0; i < res.length; i++) {
+      const [userId, userData] = res[i];
+      usersArray.push({ userId, ...userData });
+    }
+
+    // Assign the array of objects to the users ref
+    users.value = usersArray;
+
+    //get length
+    userlength.value = usersArray.length;
+
+    console.log("Users array:", usersArray);
+  } catch (error) {
+    console.error("Error fetching users list:", error);
+  }
 });
+
 const isEmpty = ref(true);
 
 
 const gotoaddemployee = () => {
   router.push("/home/add-employee");
 };
-const employees = [
-  {
-    name: "Lindsay Walton",
-    designation: "Front-end Developer",
-    department: "Frontend",
-    id: "23",
-    type: "office",
-    status: "Permannet",
-  },
-  // More people...
-  {
-    name: "Lindsay Walton",
-    designation: "Front-end Developer",
-    department: "Frontend",
-    id: "45",
-    type: "office",
-    status: "Permannet",
-  },
-  {
-    name: "Lindsay Walton",
-    designation: "Front-end Developer",
-    department: "Frontend",
-    id: "7567",
-    type: "office",
-    status: "Permannet",
-  },
-  {
-    name: "Lindsay Walton",
-    designation: "Front-end Developer",
-    department: "Frontend",
-    id: "786",
-    type: "office",
-    status: "Permannet",
-  },
-  {
-    name: "Lindsay Walton",
-    designation: "Front-end Developer",
-    department: "Frontend",
-    id: "243",
-    type: "office",
-    status: "Permannet",
-  },
-  {
-    name: "Lindsay Walton",
-    designation: "Front-end Developer",
-    department: "Frontend",
-    id: "687",
-    type: "office",
-    status: "Permannet",
-  },
-];
+
+async function deleteUser(wallet){
+
+try {
+  const res = await authStore.whoamiActor?.deleteUser(wallet);
+  console.log("User deleted:", res);
+} catch (error) {
+  console.error("Error deleting user:", error);
+}
+
+};
 //import data by pointing users to static employee data for now
 async function importdata()  {
-  const res = await authStore.whoamiActor?.getUsers();
-  users.value = res;
+  try {
+    const res = await authStore.whoamiActor?.getUsersList();
+    let usersArray = [];
+
+    // Loop through the result and create an array of objects
+    for (let i = 0; i < res.length; i++) {
+      const [userId, userData] = res[i];
+      usersArray.push({ userId, ...userData });
+    }
+
+    // Assign the array of objects to the users ref
+    users.value = usersArray;
+
+    console.log("Users array:", usersArray);
+  } catch (error) {
+    console.error("Error fetching users list:", error);
+  }
 };
 
 
@@ -124,12 +118,12 @@ async function importdata()  {
                 >
                   Name
                 </th>
-                <th
+                <!--th
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
                   ID
-                </th>
+                </th-->
                 <th
                   scope="col"
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
@@ -153,7 +147,7 @@ async function importdata()  {
                   class="pr-[10px] py-[10px] text-left text-base text-accentgray font-light"
                 >
                   Wallet
-                </th>
+                </th>            
 
                 <th
                   scope="col"
@@ -170,11 +164,11 @@ async function importdata()  {
                 >
                   {{ person.name }}
                 </td>
-                <td
+                <!--td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
                   {{ person.id }}
-                </td>
+                </td-->
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
@@ -195,6 +189,7 @@ async function importdata()  {
                 >
                   {{ person.wallet }}
                 </td>
+                
                 <td
                   class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
                 >
@@ -205,7 +200,9 @@ async function importdata()  {
                     <div class="cursor-pointer">
                       <img src="../assets/edit.png" alt="" class="w-6 h-6" />
                     </div>
-                    <div class="cursor-pointer">
+                    <div
+                    @click="deleteUser(person.wallet)"
+                     class="cursor-pointer">
                       <img src="../assets/trash.png" alt="" class="w-6 h-6" />
                     </div>
                   </div>
@@ -222,7 +219,7 @@ async function importdata()  {
         <div
           class="rounded-[10px] border border-bordercolor flex flex-row h-[46px] w-[76px] items-center justify-around"
         >
-          <p class="text-accentgray text-sm leading-[22px] font-light">10</p>
+          <p class="text-accentgray text-sm leading-[22px] font-light">{{ userlength }}</p>
           <img src="../assets/direction-down 01.png" alt="" class="w-6 h-6" />
         </div>
       </div>
@@ -237,11 +234,11 @@ async function importdata()  {
           {{ " " }}
           to
           {{ " " }}
-          <span class="font-medium">10</span>
+          <span class="font-medium">{{ userlength }}</span>
           {{ " " }}
           out of
           {{ " " }}
-          <span class="font-medium">97</span>
+          <span class="font-medium">{{ userlength }}</span>
           {{ " " }}
           Records
         </p>
