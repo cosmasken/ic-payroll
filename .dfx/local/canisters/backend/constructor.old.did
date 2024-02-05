@@ -34,7 +34,7 @@ type Account =
    subaccount: opt Subaccount;
  };
 service : {
-  deleteUser: () -> (Response_1);
+  deleteUser: (text) -> (Response_1);
   getAddress: () -> (text);
   getCanisterAddress: () -> (text);
   getCanisterBalance: () -> (text);

@@ -326,7 +326,7 @@ const toggleDarkMode = () => {
       <div class="w-full sticky flex flex-row justify-between">
         <div class="flex flex-col">
           <div v-if="fundingaddress.length === 0">
-            <SkeletonLoader class="w-16 h-5" />
+            <SkeletonLoader class="w-36 h-5" />
             </div>
             <div v-else>
               <p
