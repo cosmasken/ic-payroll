@@ -85,10 +85,6 @@ service : {
   getLogs: () -> (vec text) query;
   getTradingAddress: () -> (text);
   getTradingBalance: () -> (text);
-  getTransactionList: () -> (vec record {
-                                   text;
-                                   Transaction;
-                                 }) query;
   getUser: () -> (Response) query;
   getUsersList: () -> (vec record {
                              text;

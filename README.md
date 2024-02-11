@@ -53,12 +53,14 @@ The frontend interacts with the following IC canisters:
 - [x] Install the [IC SDK](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx).
 - [x] Install [Node.js](https://nodejs.org/en/).
 
-### Use the package,,json scripts to  automate the whole process or run the subsequent commands manually
+### Use the package,,json scripts to  automate the whole process 
 ```bash
-npm run start
+npm run start && npm run dev
 ```
 
-### Step 1: Start a local instance of the Internet Computer
+### This will setup the project and get it running. you can then login and start transacting
+
+### OR Step 1: Start a local instance of the Internet Computer
 
 ```bash
 dfx start --clean --background

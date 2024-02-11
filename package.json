@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite",
     "deploy:identity": "dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy",
-    "start": "npm run replica && npm run private-dids && npm run deploy && npm run deploy:identity && npm install",
+    "start": "npm install --force && npm run replica && npm run private-dids && npm run deploy && npm run deploy:identity",
     "replica": "dfx stop && rm -rf .dfx && dfx start --clean --background && dfx canister create ckbtc_ledger && dfx canister create backend",
     "deploy": "npm run deploy:ledger && npm run deploy:index &&   npm run deploy:backend && npm run deploy:assets && dfx generate backend",
     "public-dids": "perl -i -pe 's|icrc1\\.did|icrc1\\.public\\.did|g' dfx.json",
