@@ -46,18 +46,20 @@ export const useAuthStore = defineStore("auth", {
   state: () => {
     return {
       isReady: false,
-      isIndivual: false,
       isAuthenticated: null,
       authClient: null,
       identity: null,
       whoamiActor: null,
-      accountAddress: null,
-      currentBalanceBaseUnits: null,
-      createdCount: null,
       payments: null,
       registrationData: {},
       transferArgs: {},
-      userInfo: String,
+      tradingbalance: null,
+      fundingbalance: null,
+      fundingaddress: null,
+      canisteraddress: null,
+      canisterbalance: null,
+      isConfigured: null,
+      userInfo: null,
     };
   },
   actions: {
@@ -72,9 +74,11 @@ export const useAuthStore = defineStore("auth", {
       this.identity = identity;
       this.whoamiActor = whoamiActor;
       this.isReady = true;
+      this.isConfigured = false;
     },
     async login() {
       const authClient = toRaw(this.authClient);
+
       authClient.login({
         ...defaultOptions.loginOptions,
         maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
@@ -86,9 +90,32 @@ export const useAuthStore = defineStore("auth", {
           this.whoamiActor = this.identity
             ? actorFromIdentity(this.identity)
             : null;
-          // router.push("/home/dashboard")
+
+          //  this.isConfigured = await this.whoamiActor.userExists();
         },
       });
+    },
+
+    async getBalance() {
+      // const whoamiActor = toRaw(this.whoamiActor);
+      const balance = await whoamiActor.getTradingBalance();
+      this.balance = await balance;
+    },
+
+    async refresh() {
+      //const whoamiActor = toRaw(this.whoamiActor);
+      const fundingbalance = await this.whoamiActor.getFundingBalance();
+      const tradingbalance = await this.whoamiActor.getTradingBalance();
+      const fundingaddress = await this.whoamiActor.getFundingAddress();
+      const canisteraddress = await this.whoamiActor.getCanisterAddress();
+      const canisterbalance = await this.whoamiActor.getCanisterBalance();
+      const config = await this.whoamiActor.userExists();
+      this.fundingbalance = await fundingbalance;
+      this.tradingbalance = await tradingbalance;
+      this.fundingaddress = await fundingaddress;
+      this.canisteraddress = await canisteraddress;
+      this.canisterbalance = await canisterbalance;
+      this.isConfigured = await config;
     },
     async logout() {
       const authClient = toRaw(this.authClient);
@@ -116,20 +143,27 @@ export const useAuthStore = defineStore("auth", {
     setUserInfo(userInfo) {
       this.userInfo = userInfo;
     },
-    async registration(firstname, lastname, email, phone, address) {
+    async registration(firstname, lastname, email, phone) {
       const response = await this.whoamiActor.updateUser({
         name: firstname + " " + lastname,
-        email: email,
-        email_notifications: false,
-        phone: phone,
-        phone_notifications: false,
-        wallet: address,
-        created_at: getTime(),
+        email_address: email,
+        email_notifications: true,
+        phone_number: phone,
+        phone_notifications: true,
       });
+      if (response.status === 200) {
+        //  this.isConfigured = true;
+        console.log("is user registered");
+        //  console.log(this.whoamiActor.userExists());
+        this.isConfigured = await this.whoamiActor.userExists();
+      }
 
       console.log(response);
     },
-
-
+  },
+  getters: {
+    getConfiguration(state) {
+      return state.isConfigured;
+    },
   },
 });

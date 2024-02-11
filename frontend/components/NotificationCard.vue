@@ -12,10 +12,10 @@ defineProps({
 <template>
   <div class="flex flex-row justify-between py-5">
     <div class="flex flex-col">
-      <p class="text-[#16151C] dark:text-white text-base  font-semibold">
+      <p class="text-[#16151C] dark:text-white text-base font-semibold">
         {{ heading }}
       </p>
-      <p class="text-[#A2A1A8]  text-base  font-semibold">
+      <p class="text-[#A2A1A8] text-base font-semibold">
         {{ subtitle }}
       </p>
     </div>

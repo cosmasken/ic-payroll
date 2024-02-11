@@ -68,7 +68,6 @@
 <script setup>
 import { ref, watchEffect } from "vue";
 import { useAuthStore } from "../store/auth";
-import { useCompanyStore } from "../store/company";
 import UserType from "./onboarding/UserType.vue";
 
 import router from "../router";
@@ -79,7 +78,6 @@ const authStore = useAuthStore();
 let response = ref("");
 
 const balance = ref("");
-const paymentres = ref("");
 
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.whoami();
@@ -91,30 +89,8 @@ watchEffect(async () => {
   balance.value = await res;
 });
 
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.makeTransfer(
-    "inhle-3bt2j-k3bn6-kp5my-33r3q-lpe4j-s4c57-fpzvm-up5rx-smpre-5qe",
-    500
-  );
-  paymentres.value = await res;
-});
-
 function gotoDashboard() {
   router.push("/home/dashboard");
-}
-
-// -> logs 0
-
-const storeSetup = companyStore.isInitialized;
-function sendMulla() {
-  authStore.whoamiActor
-    ?.makeTransfer(
-      "inhle-3bt2j-k3bn6-kp5my-33r3q-lpe4j-s4c57-fpzvm-up5rx-smpre-5qe",
-      500
-    )
-    .then((res) => {
-      response.value = res;
-    });
 }
 </script>
 

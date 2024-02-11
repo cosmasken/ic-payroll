@@ -1,5 +1,5 @@
 {
-  "replica_rev": "91bf38ff3cb927cb94027d9da513cd15f91a5b04",
+  "replica_rev": "044cfd5147fc97d7e5a214966941b6580c325d72",
   "type": "replica",
   "config": {
     "http_handler": {
@@ -22,7 +22,7 @@
     },
     "canister_http_adapter": {
       "enabled": true,
-      "socket_path": "/tmp/ic-https-outcalls-adapter-socket.2927.1706864562"
+      "socket_path": "/tmp/ic-https-outcalls-adapter-socket.16405.1707643609"
     },
     "log_level": "error",
     "artificial_delay": 600,

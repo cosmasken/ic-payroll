@@ -40,4 +40,4 @@ export const createActor = (canisterId, options = {}) => {
   });
 };
 
-export const ckbtc_ledger = createActor(canisterId);
+export const ckbtc_ledger = canisterId ? createActor(canisterId) : undefined;

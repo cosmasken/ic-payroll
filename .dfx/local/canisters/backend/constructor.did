@@ -1,12 +1,16 @@
 type User = 
  record {
-   created_at: int;
-   email: text;
+   email_address: text;
    email_notifications: bool;
    name: text;
-   phone: text;
    phone_notifications: bool;
-   wallet: text;
+   phone_number: text;
+ };
+type Transaction = 
+ record {
+   amount: text;
+   from: text;
+   to: text;
  };
 type Subaccount = blob;
 type Result = 
@@ -14,9 +18,16 @@ type Result =
    err: text;
    ok: text;
  };
-type Response_1 = 
+type Response_2 = 
  record {
    data: opt text;
+   error_text: opt text;
+   status: nat16;
+   status_text: text;
+ };
+type Response_1 = 
+ record {
+   data: opt Transaction;
    error_text: opt text;
    status: nat16;
    status_text: text;
@@ -28,31 +39,69 @@ type Response =
    status: nat16;
    status_text: text;
  };
+type GetAccountIdentifierSuccess = record {
+                                     accountIdentifier: AccountIdentifier;};
+type GetAccountIdentifierResult = 
+ variant {
+   err: GetAccountIdentifierErr;
+   ok: GetAccountIdentifierSuccess;
+ };
+type GetAccountIdentifierErr = record {message: opt text;};
+type GetAccountIdentifierArgs = record {"principal": principal;};
 type Backend = 
  service {
-   deleteUser: (text) -> (Response_1);
+   accountIdentifierToBlob: (AccountIdentifier) ->
+    (AccountIdentifierToBlobResult);
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);
    getFundingAddress: () -> (text);
    getFundingBalance: () -> (text);
    getInvoice: () -> (Account);
+   /// * Get latest log items. Log output is capped at 100 items.
    getLogs: () -> (vec text) query;
    getTradingAddress: () -> (text);
    getTradingBalance: () -> (text);
+   /// * High-Level API
+   /// *  Get the merchant's information
    getUser: () -> (Response) query;
    getUsersList: () -> (vec record {
                               text;
                               User;
                             }) query;
-   setCourierApiKey: (text) -> (Response_1);
-   transactionsLength: () -> (text) query;
+   get_account_identifier: (GetAccountIdentifierArgs) ->
+    (GetAccountIdentifierResult) query;
+   /// * Set the courier API key. Only the owner can set the courier API key.
+   setCourierApiKey: (text) -> (Response_2);
    transferFromCanistertoSubAccount: () -> (Result);
    transferFromSubAccountToCanister: (nat) -> (Result);
-   transferFromSubAccountToSubAccount: (text, nat) -> (Result);
+   transferFromSubAccountToSubAccount: (text, nat) -> (Response_1);
+   /// * Update the merchant's information
    updateUser: (User) -> (Response);
+   /// *  Check if user exists and return Bool
+   userExists: () -> (bool) query;
    userLength: () -> (text) query;
    whoami: () -> (principal);
+ };
+type AccountIdentifierToBlobSuccess = blob;
+type AccountIdentifierToBlobResult = 
+ variant {
+   err: AccountIdentifierToBlobErr;
+   ok: AccountIdentifierToBlobSuccess;
+ };
+type AccountIdentifierToBlobErr = 
+ record {
+   kind: variant {
+           InvalidAccountIdentifier;
+           Other;
+         };
+   message: opt text;
+ };
+type AccountIdentifier = 
+ variant {
+   "blob": blob;
+   "principal": principal;
+   "text": text;
  };
 type Account = 
  record {

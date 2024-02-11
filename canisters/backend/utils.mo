@@ -10,8 +10,12 @@ import Prelude "mo:base/Prelude";
 import Time "mo:base/Time";
 import Sha256 "mo:sha2/Sha256";
 import ICRC1_AccountConverter "./icrc1-account-converter";
+import Hex "./Hex";
+import Account "./Account";
 
 module {
+
+  type AccountIdentifier = Types.AccountIdentifier;
 
   /// Convert Principal to ICRC1.Subaccount
   // from https://github.com/research-ag/motoko-lib/blob/2772d029c1c5087c2f57b022c84882f2ac16b79d/src/TokenHandler.mo#L51
@@ -44,15 +48,6 @@ module {
       subaccount = ?toSubaccount(caller);
     };
   };
-
-  // public func createInvoice(from:Principal, to: Principal, amount : Nat, memo:Text) : Types.Invoice {
-  //   {
-  //     from;
-  //     to;
-  //     amount;
-  //     memo;
-  //   };
-  // };
 
   /** Decodes an ICRC1 account from text if valid, otherwise returns #InvalidAddressText. */
   func icrc1AccountFromText(textAddress : Text) : Result.Result<Types.Account, ()> {
@@ -96,6 +91,111 @@ module {
 
   public func defaultSubaccount() : Types.Subaccount {
     Blob.fromArrayMut(Array.init(32, 0 : Nat8));
+  };
+
+
+   /**
+    * args : { accountIdentifier : AccountIdentifier, canisterId  : ?Principal }
+    * Takes an account identifier and returns a Blob
+    *
+    * Canister ID is required only for Principal, and will return an account identifier using that principal as a subaccount for the provided canisterId
+    */
+  public func accountIdentifierToBlob (args : Types.AccountIdentifierToBlobArgs) : Types.AccountIdentifierToBlobResult {
+    let accountIdentifier = args.accountIdentifier;
+    let canisterId = args.canisterId;
+    let err = {
+      kind = #InvalidAccountIdentifier;
+      message = ?"Invalid account identifier";
+    };
+    switch (accountIdentifier) {
+      case(#text(identifier)){
+        switch (Hex.decode(identifier)) {
+          case(#ok v){
+            let blob = Blob.fromArray(v);
+            if(Account.validateAccountIdentifier(blob)){
+              #ok(blob);
+            } else {
+              #err(err);
+            }
+          };
+          case(#err _){
+            #err(err);
+          };
+        };
+      };
+      case(#principal principal){
+        switch(canisterId){
+          case (null){
+            #err({
+              kind = #Other;
+              message = ?"Canister Id is required for account identifiers of type principal";
+            })
+          };
+          case (? id){
+            let identifier = Account.accountIdentifier(id, Account.principalToSubaccount(principal));
+            if(Account.validateAccountIdentifier(identifier)){
+              #ok(identifier);
+            } else {
+              #err(err);
+            }
+          };
+        }
+      };
+      case(#blob(identifier)){
+        if(Account.validateAccountIdentifier(identifier)){
+          #ok(identifier);
+        } else {
+          #err(err);
+        }
+      };
+    };
+  };
+
+    /**
+    * args : { accountIdentifier : AccountIdentifier, canisterId  : ?Principal }
+    * Takes an account identifier and returns Hex-encoded Text
+    *
+    * Canister ID is required only for Principal, and will return an account identifier using that principal as a subaccount for the provided canisterId
+    */
+  public func accountIdentifierToText (args : Types.AccountIdentifierToTextArgs) : Types.AccountIdentifierToTextResult {
+    let accountIdentifier = args.accountIdentifier;
+    let canisterId = args.canisterId;
+    switch (accountIdentifier) {
+      case(#text(identifier)){
+        #ok(identifier);
+      };
+      case(#principal(identifier)){
+        let blobResult = accountIdentifierToBlob(args);
+        switch(blobResult){
+          case(#ok(blob)){
+            #ok(Hex.encode(Blob.toArray(blob)));
+          };
+          case(#err(err)){
+            #err(err);
+          };
+        };
+      };
+      case(#blob(identifier)){
+        let blobResult = accountIdentifierToBlob(args);
+        switch(blobResult){
+          case(#ok(blob)){
+            #ok(Hex.encode(Blob.toArray(blob)));
+          };
+          case(#err(err)){
+            #err(err);
+          };
+        };
+      };
+    };
+  };
+
+   type DefaultAccountArgs = {
+    // Hex-encoded AccountIdentifier
+    canisterId : Principal;
+    principal : Principal;
+  };
+  public func getDefaultAccount(args : DefaultAccountArgs) : Blob {
+    Account.accountIdentifier(args.canisterId, Account.principalToSubaccount(args.principal));
   };
 
 };

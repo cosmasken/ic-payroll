@@ -21,16 +21,12 @@ import Home from "./Home.vue";
 import SignIn from "./components/auth/SignIn.vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "./store/auth";
-import { useledger } from "./store/useledger";
-
-const ledgerStore = useledger();
 
 const authStore = useAuthStore();
 
-const { isReady, isAuthenticated } = storeToRefs(authStore);
+const { isReady, isAuthenticated, isConfigured } = storeToRefs(authStore);
 if (isReady.value === false) {
   authStore.init();
-  ledgerStore.init();
 } else {
   router.push("/home/dashboard");
 }

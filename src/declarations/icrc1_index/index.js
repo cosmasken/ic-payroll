@@ -40,4 +40,4 @@ export const createActor = (canisterId, options = {}) => {
   });
 };
 
-export const icrc1_index = createActor(canisterId);
+export const icrc1_index = canisterId ? createActor(canisterId) : undefined;

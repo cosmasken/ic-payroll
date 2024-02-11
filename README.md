@@ -53,11 +53,19 @@ The frontend interacts with the following IC canisters:
 - [x] Install the [IC SDK](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx).
 - [x] Install [Node.js](https://nodejs.org/en/).
 
+### Use the package,,json scripts to  automate the whole process or run the subsequent commands manually
+```bash
+npm run start
+```
+
 ### Step 1: Start a local instance of the Internet Computer
 
 ```bash
 dfx start --clean --background
 ```
+
+
+
 ### Step 2: Deploy the Internet Identity canister
 
 Integration with the [Internet Identity](https://internetcomputer.org/internet-identity/) allows store owners to securely setup and manage their store. The Internet Identity canister is already deployed on the IC mainnet. For local development, you need to deploy it to your local instance of the IC.
@@ -136,7 +144,7 @@ The backend canister manages the user configuration and sends notifications when
 The `--argument '(0)'` argument is used to initialize the canister with `startBlock` set to 0. This is used to tell the canister to start monitoring the ledger from block 0. When deploying to the IC mainnet, this should be set to the current block height to prevent the canister from processing old transactions.
 
 ```bash
-dfx deploy --network local icpos --argument '(0)'
+dfx deploy --network local backend --argument '(0)'
 ```
 
 ### Step 6: Configure the backend canister

@@ -1,6 +1,22 @@
 type Account = record { owner : principal; subaccount : opt Subaccount };
+type AccountIdentifier = variant {
+  "principal" : principal;
+  "blob" : vec nat8;
+  "text" : text;
+};
+type AccountIdentifierToBlobErr = record {
+  kind : variant { InvalidAccountIdentifier; Other };
+  message : opt text;
+};
+type AccountIdentifierToBlobResult = variant {
+  ok : AccountIdentifierToBlobSuccess;
+  err : AccountIdentifierToBlobErr;
+};
+type AccountIdentifierToBlobSuccess = vec nat8;
 type Backend = service {
-  deleteUser : (text) -> (Response_1);
+  accountIdentifierToBlob : (AccountIdentifier) -> (
+      AccountIdentifierToBlobResult,
+    );
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
@@ -12,14 +28,26 @@ type Backend = service {
   getTradingBalance : () -> (text);
   getUser : () -> (Response) query;
   getUsersList : () -> (vec record { text; User }) query;
-  setCourierApiKey : (text) -> (Response_1);
-  transactionsLength : () -> (text) query;
+  get_account_identifier : (GetAccountIdentifierArgs) -> (
+      GetAccountIdentifierResult,
+    ) query;
+  setCourierApiKey : (text) -> (Response_2);
   transferFromCanistertoSubAccount : () -> (Result);
   transferFromSubAccountToCanister : (nat) -> (Result);
-  transferFromSubAccountToSubAccount : (text, nat) -> (Result);
+  transferFromSubAccountToSubAccount : (text, nat) -> (Response_1);
   updateUser : (User) -> (Response);
+  userExists : () -> (bool) query;
   userLength : () -> (text) query;
   whoami : () -> (principal);
+};
+type GetAccountIdentifierArgs = record { "principal" : principal };
+type GetAccountIdentifierErr = record { message : opt text };
+type GetAccountIdentifierResult = variant {
+  ok : GetAccountIdentifierSuccess;
+  err : GetAccountIdentifierErr;
+};
+type GetAccountIdentifierSuccess = record {
+  accountIdentifier : AccountIdentifier;
 };
 type Response = record {
   status : nat16;
@@ -29,19 +57,24 @@ type Response = record {
 };
 type Response_1 = record {
   status : nat16;
+  data : opt Transaction;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_2 = record {
+  status : nat16;
   data : opt text;
   status_text : text;
   error_text : opt text;
 };
 type Result = variant { ok : text; err : text };
 type Subaccount = vec nat8;
+type Transaction = record { to : text; from : text; amount : text };
 type User = record {
+  email_address : text;
   phone_notifications : bool;
   name : text;
   email_notifications : bool;
-  created_at : int;
-  email : text;
-  wallet : text;
-  phone : text;
+  phone_number : text;
 };
 service : Backend

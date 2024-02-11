@@ -8,7 +8,7 @@ import Blob "mo:base/Blob";
 import Char "mo:base/Char";
 import CkBtcLedger "canister:ckbtc_ledger";
 import Types "./types";
-import { toAccount; toSubaccount;defaultSubaccount } "./utils";
+import { toAccount; toSubaccount; defaultSubaccount } "./utils";
 import Error "mo:base/Error";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
@@ -25,48 +25,52 @@ import Cycles "mo:base/ExperimentalCycles";
 import Buffer "mo:base/Buffer";
 import Nat8 "mo:base/Nat8";
 import Iter "mo:base/Iter";
-import SHA224    "./SHA224";
-import CRC32     "./CRC32";
-
-
+import SHA224 "./SHA224";
+import CRC32 "./CRC32";
+import Hash "mo:base/Hash";
+import Hex "./Hex";
 
 shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
+  // #region Types
+  type Account = Types.Account;
+  type AccountIdentifier = Types.AccountIdentifier;
+  type Transaction = Types.Transaction;
+  type User = Types.User;
+  type Notification = Types.Notification;
+   public type TransactionId = Nat32;
+// #endregion
+
   let addressConverter_ = Utils.addressConverter;
- // The type of a user identifier.
-  public type UserId = Nat32;
-  public type TransactionId = Nat32;
+// The next available transaction identifier.
   private stable var latestTransactionIndex : Nat = 0;
   private stable var courierApiKey : Text = "";
   private var logData = Buffer.Buffer<Text>(0);
-  private stable var next : UserId = 0;
+  // The user data store. The key is the user's principal ID.
+ private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
 
-public shared ({ caller }) func getAddress() : async Text {
-  let acc : Types.Account = {
-    owner = Principal.fromActor(this);
-    subaccount = ?toSubaccount(caller);
+
+  public shared ({ caller }) func getAddress() : async Text {
+    let acc : Types.Account = {
+      owner = Principal.fromActor(this);
+      subaccount = ?toSubaccount(caller);
+    };
+    let address = addressConverter_.toText(acc);
+    Debug.print("address:  is  " # debug_show (address));
+    return address;
   };
-  let address = addressConverter_.toText(acc);
-  Debug.print("address:  is  " # debug_show (address));
-  return address;
-};
 
 
-  // The user data store.
-  //private stable var users : Trie.Trie<UserId, Types.User> = Trie.empty();
-  private stable var userStore : Trie.Trie<Text, Types.User> = Trie.empty();
-  private stable var transactions : Trie.Trie<Text, Types.Transaction> = Trie.empty();
 
- // private stable var userlist : TrieMap.TrieMap<Principal, Types.User>(1, Principal.equal, Principal.hash);
 
   /**
    * High-Level API
    */
 
-  /**
+     /**
     *  Get the merchant's information
     */
-  public query (context) func getUser() : async Types.Response<Types.User> {
+  public query (context) func getUser() : async Types.Response<User> {
     let caller : Principal = context.caller;
 
     switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
@@ -89,15 +93,35 @@ public shared ({ caller }) func getAddress() : async Text {
     };
   };
 
- /**
+
+     /**
+    *  Check if user exists and return Bool
+    */
+  public query (context) func userExists() : async Bool {
+    let caller : Principal = context.caller;
+
+    switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
+      case (?user) {
+        return true;
+      };
+      case null {
+        return false;
+      };
+    };
+  };
+
+
+
+
+  /**
     * Update the merchant's information
     */
-  public shared (context) func updateUser(user : Types.User) : async Types.Response<Types.User> {
+  public shared (context) func updateUser(user : User) : async Types.Response<User> {
 
     let caller : Principal = context.caller;
     userStore := Trie.replace(
       userStore,
-      userKey(user.wallet),
+      userKey(Principal.toText(caller)),
       Text.equal,
       ?user,
     ).0;
@@ -109,30 +133,8 @@ public shared ({ caller }) func getAddress() : async Text {
     };
   };
 
- /**
-    * Delete the users's information
-    */
-  public shared (context) func deleteUser(wallet : Text) : async Types.Response<Text> {
-   // let caller : Principal = context.caller;
-       let result = Trie.find(userStore, userKey(wallet), Text.equal);
-    let exists = Option.isSome(result);
-    if (exists) {
-      userStore := Trie.replace(
-        userStore,
-        userKey(wallet),
-        Text.equal,
-        null,
-      ).0;
-    };
-    {
-      status = 200;
-      status_text = "OK";
-      data = ?"User deleted";
-      error_text = null;
-    };
-    
-   
-  };
+
+
 
   //no of users
   public query func userLength() : async Text {
@@ -140,28 +142,23 @@ public shared ({ caller }) func getAddress() : async Text {
     return Nat.toText(size);
   };
 
-  public query func getUsersList() : async [(Text, Types.User)] {
-    let usersArray : [(Text, Types.User)] = Iter.toArray(Trie.iter(userStore));
-      Debug.print(debug_show(usersArray));
+  public query func getUsersList() : async [(Text, User)] {
+    let usersArray : [(Text, User)] = Iter.toArray(Trie.iter(userStore));
+    Debug.print(debug_show (usersArray));
     return usersArray;
   };
 
-  //no of transactions
-  public query func transactionsLength() : async Text {
-    var size = Trie.size(transactions);
-    return Nat.toText(size);
-  };
+
 
   public shared ({ caller }) func whoami() : async Principal {
     return caller;
   };
 
   public shared ({ caller }) func getInvoice() : async Types.Account {
-     Debug.print(debug_show(toAccount({ caller; canister = Principal.fromActor(this) })));
+    Debug.print(debug_show (toAccount({ caller; canister = Principal.fromActor(this) })));
     return toAccount({ caller; canister = Principal.fromActor(this) });
 
   };
-
 
   public shared ({ caller }) func getFundingBalance() : async Text {
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -177,10 +174,10 @@ public shared ({ caller }) func getAddress() : async Text {
 
   public shared ({ caller }) func getTradingBalance() : async Text {
     let balance = await CkBtcLedger.icrc1_balance_of(
-    {
+      {
         owner = Principal.fromActor(this);
         subaccount = ?toSubaccount(caller);
-      },
+      }
     );
     return Nat.toText(balance);
   };
@@ -225,7 +222,7 @@ public shared ({ caller }) func getAddress() : async Text {
 
   //transfer funds from the default canister subaccount to the user subaccount
   //Works
-  public shared ({ caller }) func transferFromCanistertoSubAccount() : async Result.Result<Text, Text> {
+   public shared ({ caller }) func transferFromCanistertoSubAccount() : async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -274,8 +271,8 @@ public shared ({ caller }) func getAddress() : async Text {
 
   //transfer from one subaccount to another
   //works
-  public shared ({ caller }) func transferFromSubAccountToSubAccount(receiver : Text, amount : Nat) : async Result.Result<Text, Text> {
-
+  public shared ({ caller }) func transferFromSubAccountToSubAccount(receiver : Text, amount : Nat) : async Types.Response<Transaction> {
+   
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
       {
@@ -284,11 +281,17 @@ public shared ({ caller }) func getAddress() : async Text {
       }
     );
 
-    if (balance < 100) {
-      return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
-    };
+    let fee = 10;
+    let total = amount + fee;
 
-    Debug.print(" su acc balance:  is  " # debug_show (balance));
+    if (balance < total) {
+      return {
+        status = 403;
+        status_text = "Forbidden";
+        data = null;
+        error_text = ?"Not enough funds available in the Account. You need 10 Sats for the transaction fee.";
+      };
+    };
 
     try {
       // if enough funds were sent, move them to the canisters default account
@@ -306,21 +309,65 @@ public shared ({ caller }) func getAddress() : async Text {
         }
       );
 
-      Debug.print("fom subaccount transferresult:  is  " # debug_show (transferResult));
-
       switch (transferResult) {
         case (#Err(transferError)) {
-          return #err("Couldn't transfer funds to default account:\n" # debug_show (transferError));
+           return {
+        status = 405;
+        status_text = "Forbidden";
+        data = null;
+        error_text = ?"Couldn't transfer funds to account:\n";
+      };
+
+        //  return #err("Couldn't transfer funds to account:\n" # debug_show (transferError));
         };
         case (_) {};
       };
     } catch (error : Error) {
-      return #err("Reject message: " # Error.message(error));
+        return {
+        status = 406;
+        status_text = "Rejected";
+        data = null;
+        error_text = ?"Reject message: ";
+      };
+    //  return #err("Reject message: " # Error.message(error));
     };
 
-    return #ok("🥠: " # "success");
-  };
 
+
+let transaction : Transaction = {
+      from = Principal.toText(caller);
+      to= receiver;
+      amount= Nat.toText(amount);
+    };
+
+    //  let data = await  saveTransaction(transaction);
+
+    //  if (data.status == 200) {
+    //       Debug.print("transaction:  is successful ");
+    //    return {
+    //     status = 200;
+    //     status_text = "Transfer to " # receiver # " is successful";
+    //     data = ?transaction;
+    //     error_text = ?"";
+    //   };
+    //  }else{
+    //   Debug.print("transaction:  is successful ");
+    //    return {
+    //     status = 405;
+    //     status_text = "Forbidden";
+    //     data = null;
+    //     error_text = ?"Couldn't transfer funds to account:\n";
+    //   };
+    //  };
+
+           return {
+        status = 200;
+        status_text = "Transfer to " # receiver # " is successful";
+        data = ?transaction;
+        error_text = ?"";
+      };
+
+  };
 
   //transfer from account to canister subaccount
   //works
@@ -338,8 +385,6 @@ public shared ({ caller }) func getAddress() : async Text {
       return #err("Not enough funds available in Personal  Account. Make sure you send at least 100 ckSats.");
     };
 
-    Debug.print("Personal Account Balance:  is  " # debug_show (balance));
-
     try {
       // if enough funds were sent, move them to the canisters default account
       let transferResult = await CkBtcLedger.icrc1_transfer(
@@ -356,8 +401,6 @@ public shared ({ caller }) func getAddress() : async Text {
         }
       );
 
-      Debug.print("fom personal account to trading account balance is :  " # debug_show (transferResult));
-
       switch (transferResult) {
         case (#Err(transferError)) {
           return #err("Couldn't transfer funds to trading account:\n" # debug_show (transferError));
@@ -368,7 +411,7 @@ public shared ({ caller }) func getAddress() : async Text {
       return #err("Reject message: " # Error.message(error));
     };
 
-    return #ok("🥠: " # "success");
+    return #ok("Transfer to trading account is " # "successful");
   };
 
   /**
@@ -376,16 +419,17 @@ public shared ({ caller }) func getAddress() : async Text {
    */
 
   // Test two user identifiers for equality.
-  private func eq(x : UserId, y : UserId) : Bool {
+  private func eq(x : Nat32, y : Nat32) : Bool {
     return x == y;
   };
 
-   /**
+  /**
     * Generate a Trie key based on a merchant's principal ID
     */
   private func userKey(x : Text) : Trie.Key<Text> {
     return { hash = Text.hash(x); key = x };
   };
+
 
   /**
     * Set the courier API key. Only the owner can set the courier API key.
@@ -439,7 +483,36 @@ public shared ({ caller }) func getAddress() : async Text {
     await notify();
   };
 
-  /**
+  // #region get_account_identifier
+  /*
+    * Get Caller Identifier
+    * Allows a caller to the accountIdentifier for a given principal
+    * for a specific token.
+    */
+  public query func get_account_identifier (args : Types.GetAccountIdentifierArgs) : async Types.GetAccountIdentifierResult {
+    let principal = args.principal;
+    let canisterId = Principal.fromActor(this);
+   
+        let subaccount = Utils.getDefaultAccount({principal; canisterId;});
+        let hexEncoded = Hex.encode(
+          Blob.toArray(subaccount)
+        );
+        let result : AccountIdentifier = #text(hexEncoded);
+        #ok({accountIdentifier = result});
+   
+  };
+// #endregion
+
+// #region Utils
+  public func accountIdentifierToBlob (accountIdentifier : Types.AccountIdentifier) : async Types.AccountIdentifierToBlobResult {
+    Utils.accountIdentifierToBlob({
+      accountIdentifier;
+      canisterId = ?Principal.fromActor(this);
+    });
+  };
+// #endregion
+
+ /**
     * Notify the merchant if a new transaction is found.
     */
   private func notify() : async () {
@@ -464,7 +537,7 @@ public shared ({ caller }) func getAddress() : async Text {
             switch (Trie.get(userStore, userKey(Principal.toText(to)), Text.equal)) {
               case (?user) {
                 if (user.email_notifications or user.phone_notifications) {
-                  log("Sending notification to: " # debug_show (user.email));
+                  log("Sending notification to: " # debug_show (user.email_address));
                   await sendNotification(user, t);
                 };
               };
@@ -481,11 +554,10 @@ public shared ({ caller }) func getAddress() : async Text {
     };
   };
 
-
   /**
     * Send a notification to a merchant about a received payment
     */
-  private func sendNotification(user : Types.User, transaction : CkBtcLedger.Transaction) : async () {
+  private func sendNotification(user : User, transaction : CkBtcLedger.Transaction) : async () {
     // Managment canister
     let ic : HttpTypes.IC = actor ("aaaaa-aa");
 
@@ -500,7 +572,7 @@ public shared ({ caller }) func getAddress() : async Text {
       case null {};
     };
     let idempotencyKey : Text = Text.concat(user.name, Nat64.toText(transaction.timestamp));
-    let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # user.email # "\", \"phone\": \"" # user.phone # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # from # "\"}";
+    let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # user.email_address # "\", \"phone\": \"" # user.phone_number # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # from # "\"}";
     let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
     let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
 
@@ -508,6 +580,7 @@ public shared ({ caller }) func getAddress() : async Text {
     let httpRequest : HttpTypes.HttpRequestArgs = {
       // The notification service is hosted on Netlify and the URL is hardcoded
       // in this example. In a real application, the URL would be configurable.
+     // url = "https://icpos-notifications.xyz/.netlify/functions/notify";
       url = "https://icpos-notifications.xyz/.netlify/functions/notify";
       max_response_bytes = ?Nat64.fromNat(1000);
       headers = [

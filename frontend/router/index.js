@@ -45,6 +45,10 @@ const router = createRouter({
           component: () => import("../views/Holidays.vue"),
         },
         {
+          path: "/home/transactions",
+          component: () => import("../views/Transactions.vue"),
+        },
+        {
           path: "/home/jobs",
           component: () => import("../views/Jobs.vue"),
         },
@@ -55,6 +59,10 @@ const router = createRouter({
         {
           path: "/home/leaves",
           component: () => import("../views/Leaves.vue"),
+        },
+        {
+          path: "/home/profile",
+          component: () => import("../views/Profile.vue"),
         },
         {
           path: "/home/settings",

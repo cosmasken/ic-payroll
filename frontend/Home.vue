@@ -1,9 +1,6 @@
 <script setup>
 import { ref, watchEffect } from "vue";
-import useClipboard from "vue-clipboard3";
 import { useAuthStore } from "./store/auth";
-import { useledger } from "./store/useledger";
-import { BellAlertIcon } from "@heroicons/vue/20/solid";
 import SkeletonLoader from "./components/SkeletonLoader.vue";
 import router from "./router/";
 
@@ -11,45 +8,73 @@ const authStore = useAuthStore();
 const darkmode = ref(false);
 let tradingaddress = ref("");
 let fundingaddress = ref("");
+let canisteraddress = ref("");
 let tradingbalance = ref("");
 let fundingbalance = ref("");
+let canisterbalance = ref("");
 let transferresponse = ref("");
 let invoice = ref("");
+let isConfig = ref(false);
 
 const logout = () => {
   router.push("/auth");
   authStore.logout();
 };
 
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getTradingAddress();
-  tradingaddress.value = await res;
-});
-
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getFundingAddress();
-  fundingaddress.value = await res;
-});
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getTradingBalance();
-  tradingbalance.value = await res;
-});
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.getFundingBalance();
-  fundingbalance.value = await res;
-});
+const isLoading = ref(false);
 
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.getInvoice();
   invoice.value = await res;
 });
 
+// watchEffect(async () => {
+//   const res = await authStore.configure();
+
+// });
+
+watchEffect(async () => {
+  const res = await authStore.refresh();
+  console.log(res);
+  tradingbalance.value = await authStore.tradingbalance;
+  fundingbalance.value = await authStore.fundingbalance;
+  fundingaddress.value = await authStore.fundingaddress;
+  canisteraddress.value = await authStore.canisteraddress;
+  canisterbalance.value = await authStore.canisterbalance;
+});
+
 const getTestTokens = async () => {
-  const response = authStore.whoamiActor.transferFromCanistertoSubAccount();
+  try{
+    isLoading.value = true;
+    const response = authStore.whoamiActor.transferFromCanistertoSubAccount();
   console.log(response);
   transferresponse.value = await response;
+  } catch (error) {
+    console.error("Error Getting tokens:", error);
+
+  } finally {
+    isLoading.value = false;
+  }
+  
 };
 
+const refreshBalance = async () => {
+
+  try{
+    isLoading.value = true;
+    const res = await authStore.refresh();
+    tradingbalance.value = await authStore.tradingbalance;
+  fundingbalance.value = await authStore.fundingbalance;
+  fundingaddress.value = await authStore.fundingaddress;
+  canisterbalance.value = await authStore.canisterbalance;
+  console.log(res);
+  }catch(e){
+    console.log("Error fetching data");
+  }finally{
+    isLoading.value = false;
+  }
+ 
+};
 
 const walletAddress = "0x1234567890123456789012345678901234567890";
 
@@ -91,19 +116,9 @@ const toggleDarkMode = () => {
               />
               <span>Dashboard</span>
             </router-link>
+      
             <router-link
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/employees"
-            >
-              <img
-                src="./assets/employees.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Employees</span>
-            </router-link>
-            <router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/transfer"
@@ -115,19 +130,9 @@ const toggleDarkMode = () => {
               />
               <span>Send</span>
             </router-link>
+            
             <!--router-link
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/departments"
-            >
-              <img
-                src="./assets/departments.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Departments</span>
-            </router-link-->
-            <!--router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/attendance"
@@ -140,6 +145,7 @@ const toggleDarkMode = () => {
               <span>Attendance</span>
             </router-link-->
             <router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/payroll"
@@ -149,9 +155,10 @@ const toggleDarkMode = () => {
                 class="shrink-0 h-6 w-6"
                 alt="Vite logo"
               />
-              <span>Payroll</span>
+              <span>Transactions</span>
             </router-link>
-            <router-link
+            <!--router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/jobs"
@@ -162,9 +169,10 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Jobs</span>
-            </router-link>
+            </router-link-->
 
             <!--router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/candidates"
@@ -177,6 +185,7 @@ const toggleDarkMode = () => {
               <span>Candidates</span>
             </router-link-->
             <router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/candidates"
@@ -189,6 +198,7 @@ const toggleDarkMode = () => {
               <span>Notifications</span>
             </router-link>
             <!--router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/leaves"
@@ -201,6 +211,7 @@ const toggleDarkMode = () => {
               <span>Leaves</span>
             </router-link-->
             <!--router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/holidays"
@@ -213,6 +224,7 @@ const toggleDarkMode = () => {
               <span>Holidays</span>
             </router-link-->
             <router-link
+              v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/settings"
@@ -327,67 +339,95 @@ const toggleDarkMode = () => {
         <div class="flex flex-col">
           <div v-if="fundingaddress.length === 0">
             <SkeletonLoader class="w-36 h-5" />
-            </div>
-            <div v-else>
-              <p
-            
-            class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
-          >
-            Hello {{ fundingaddress }} 👋🏻
-          </p>
-            </div>
-         
+          </div>
+          <div v-else>
+            <p
+              class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
+            >
+              Hello {{ fundingaddress }} 👋🏻
+            </p>
+            <p
+              class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
+            >
+              Canister Address is {{ canisteraddress }}
+            </p>
+          </div>
+
           <!--p
             class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
           >
             Trading {{ tradingaddress }} 👋🏻
           </p-->
-         
+
           <!--p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p-->
         </div>
         <div class="flex flex-row justify-evenly items-center space-x-5">
-         
-          <div v-if="fundingaddress.length === 0"
-          class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900 dark:border-white"
+          <div
+            v-if="fundingaddress.length === 0"
+            class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900 dark:border-white"
+          ></div>
+          <div
+            v-else
+            class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2"
           >
-
+          <div>
+            <div v-if="isLoading">
+              <span class="loading loading-spinner loading-xs"></span>
+            </div>
+            <div v-else> 
+            <p
+              class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
+            >
+              TradingBalance : {{ tradingbalance }} ckSats
+            </p>
+            <p
+              class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
+            >
+              Canister Balance : {{ canisterbalance }} ckSats
+            </p>
+            </div>
           </div>
-          <div v-else class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2">
-            <!--p class="text-sm leading-6 font-semibold text-[#919DB5]">
-              FundingAddress : {{ fundingaddress }}
-            </p-->
-          
-              <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                TradingBalance : {{ tradingbalance }} cksats
-              </p>
            
-           
-              <p class="text-sm leading-6 font-semibold text-[#919DB5]">
-                FundingBalance : {{ BigInt(Math.round(fundingbalance / 100_000_000)) }} ckbtc
-              </p>
 
-              <button  @click="getTestTokens"
+            <p
+              class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
+            >
+              FundingBalance : {{ BigInt(Math.round(fundingbalance)) }} ckSats
+            </p>
+
+            <button
+           
+              @click="getTestTokens"
               class="bg-blue-700 p-2 text-sm rounded-[10px]"
-              >Get Test Tokens</button>
+            >
+              Get Test Tokens
+            </button>
 
             <div class="flex flex-row justify-between">
-             
-              <!--div
-                class="h-6 w-6 rounded-md bg-[#E0ECFE] flex items-center justify-center cursor-pointer"
+              <div
+                @click="refreshBalance"
+                class="h-6 w-6 rounded-md flex items-center justify-center cursor-pointer"
               >
-                <svg
+                <div v-if="isLoading">
+                  <span class="loading loading-spinner loading-xs"></span>
+                </div>
+                <div v-else>
+                  <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
                   fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-6 h-6"
                 >
                   <path
-                    d="M7.875 9.75V10.5312C7.875 10.7901 7.66514 11 7.40625 11H2.09375C1.83486 11 1.625 10.7901 1.625 10.5312V3.34375C1.625 3.08486 1.83486 2.875 2.09375 2.875H3.5V8.65625C3.5 9.25936 3.99064 9.75 4.59375 9.75H7.875ZM7.875 3.03125V1H4.59375C4.33486 1 4.125 1.20986 4.125 1.46875V8.65625C4.125 8.91514 4.33486 9.125 4.59375 9.125H9.90625C10.1651 9.125 10.375 8.91514 10.375 8.65625V3.5H8.34375C8.08594 3.5 7.875 3.28906 7.875 3.03125ZM10.2377 2.42521L8.94979 1.13729C8.86188 1.04938 8.74265 1 8.61834 1H8.5V2.875H10.375V2.75666C10.375 2.63234 10.3256 2.51312 10.2377 2.42521Z"
-                    fill="#227BF6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
                   />
                 </svg>
-              </div-->
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -401,4 +441,3 @@ const toggleDarkMode = () => {
 </template>
 
 <style scoped></style>
-
