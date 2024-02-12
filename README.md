@@ -165,4 +165,17 @@ npm install
 npm run dev
 ```
 
+### Step 8: Login and start transacting
+Go to http://localhost:3000 and login with the Internet Identity
 
+### Step 9: Get funds
+```bash
+npm run mint
+```
+
+Enter the amount of ckBTC you want to mint and the principal you want to mint to. The principal is the Internet Identity principal of the user you want to mint to. You can find the principal by logging in to the frontend and copying the principal from the URL.Also send some funds to the canister so you can receive funds in your canister subaccount
+
+### Step 10: Start transacting
+You can now start transacting with the app. You can send funds to other users and receive funds from other users.
+
+Note that you need to refresh manually to see the updated balance after a transaction.

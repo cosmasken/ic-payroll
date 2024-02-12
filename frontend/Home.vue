@@ -28,10 +28,10 @@ watchEffect(async () => {
   invoice.value = await res;
 });
 
-// watchEffect(async () => {
-//   const res = await authStore.configure();
-
-// });
+//  watchEffect(async () => {
+//    const res = await authStore.getTransactions();
+// console.log(res);
+//  });
 
 watchEffect(async () => {
   const res = await authStore.refresh();

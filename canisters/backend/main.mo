@@ -7,6 +7,7 @@ import Array "mo:base/Array";
 import Blob "mo:base/Blob";
 import Char "mo:base/Char";
 import CkBtcLedger "canister:ckbtc_ledger";
+//import CkBtcIndex "canister:icrc1_index";
 import Types "./types";
 import { toAccount; toSubaccount; defaultSubaccount } "./utils";
 import Error "mo:base/Error";
@@ -615,6 +616,31 @@ let transaction : Transaction = {
   system func postupgrade() {
     // Make sure we start to montitor transactions from the block set on deployment
     latestTransactionIndex := _startBlock;
+  };
+
+
+  //get transactions
+  public shared ({ caller }) func getTransactions() : async () {
+    // let transactions = await CkBtcIndex.get_account_transactions(
+    //   {
+    //   account = {
+    //     owner = caller;
+    //     subaccount = null;
+    //   };
+    //   max_results = 100;
+    //   start = ?0;
+    // }
+    // );
+
+    let transactions = await CkBtcLedger.get_transactions(
+      {
+        start = 0;
+        length = 100;
+      }
+    );
+
+   // Debug.print("my transaction:  are  " # debug_show (transactions));
+   // return transactions.transactions;
   };
 
 };
