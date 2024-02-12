@@ -34,31 +34,15 @@ module {
     modified_at : Int;
   };
 
-  // public type Transaction = {
-  //   id : Text;
-  //   from : Principal;
-  //   to : Principal;
-  //   amount : Nat;
-  //   memo : Text;
-  //   created_at : Int;
-  // };
-   public type Transaction = {
-    from : Text;
-    to : Text;
-    amount : Text;
+    public type Transaction = {
+    id : Nat;
+    creator : Principal;
+    amount : Nat;
+    successful : Bool;
+    destination : Principal;
   };
 
-  // New type for User
-  // public type User = {
-  //   // admin : Principal;
-  //   name : Text;
-  //   email : Text;
-  //   email_notifications : Bool;
-  //   phone : Text;
-  //   phone_notifications : Bool;
-  //   wallet : Text;
-  //   created_at : Int;
-  // };
+
 
     public type User = {
     name : Text;
@@ -126,5 +110,65 @@ module {
     };
   };
 // #endregion
+
+// #region create_transaction
+  // public type CreateTransactionArgs = {
+  //   id : Nat;
+  //   creator : Principal;
+  //   amount : Text;
+  //   from : Text;
+  //   to: Text;
+  //   memo : ?Blob;
+  // };
+  // id : Nat;
+  //   creator : Principal;
+  //   amount : Nat;
+  //   verifiedAtTime : ?Time.Time;
+  //   successful : Bool;
+  //   destination : Principal;
+   public type CreateTransactionArgs = {
+    creator : Principal;
+    amount : Nat;
+    destination: Principal;
+    successful : Bool;
+  };
+  public type CreateTransactionResult = Result.Result<CreateTransactionSuccess, CreateTransactionErr>;
+  public type CreateTransactionSuccess = {
+    transaction : Transaction;
+  };
+  public type CreateTransactionErr = {
+    message : ?Text;
+    kind : {
+      #InsufficientBalance;
+      #InvalidAmount;
+      #InvalidDestination;
+      #InvalidDetails;
+      #InvalidSender;
+      #MaxTransactionsReached;
+      #Other;
+    };
+  };
+// #endregion
+
+// #region get_transaction
+  public type GetTransactionArgs = {
+    id : Nat;
+  };
+  public type GetTransactionResult = Result.Result<GetTransactionSuccess, GetTransactionErr>;
+  public type GetTransactionSuccess = {
+    transaction : Transaction;
+  };
+  public type GetTransactionErr = {
+    message : ?Text;
+    kind : {
+      #InvalidTransactionId;
+      #NotFound;
+      #NotAuthorized;
+      #Other;
+    };
+  };
+// #endregion
+
+
 
 };

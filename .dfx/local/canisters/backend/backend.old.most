@@ -6,6 +6,15 @@ type Hash = Nat32;
 type Key__1<K> = {hash : Hash; key : K};
 type Leaf<K, V> = {keyvals : AssocList__1<Key__1<K>, V>; size : Nat};
 type List<T> = ?(T, List<T>);
+type Transaction =
+  {
+    amount : Nat;
+    creator : Principal;
+    destination : Principal;
+    id : Nat;
+    successful : Bool
+  };
+type Transaction__2 = Transaction;
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
 type User =
   {
@@ -18,7 +27,9 @@ type User =
 type User__1 = User;
 actor {
   stable var courierApiKey : Text;
+  stable var entries : [(Nat, Transaction__2)];
   stable var latestTransactionIndex : Nat;
+  stable var transactionCounter : Nat;
   stable var userStore :
     {#branch : Branch<Text, User__1>; #empty; #leaf : Leaf<Text, User__1>}
 };

@@ -49,6 +49,10 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   private var logData = Buffer.Buffer<Text>(0);
   // The user data store. The key is the user's principal ID.
  private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
+ stable var entries : [(Nat, Transaction)] = [];
+  stable var transactionCounter : Nat = 0;
+  let transactions: HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(entries), entries.size(), Nat.equal, Hash.hash);
+let MAX_TRANSACTIONS = 30_000;
 
 
   public shared ({ caller }) func getAddress() : async Text {
@@ -60,7 +64,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     Debug.print("address:  is  " # debug_show (address));
     return address;
   };
-
 
 
 
@@ -332,42 +335,45 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       };
     //  return #err("Reject message: " # Error.message(error));
     };
+//  id : Nat;
+//     amount : Text;
+//     from : Text;
+//     to: Text;
+//     memo : ?Blob;
 
 
+    let transaction = await save_transaction({
+     // id = 4;
+      amount=amount;
+      creator= caller;
+      destination = Principal.fromText(receiver);
+      successful  = true;
+    });
 
-let transaction : Transaction = {
-      from = Principal.toText(caller);
-      to= receiver;
-      amount= Nat.toText(amount);
-    };
 
-    //  let data = await  saveTransaction(transaction);
-
-    //  if (data.status == 200) {
-    //       Debug.print("transaction:  is successful ");
-    //    return {
-    //     status = 200;
-    //     status_text = "Transfer to " # receiver # " is successful";
-    //     data = ?transaction;
-    //     error_text = ?"";
-    //   };
-    //  }else{
-    //   Debug.print("transaction:  is successful ");
-    //    return {
-    //     status = 405;
-    //     status_text = "Forbidden";
-    //     data = null;
-    //     error_text = ?"Couldn't transfer funds to account:\n";
-    //   };
-    //  };
-
-           return {
+switch(transaction) {
+  case (#ok(transaction)) {  
+     return {
         status = 200;
         status_text = "Transfer to " # receiver # " is successful";
-        data = ?transaction;
+        data = null;
+        error_text = ?"";
+      };
+  };
+
+  case (#err(message)) {
+     return {
+        status = 200;
+        status_text = "Transfer to " # receiver # " is failed";
+        data = null;
         error_text = ?"";
       };
 
+    // Debug.print("Failed to create user with the error: " # message) };
+}
+    //check if transaction is ok or error
+};
+          
   };
 
   //transfer from account to canister subaccount
@@ -618,29 +624,86 @@ let transaction : Transaction = {
     latestTransactionIndex := _startBlock;
   };
 
-
-  //get transactions
-  public shared ({ caller }) func getTransactions() : async () {
-    // let transactions = await CkBtcIndex.get_account_transactions(
-    //   {
-    //   account = {
-    //     owner = caller;
-    //     subaccount = null;
-    //   };
-    //   max_results = 100;
-    //   start = ?0;
-    // }
-    // );
-
-    let transactions = await CkBtcLedger.get_transactions(
-      {
-        start = 0;
-        length = 100;
-      }
-    );
-
-   // Debug.print("my transaction:  are  " # debug_show (transactions));
-   // return transactions.transactions;
+// #region Upgrade Hooks
+  system func preupgrade() {
+      entries := Iter.toArray(transactions.entries());
   };
+// #endregion
+
+
+
+
+  // #region Create Invoice
+  public shared ({caller}) func save_transaction (args: Types.CreateTransactionArgs) : async Types.CreateTransactionResult {
+    let id : Nat = transactionCounter;
+    // increment counter
+    transactionCounter += 1;
+
+    if(id > MAX_TRANSACTIONS){
+      return #err({
+        message = ?"The maximum number of Transactions has been reached.";
+        kind = #MaxTransactionsReached;
+      });
+    };
+
+     let transaction : Transaction = {
+          id;
+          creator = args.creator;
+          destination = args.destination;
+          amount = args.amount;
+          successful =args.successful
+        };
+    
+        transactions.put(id, transaction);
+
+        return #ok({transaction});
+  };
+
+// #region Get Transaction
+  public shared query ({caller}) func get_transaction (args: Types.GetTransactionArgs) : async Types.GetTransactionResult {
+    let transaction = transactions.get(args.id);
+    switch(transaction){
+      case(null){
+        return #err({
+          message = ?"Transaction not found";
+          kind = #NotFound;
+        });
+      };
+      case (?i) {
+        if (i.creator == caller) {
+          return #ok({transaction = i});
+        };
+        // If additional permissions are provided
+        // switch (i.permissions) {
+        //   case (null) {
+        //     return #err({
+        //       message = ?"You do not have permission to view this transaction";
+        //       kind = #NotAuthorized;
+        //     });
+        //   };
+        //   case (?permissions) {
+        //     let hasPermission = Array.find<Principal>(
+        //       permissions.canGet,
+        //       func (x : Principal) : Bool {
+        //         return x == caller;
+        //       }
+        //     );
+        //     if (Option.isSome(hasPermission)) {
+        //       return #ok({invoice = i});
+        //     } else {
+        //       return #err({
+        //         message = ?"You do not have permission to view this invoice";
+        //         kind = #NotAuthorized;
+        //       });
+        //     };
+        //   };
+        // };
+        #ok({transaction = i});
+      };
+    };
+  };
+// #endregion
+
+
 
 };

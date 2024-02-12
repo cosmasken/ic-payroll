@@ -9,7 +9,7 @@
     </div>
     <div v-else class="p-5 flex flex-col space-y-4">
       <div
-        v-if="transferResult === true"
+        v-show="showSuccess == true"
         role="alert"
         class="alert alert-success"
       >
@@ -29,7 +29,7 @@
         <span>Your transfer was successful!</span>
       </div>
       <div
-        v-if="transferResult === false"
+      v-show="showFailure == true"
         role="alert"
         class="alert alert-error"
       >
@@ -165,9 +165,12 @@ Write something here</textarea
 <script setup>
 import { ref, watchEffect } from "vue";
 import { useAuthStore } from "../store/auth";
+import router from "../router";
 let tradingbalance = ref("");
 let transferResult = ref("");
 const isTransferring = ref(false);
+const showSuccess = ref(false);
+const showFailure = ref(false);
 const getTime = () => {
   const date = new Date();
   const time = date.getTime();
@@ -200,32 +203,36 @@ const transfer = async () => {
   const created_at = authStore.transferArgs.created_at;
   let response = ref("");
   try {
-    
-    // Simulate the transfer process with a timeout of 2 seconds
-    setTimeout(async () => {
-       response =
+    response =
         await authStore.whoamiActor?.transferFromSubAccountToSubAccount(
           address,
           BigInt(Math.round(amount))
         );
+    
+    // Simulate the transfer process with a timeout of 2 seconds
+    // setTimeout(async () => {
+    //    response =
+    //     await authStore.whoamiActor?.transferFromSubAccountToSubAccount(
+    //       address,
+    //       BigInt(Math.round(amount))
+    //     );
    
-    }, 2000);
+    // }, 2000);
+    console.log(repsonse);
   } catch (error) {
     console.error("Error fetching data:", error);
   } finally {
-    if (response.status === 200) {
-        let data = await response.data;
+    isTransferring.value = false;
 
-        // Show success modal
-        // transferResult.value = true;
-        console.log("Transfer successful");
-        isTransferring.value = false;
+    if (response.status === 200) {
+      showSuccess.value = true
+      
       } else {
-        // Show error modal
-        //  transferResult.value = false;
-        console.error("Transfer failed");
-        isTransferring.value = false;
+        showFailure.value = true
+
       }
+    
+    
  
   }
 };

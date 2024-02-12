@@ -6,11 +6,21 @@ type User =
    phone_notifications: bool;
    phone_number: text;
  };
+type Transaction__1 = 
+ record {
+   amount: nat;
+   creator: principal;
+   destination: principal;
+   id: nat;
+   successful: bool;
+ };
 type Transaction = 
  record {
-   amount: text;
-   from: text;
-   to: text;
+   amount: nat;
+   creator: principal;
+   destination: principal;
+   id: nat;
+   successful: bool;
  };
 type Subaccount = blob;
 type Result = 
@@ -39,6 +49,23 @@ type Response =
    status: nat16;
    status_text: text;
  };
+type GetTransactionSuccess = record {transaction: Transaction__1;};
+type GetTransactionResult = 
+ variant {
+   err: GetTransactionErr;
+   ok: GetTransactionSuccess;
+ };
+type GetTransactionErr = 
+ record {
+   kind: variant {
+           InvalidTransactionId;
+           NotAuthorized;
+           NotFound;
+           Other;
+         };
+   message: opt text;
+ };
+type GetTransactionArgs = record {id: nat;};
 type GetAccountIdentifierSuccess = record {
                                      accountIdentifier: AccountIdentifier;};
 type GetAccountIdentifierResult = 
@@ -48,6 +75,33 @@ type GetAccountIdentifierResult =
  };
 type GetAccountIdentifierErr = record {message: opt text;};
 type GetAccountIdentifierArgs = record {"principal": principal;};
+type CreateTransactionSuccess = record {transaction: Transaction__1;};
+type CreateTransactionResult = 
+ variant {
+   err: CreateTransactionErr;
+   ok: CreateTransactionSuccess;
+ };
+type CreateTransactionErr = 
+ record {
+   kind:
+    variant {
+      InsufficientBalance;
+      InvalidAmount;
+      InvalidDestination;
+      InvalidDetails;
+      InvalidSender;
+      MaxTransactionsReached;
+      Other;
+    };
+   message: opt text;
+ };
+type CreateTransactionArgs = 
+ record {
+   amount: nat;
+   creator: principal;
+   destination: principal;
+   successful: bool;
+ };
 type AccountIdentifierToBlobSuccess = blob;
 type AccountIdentifierToBlobResult = 
  variant {
@@ -92,6 +146,8 @@ service : {
                            }) query;
   get_account_identifier: (GetAccountIdentifierArgs) ->
    (GetAccountIdentifierResult) query;
+  get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
+  save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
   setCourierApiKey: (text) -> (Response_2);
   transferFromCanistertoSubAccount: () -> (Result);
   transferFromSubAccountToCanister: (nat) -> (Result);

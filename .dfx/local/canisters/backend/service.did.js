@@ -43,6 +43,53 @@ export const idlFactory = ({ IDL }) => {
     'ok' : GetAccountIdentifierSuccess,
     'err' : GetAccountIdentifierErr,
   });
+  const GetTransactionArgs = IDL.Record({ 'id' : IDL.Nat });
+  const Transaction__1 = IDL.Record({
+    'id' : IDL.Nat,
+    'creator' : IDL.Principal,
+    'destination' : IDL.Principal,
+    'amount' : IDL.Nat,
+    'successful' : IDL.Bool,
+  });
+  const GetTransactionSuccess = IDL.Record({ 'transaction' : Transaction__1 });
+  const GetTransactionErr = IDL.Record({
+    'kind' : IDL.Variant({
+      'NotFound' : IDL.Null,
+      'NotAuthorized' : IDL.Null,
+      'Other' : IDL.Null,
+      'InvalidTransactionId' : IDL.Null,
+    }),
+    'message' : IDL.Opt(IDL.Text),
+  });
+  const GetTransactionResult = IDL.Variant({
+    'ok' : GetTransactionSuccess,
+    'err' : GetTransactionErr,
+  });
+  const CreateTransactionArgs = IDL.Record({
+    'creator' : IDL.Principal,
+    'destination' : IDL.Principal,
+    'amount' : IDL.Nat,
+    'successful' : IDL.Bool,
+  });
+  const CreateTransactionSuccess = IDL.Record({
+    'transaction' : Transaction__1,
+  });
+  const CreateTransactionErr = IDL.Record({
+    'kind' : IDL.Variant({
+      'InvalidDetails' : IDL.Null,
+      'InvalidAmount' : IDL.Null,
+      'InvalidDestination' : IDL.Null,
+      'MaxTransactionsReached' : IDL.Null,
+      'InsufficientBalance' : IDL.Null,
+      'InvalidSender' : IDL.Null,
+      'Other' : IDL.Null,
+    }),
+    'message' : IDL.Opt(IDL.Text),
+  });
+  const CreateTransactionResult = IDL.Variant({
+    'ok' : CreateTransactionSuccess,
+    'err' : CreateTransactionErr,
+  });
   const Response_2 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(IDL.Text),
@@ -51,9 +98,11 @@ export const idlFactory = ({ IDL }) => {
   });
   const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const Transaction = IDL.Record({
-    'to' : IDL.Text,
-    'from' : IDL.Text,
-    'amount' : IDL.Text,
+    'id' : IDL.Nat,
+    'creator' : IDL.Principal,
+    'destination' : IDL.Principal,
+    'amount' : IDL.Nat,
+    'successful' : IDL.Bool,
   });
   const Response_1 = IDL.Record({
     'status' : IDL.Nat16,
@@ -86,6 +135,16 @@ export const idlFactory = ({ IDL }) => {
         [GetAccountIdentifierArgs],
         [GetAccountIdentifierResult],
         ['query'],
+      ),
+    'get_transaction' : IDL.Func(
+        [GetTransactionArgs],
+        [GetTransactionResult],
+        ['query'],
+      ),
+    'save_transaction' : IDL.Func(
+        [CreateTransactionArgs],
+        [CreateTransactionResult],
+        [],
       ),
     'setCourierApiKey' : IDL.Func([IDL.Text], [Response_2], []),
     'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),

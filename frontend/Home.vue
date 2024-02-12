@@ -3,6 +3,7 @@ import { ref, watchEffect } from "vue";
 import { useAuthStore } from "./store/auth";
 import SkeletonLoader from "./components/SkeletonLoader.vue";
 import router from "./router/";
+import {formatCkBtc} from "./utils/formatCkBtc"
 
 const authStore = useAuthStore();
 const darkmode = ref(false);
@@ -20,6 +21,21 @@ const logout = () => {
   router.push("/auth");
   authStore.logout();
 };
+
+// const formatCkBtc(amount) = async () => {
+
+// }
+
+// const formatCkBtc(amount) {
+//   if (amount === undefined) return "0";
+//   amount = typeof amount === "number" ? BigInt(amount) : amount;
+//   if (!amount) return "0";
+//   const integerPart = amount / 100000000n;
+//   const fractionalPart = amount % 100000000n;
+//   const fractionalPartString = fractionalPart.toString().padStart(8, "0");
+//   const fractionalPartTrimmed = fractionalPartString.replace(/0+$/, ""); // Removes trailing zeroes
+//   return `${integerPart.toLocaleString()}.${fractionalPartTrimmed}`;
+// };
 
 const isLoading = ref(false);
 
@@ -42,6 +58,23 @@ watchEffect(async () => {
   canisteraddress.value = await authStore.canisteraddress;
   canisterbalance.value = await authStore.canisterbalance;
 });
+const refreshBalance = async () => {
+
+try{
+  isLoading.value = true;
+  const res = await authStore.refresh();
+  tradingbalance.value = await authStore.tradingbalance;
+fundingbalance.value = await authStore.fundingbalance;
+fundingaddress.value = await authStore.fundingaddress;
+canisterbalance.value = await authStore.canisterbalance;
+console.log(res);
+}catch(e){
+  console.log("Error fetching data");
+}finally{
+  isLoading.value = false;
+}
+
+};
 
 const getTestTokens = async () => {
   try{
@@ -58,23 +91,7 @@ const getTestTokens = async () => {
   
 };
 
-const refreshBalance = async () => {
 
-  try{
-    isLoading.value = true;
-    const res = await authStore.refresh();
-    tradingbalance.value = await authStore.tradingbalance;
-  fundingbalance.value = await authStore.fundingbalance;
-  fundingaddress.value = await authStore.fundingaddress;
-  canisterbalance.value = await authStore.canisterbalance;
-  console.log(res);
-  }catch(e){
-    console.log("Error fetching data");
-  }finally{
-    isLoading.value = false;
-  }
- 
-};
 
 const walletAddress = "0x1234567890123456789012345678901234567890";
 
@@ -383,7 +400,7 @@ const toggleDarkMode = () => {
             <p
               class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
             >
-              Canister Balance : {{ canisterbalance }} ckSats
+              Canister Balance : {{ canisterbalance }} ckSats 
             </p>
             </div>
           </div>

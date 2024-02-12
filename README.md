@@ -73,7 +73,7 @@ dfx start --clean --background
 Integration with the [Internet Identity](https://internetcomputer.org/internet-identity/) allows store owners to securely setup and manage their store. The Internet Identity canister is already deployed on the IC mainnet. For local development, you need to deploy it to your local instance of the IC.
 
 ```bash
-dfx deploy --network local internet_identity
+dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy
 ```
 
 ### Step 3: Save current principal as a variable
@@ -88,7 +88,7 @@ export OWNER=$(dfx identity get-principal)
 
 The responsibilities of the ledger canister is to keep track of token balances and handle token transfers.
 
-The ckBTC ledger canister is already deployed on the IC mainnet. ckBTC implements the [ICRC-1](https://internetcomputer.org/docs/current/developer-docs/integrations/icrc-1/) token standard. For local development, we deploy the ledger for an ICRC-1 token mimicking the mainnet setup.
+The ckBTC ledger canister is already deployed on the IC mainnet. ckBTC implements the [ICRC-2](https://internetcomputer.org/docs/current/developer-docs/integrations/icrc-2/) token standard. For local development, we deploy the ledger for an ICRC-2 token mimicking the mainnet setup.
 
 Take a moment to read the details of the call we are making below. Not only are we deploying the ledger canister, we are also:
 
@@ -99,7 +99,7 @@ Take a moment to read the details of the call we are making below. Not only are 
 - Setting the transfer fee to 10 LCKBTC.
 
 ```bash
-dfx deploy --network local --specified-id mxzaz-hqaaa-aaaar-qaada-cai icrc1_ledger --argument '
+dfx deploy --network local --specified-id mxzaz-hqaaa-aaaar-qaada-cai ckbtc_ledger --argument '
   (variant {
     Init = record {
       token_name = "Local ckBTC";
@@ -116,6 +116,7 @@ dfx deploy --network local --specified-id mxzaz-hqaaa-aaaar-qaada-cai icrc1_ledg
         };
       };
       metadata = vec {};
+      feature_flags = opt record{icrc2 = true };
       transfer_fee = 10;
       archive_options = record {
         trigger_threshold = 2000;
@@ -151,10 +152,10 @@ dfx deploy --network local backend --argument '(0)'
 
 ### Step 6: Configure the backend canister
 
-ic-pos uses [Courier](https://courier.com/) to send email and SMS notifications. If you want to enable notifications, you need to sign up for a Courier account and and create and API key. Then issue the following command:
+The backend uses [Courier](https://courier.com/) to send email and SMS notifications. If you want to enable notifications, you need to sign up for a Courier account and and create and API key. Then issue the following command:
 
 ```bash
-dfx canister --network local call icpos setCourierApiKey "pk_prod_..."
+dfx canister --network local call backend setCourierApiKey "pk_prod_..."
 ```
 ### Step 7: Build and run the frontend
 

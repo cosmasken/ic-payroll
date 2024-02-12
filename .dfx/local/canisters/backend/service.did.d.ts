@@ -39,6 +39,11 @@ export interface Backend {
     [GetAccountIdentifierArgs],
     GetAccountIdentifierResult
   >,
+  'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
+  'save_transaction' : ActorMethod<
+    [CreateTransactionArgs],
+    CreateTransactionResult
+  >,
   'setCourierApiKey' : ActorMethod<[string], Response_2>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
   'transferFromSubAccountToCanister' : ActorMethod<[bigint], Result>,
@@ -51,6 +56,25 @@ export interface Backend {
   'userLength' : ActorMethod<[], string>,
   'whoami' : ActorMethod<[], Principal>,
 }
+export interface CreateTransactionArgs {
+  'creator' : Principal,
+  'destination' : Principal,
+  'amount' : bigint,
+  'successful' : boolean,
+}
+export interface CreateTransactionErr {
+  'kind' : { 'InvalidDetails' : null } |
+    { 'InvalidAmount' : null } |
+    { 'InvalidDestination' : null } |
+    { 'MaxTransactionsReached' : null } |
+    { 'InsufficientBalance' : null } |
+    { 'InvalidSender' : null } |
+    { 'Other' : null },
+  'message' : [] | [string],
+}
+export type CreateTransactionResult = { 'ok' : CreateTransactionSuccess } |
+  { 'err' : CreateTransactionErr };
+export interface CreateTransactionSuccess { 'transaction' : Transaction__1 }
 export interface GetAccountIdentifierArgs { 'principal' : Principal }
 export interface GetAccountIdentifierErr { 'message' : [] | [string] }
 export type GetAccountIdentifierResult = {
@@ -60,6 +84,17 @@ export type GetAccountIdentifierResult = {
 export interface GetAccountIdentifierSuccess {
   'accountIdentifier' : AccountIdentifier,
 }
+export interface GetTransactionArgs { 'id' : bigint }
+export interface GetTransactionErr {
+  'kind' : { 'NotFound' : null } |
+    { 'NotAuthorized' : null } |
+    { 'Other' : null } |
+    { 'InvalidTransactionId' : null },
+  'message' : [] | [string],
+}
+export type GetTransactionResult = { 'ok' : GetTransactionSuccess } |
+  { 'err' : GetTransactionErr };
+export interface GetTransactionSuccess { 'transaction' : Transaction__1 }
 export interface Response {
   'status' : number,
   'data' : [] | [User],
@@ -82,9 +117,18 @@ export type Result = { 'ok' : string } |
   { 'err' : string };
 export type Subaccount = Uint8Array | number[];
 export interface Transaction {
-  'to' : string,
-  'from' : string,
-  'amount' : string,
+  'id' : bigint,
+  'creator' : Principal,
+  'destination' : Principal,
+  'amount' : bigint,
+  'successful' : boolean,
+}
+export interface Transaction__1 {
+  'id' : bigint,
+  'creator' : Principal,
+  'destination' : Principal,
+  'amount' : bigint,
+  'successful' : boolean,
 }
 export interface User {
   'email_address' : string,

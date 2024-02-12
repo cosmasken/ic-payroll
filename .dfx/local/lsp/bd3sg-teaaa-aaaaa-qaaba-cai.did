@@ -31,6 +31,8 @@ type Backend = service {
   get_account_identifier : (GetAccountIdentifierArgs) -> (
       GetAccountIdentifierResult,
     ) query;
+  get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
+  save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
   setCourierApiKey : (text) -> (Response_2);
   transferFromCanistertoSubAccount : () -> (Result);
   transferFromSubAccountToCanister : (nat) -> (Result);
@@ -40,6 +42,29 @@ type Backend = service {
   userLength : () -> (text) query;
   whoami : () -> (principal);
 };
+type CreateTransactionArgs = record {
+  creator : principal;
+  destination : principal;
+  amount : nat;
+  successful : bool;
+};
+type CreateTransactionErr = record {
+  kind : variant {
+    InvalidDetails;
+    InvalidAmount;
+    InvalidDestination;
+    MaxTransactionsReached;
+    InsufficientBalance;
+    InvalidSender;
+    Other;
+  };
+  message : opt text;
+};
+type CreateTransactionResult = variant {
+  ok : CreateTransactionSuccess;
+  err : CreateTransactionErr;
+};
+type CreateTransactionSuccess = record { transaction : Transaction__1 };
 type GetAccountIdentifierArgs = record { "principal" : principal };
 type GetAccountIdentifierErr = record { message : opt text };
 type GetAccountIdentifierResult = variant {
@@ -49,6 +74,16 @@ type GetAccountIdentifierResult = variant {
 type GetAccountIdentifierSuccess = record {
   accountIdentifier : AccountIdentifier;
 };
+type GetTransactionArgs = record { id : nat };
+type GetTransactionErr = record {
+  kind : variant { NotFound; NotAuthorized; Other; InvalidTransactionId };
+  message : opt text;
+};
+type GetTransactionResult = variant {
+  ok : GetTransactionSuccess;
+  err : GetTransactionErr;
+};
+type GetTransactionSuccess = record { transaction : Transaction__1 };
 type Response = record {
   status : nat16;
   data : opt User;
@@ -69,7 +104,20 @@ type Response_2 = record {
 };
 type Result = variant { ok : text; err : text };
 type Subaccount = vec nat8;
-type Transaction = record { to : text; from : text; amount : text };
+type Transaction = record {
+  id : nat;
+  creator : principal;
+  destination : principal;
+  amount : nat;
+  successful : bool;
+};
+type Transaction__1 = record {
+  id : nat;
+  creator : principal;
+  destination : principal;
+  amount : nat;
+  successful : bool;
+};
 type User = record {
   email_address : text;
   phone_notifications : bool;
