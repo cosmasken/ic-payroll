@@ -26,7 +26,7 @@
             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span>Your transfer was successful!</span>
+        <span>Your transfer was successful! Go to transactions to view it</span>
       </div>
       <div
       v-show="showFailure == true"
@@ -46,7 +46,7 @@
             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span>Error! Transfer failed .</span>
+        <span>Error! Transfer failed . Retry</span>
       </div>
 
       <h1 class="text-3xl text-[#16151C] dark:text-white font-semibold">

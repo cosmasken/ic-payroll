@@ -716,20 +716,16 @@ switch(transaction) {
        // outputArray := Array.append(outputArray, [(transaction)]);
         Debug.print("Transaction: " # debug_show(transaction));
       };
-};
-//     for (value in allEntries.vals()){
-//           if(value.creator == caller){
-//             outputArray := Array.append(outputArray, [value]);
-//             Debug.print("Transaction: " # debug_show(value));
-//           };
-      
-// // let callerTransactions = Array.filter(allEntries, func((_, transaction) : (HashMap.HashMap<Transaction>, Transaction)) : Bool {
-// //   transaction.creator == caller
-// // });
-// };
-return Buffer.toArray<Transaction>(my_transactions);
-  //  let transactionsArray = Iter.toArray(transactions.entries());
-   // return #ok({transactions = transactionsArray});
+    };
+
+    return Buffer.toArray<Transaction>(my_transactions);
+      };
+
+// #endregion
+  // region get no of transactions
+  public query func getTransactionLength() : async Text {
+    var size = transactions.size();
+    return Nat.toText(size);
   };
 
 
