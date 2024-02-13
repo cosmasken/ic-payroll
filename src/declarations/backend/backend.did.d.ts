@@ -40,6 +40,7 @@ export interface Backend {
     GetAccountIdentifierResult
   >,
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
+  'get_transactions' : ActorMethod<[], Array<Transaction>>,
   'save_transaction' : ActorMethod<
     [CreateTransactionArgs],
     CreateTransactionResult

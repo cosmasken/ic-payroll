@@ -164,7 +164,7 @@ export const useAuthStore = defineStore("auth", {
       });
       if (response.status === 200) {
         //  this.isConfigured = true;
-        console.log("is user registered");
+        console.log(" user registered");
         //  console.log(this.whoamiActor.userExists());
         this.isConfigured = await this.whoamiActor.userExists();
       }

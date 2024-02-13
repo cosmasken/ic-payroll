@@ -32,6 +32,7 @@ type Backend = service {
       GetAccountIdentifierResult,
     ) query;
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
+  get_transactions : () -> (vec Transaction) query;
   save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
   setCourierApiKey : (text) -> (Response_2);
   transferFromCanistertoSubAccount : () -> (Result);

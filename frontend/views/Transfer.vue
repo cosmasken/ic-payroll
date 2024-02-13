@@ -88,10 +88,16 @@
           />
         </div>
         <p class="text-right text-sm text-black dark:text-white">
-          <span
+          <div v-if="isRefreshing == true">
+            <span class="loading loading-spinner loading-xs"></span>
+          </div>
+          <div v-else>
+            <span
             class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
             >Available Balance: {{ authStore.tradingbalance }} ckSats</span
           >
+          </div>
+          
         </p>
       </div>
 
@@ -171,6 +177,7 @@ let transferResult = ref("");
 const isTransferring = ref(false);
 const showSuccess = ref(false);
 const showFailure = ref(false);
+const isRefreshing = ref(false);
 const getTime = () => {
   const date = new Date();
   const time = date.getTime();
@@ -189,6 +196,21 @@ watchEffect(async () => {
   tradingbalance.value = await authStore.tradingbalance;
 });
 
+const refreshBalance = async () => {
+
+try{
+  isRefreshing.value = true;
+  const res = await authStore.refresh();
+  tradingbalance.value = await authStore.tradingbalance;
+console.log(res);
+}catch(e){
+  console.log("Error fetching data");
+}finally{
+  isLoading.value = false;
+}
+
+};
+
 //set max amount on click
 // async setMax () => {
 //   maxAmount.value = await authStore.tradingbalance;
@@ -196,6 +218,8 @@ watchEffect(async () => {
 
 const transfer = async () => {
   isTransferring.value = true;
+  showFailure.value = false
+  showSuccess.value = false
   authStore.updateTranferArgs(transferArgs);
   const address = authStore.transferArgs.address;
   const amount = authStore.transferArgs.amount;
@@ -209,23 +233,19 @@ const transfer = async () => {
           BigInt(Math.round(amount))
         );
     
-    // Simulate the transfer process with a timeout of 2 seconds
-    // setTimeout(async () => {
-    //    response =
-    //     await authStore.whoamiActor?.transferFromSubAccountToSubAccount(
-    //       address,
-    //       BigInt(Math.round(amount))
-    //     );
-   
-    // }, 2000);
-    console.log(repsonse);
+    console.log(response);
   } catch (error) {
     console.error("Error fetching data:", error);
   } finally {
     isTransferring.value = false;
 
     if (response.status === 200) {
+      refreshBalance();
       showSuccess.value = true
+      transferArgs.address = "";
+      transferArgs.amount = "";
+      transferArgs.memo = "";
+     
       
       } else {
         showFailure.value = true

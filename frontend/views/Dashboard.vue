@@ -8,6 +8,7 @@ let response = ref(0);
 let transactions = ref(0);
 let isLoading = ref(false);
 let walletAddress = ref("");
+let tradingbalance = ref("");
 
 const getTime = () => {
   const date = new Date();
@@ -15,12 +16,17 @@ const getTime = () => {
   return time;
 };
 
+
+watchEffect(async () => {
+  tradingbalance.value = await authStore.tradingbalance;
+});
+
 watchEffect(async () => {
   isLoading.value = true;
   try {
     const response = await authStore.whoamiActor?.userLength();
     transactions.value = response;
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    //await new Promise((resolve) => setTimeout(resolve, 2000));
   } catch (e) {
     console.log("Error fetching data");
   } finally {
@@ -46,7 +52,7 @@ const addData = async () => {
 
   try {
     const response = authStore.registration(firstname, lastname, email, phone);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   } catch (error) {
     console.error("Error submitting data:", error);
   } finally {
@@ -64,17 +70,91 @@ const addData = async () => {
     </div>
   </div>
   <div v-else>
-    <div v-if="authStore.isConfigured === true">
+   
+
+    <div v-if="authStore.isConfigured === false" >
+      <div class="flex items-center justify-center h-screen">
+        <div class="text-center card">
+          <p class="text-lg font-semibold mb-3">Welcome to the app!</p>
+          <p class="text-sm mb-3">
+            Please add your data and save it to continue using the app.
+          </p>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">What is your first name?</span>
+            </div>
+            <input
+              v-model="registrationData.first_name"
+              type="text"
+              placeholder="Type here"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">What is your last name?</span>
+            </div>
+            <input
+              v-model="registrationData.last_name"
+              type="text"
+              placeholder="Type here"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">What is your email?</span>
+            </div>
+            <input
+              v-model="registrationData.email"
+              type="text"
+              placeholder="Type here"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">What is your phone number?</span>
+            </div>
+            <input
+              v-model="registrationData.phone_number"
+              type="text"
+              placeholder="Type here"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+
+          <div class="card-actions justify-end">
+            <button @click="addData" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else >
       <div class="p-5 flex flex-col gap-5">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <OverviewCard
-            header="Balance"
-            currency1="CKBTC"
-            headercolor="#36B293"
-            bgcolor="#EDFFFB"
-            currency1color="#36B293"
-            currency2color="#36B293"
-          />
+          <div
+    class="rounded-lg py-2 px-4 shadow-sm bg-[#EDFFFB]"
+   
+  >
+    <div class="flex flex-col space-y-2">
+      <p class="text-base font-semibold text-[#36B293]">
+        Balance
+      </p>
+
+      <div class="flex basis-1/2 flex-col border-r border-gray-300 shrink-0">
+        <p class="text-xs font-normal">CKBTC</p>
+        <p
+          class="font-semibold text-2xl text-[#36B293]"
+          
+        >
+          {{ tradingbalance }}
+        </p>
+      </div>
+    </div>
+  </div>
+         
           <OverviewCard
             header="Outstanding Amount"
             currency1="CKBTC"
@@ -162,7 +242,7 @@ const addData = async () => {
                       <p
                         class="text-[#16151C] dark:text-white text-sm leading-[22px] font-light"
                       >
-                        Transactions
+                        Users
                       </p>
                     </div>
                     <div class="flex flex-row justify-between items-center">
@@ -195,65 +275,6 @@ const addData = async () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div v-else>
-      <div class="flex items-center justify-center h-screen">
-        <div class="text-center card">
-          <p class="text-lg font-semibold mb-3">Welcome to the app!</p>
-          <p class="text-sm mb-3">
-            Please add your data and save it to continue using the app.
-          </p>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your first name?</span>
-            </div>
-            <input
-              v-model="registrationData.first_name"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your last name?</span>
-            </div>
-            <input
-              v-model="registrationData.last_name"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your email?</span>
-            </div>
-            <input
-              v-model="registrationData.email"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your phone number?</span>
-            </div>
-            <input
-              v-model="registrationData.phone_number"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
-
-          <div class="card-actions justify-end">
-            <button @click="addData" class="btn btn-primary">Save</button>
           </div>
         </div>
       </div>

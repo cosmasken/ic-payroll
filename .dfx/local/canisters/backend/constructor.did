@@ -126,6 +126,7 @@ type Backend =
    get_account_identifier: (GetAccountIdentifierArgs) ->
     (GetAccountIdentifierResult) query;
    get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
+   get_transactions: () -> (vec Transaction) query;
    save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
    /// * Set the courier API key. Only the owner can set the courier API key.
    setCourierApiKey: (text) -> (Response_2);

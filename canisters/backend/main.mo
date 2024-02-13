@@ -335,11 +335,7 @@ let MAX_TRANSACTIONS = 30_000;
       };
     //  return #err("Reject message: " # Error.message(error));
     };
-//  id : Nat;
-//     amount : Text;
-//     from : Text;
-//     to: Text;
-//     memo : ?Blob;
+
 
 
     let transaction = await save_transaction({
@@ -350,9 +346,12 @@ let MAX_TRANSACTIONS = 30_000;
       successful  = true;
     });
 
+    
 
 switch(transaction) {
   case (#ok(transaction)) {  
+    Debug.print("Created new transaction: " # debug_show(transaction)) ;
+
      return {
         status = 200;
         status_text = "Transfer to " # receiver # " is successful";
@@ -362,15 +361,17 @@ switch(transaction) {
   };
 
   case (#err(message)) {
+    Debug.print("Transaction failed: " # debug_show(transaction)) ;
+
      return {
-        status = 200;
+        status = 403;
         status_text = "Transfer to " # receiver # " is failed";
         data = null;
         error_text = ?"";
       };
 
     // Debug.print("Failed to create user with the error: " # message) };
-}
+};
     //check if transaction is ok or error
 };
           
@@ -703,6 +704,33 @@ switch(transaction) {
     };
   };
 // #endregion
+
+// #region Get All Transactions for a given caller
+  public shared query ({caller}) func get_transactions () : async [Transaction]{
+    let allEntries = Iter.toArray(transactions.entries());
+  let my_transactions = Buffer.Buffer<Transaction>(50);
+  // let outputArray : [Transaction] = [];
+    for ((_, transaction) in allEntries.vals()){
+      if(transaction.creator == caller){
+        my_transactions.add(transaction);
+       // outputArray := Array.append(outputArray, [(transaction)]);
+        Debug.print("Transaction: " # debug_show(transaction));
+      };
+};
+//     for (value in allEntries.vals()){
+//           if(value.creator == caller){
+//             outputArray := Array.append(outputArray, [value]);
+//             Debug.print("Transaction: " # debug_show(value));
+//           };
+      
+// // let callerTransactions = Array.filter(allEntries, func((_, transaction) : (HashMap.HashMap<Transaction>, Transaction)) : Bool {
+// //   transaction.creator == caller
+// // });
+// };
+return Buffer.toArray<Transaction>(my_transactions);
+  //  let transactionsArray = Iter.toArray(transactions.entries());
+   // return #ok({transactions = transactionsArray});
+  };
 
 
 

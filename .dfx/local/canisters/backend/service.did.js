@@ -65,6 +65,13 @@ export const idlFactory = ({ IDL }) => {
     'ok' : GetTransactionSuccess,
     'err' : GetTransactionErr,
   });
+  const Transaction = IDL.Record({
+    'id' : IDL.Nat,
+    'creator' : IDL.Principal,
+    'destination' : IDL.Principal,
+    'amount' : IDL.Nat,
+    'successful' : IDL.Bool,
+  });
   const CreateTransactionArgs = IDL.Record({
     'creator' : IDL.Principal,
     'destination' : IDL.Principal,
@@ -97,13 +104,6 @@ export const idlFactory = ({ IDL }) => {
     'error_text' : IDL.Opt(IDL.Text),
   });
   const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
-  const Transaction = IDL.Record({
-    'id' : IDL.Nat,
-    'creator' : IDL.Principal,
-    'destination' : IDL.Principal,
-    'amount' : IDL.Nat,
-    'successful' : IDL.Bool,
-  });
   const Response_1 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Transaction),
@@ -141,6 +141,7 @@ export const idlFactory = ({ IDL }) => {
         [GetTransactionResult],
         ['query'],
       ),
+    'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'save_transaction' : IDL.Func(
         [CreateTransactionArgs],
         [CreateTransactionResult],
