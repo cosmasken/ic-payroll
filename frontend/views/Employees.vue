@@ -12,14 +12,14 @@ let users = ref([]);
 
 watchEffect(async () => {
   try {
-    const res = await authStore.whoamiActor?.getUsersList();
+    const res = await authStore.whoamiActor?.getMyContacts();
     let usersArray = [];
     console.log("backend array:", usersArray);
 
     // Loop through the result and create an array of objects
     for (let i = 0; i < res.length; i++) {
-      const [userId, userData] = res[i];
-      usersArray.push({ userId, ...userData });
+      const data = res[i];
+      usersArray.push(data);
     }
 
     // Assign the array of objects to the users ref
@@ -51,7 +51,7 @@ async function deleteUser(wallet) {
 //import data by pointing users to static employee data for now
 async function importdata() {
   try {
-    const res = await authStore.whoamiActor?.getUsersList();
+    const res = await authStore.whoamiActor?.getMyContacts();
     let usersArray = [];
 
     // Loop through the result and create an array of objects

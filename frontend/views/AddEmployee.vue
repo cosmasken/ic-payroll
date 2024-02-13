@@ -191,7 +191,6 @@ const getTime = () => {
 const registrationData = {
   first_name: "",
   last_name: "",
-  created_at: getTime(),
   email: "",
   phone_number: "",
   wallet_address: "",
@@ -201,12 +200,11 @@ const addData = async () => {
   authStore.updateRegistrationData(registrationData);
   const firstname = authStore.registrationData.first_name;
   const lastname = authStore.registrationData.last_name;
-  const createdat = authStore.registrationData.created_at;
   const email = authStore.registrationData.email;
   const phone = authStore.registrationData.phone_number;
   const address = authStore.registrationData.wallet_address;
 
-  console.log(firstname, lastname, createdat, email, phone, address);
+  console.log(firstname, lastname, email, phone, address);
 
   try {
     const response = authStore.registration(
@@ -221,13 +219,9 @@ const addData = async () => {
     console.error("Error submitting data:", error);
   } finally {
     isLoading.value = false;
+    console.error("Successful:");
     router.push("/home/employees");
   }
-
-  // const response = authStore.registration(firstname, lastname, email, phone, address);
-  // console.log(response);
-  // isLoading.value == false;
 };
 
-// save data
 </script>

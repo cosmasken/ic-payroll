@@ -6,6 +6,7 @@ import { useAuthStore } from "../store/auth";
 const authStore = useAuthStore();
 let response = ref(0);
 let transactions = ref(0);
+let contacts = ref(0);
 let isLoading = ref(false);
 let walletAddress = ref("");
 let tradingbalance = ref("");
@@ -24,8 +25,10 @@ watchEffect(async () => {
 watchEffect(async () => {
   isLoading.value = true;
   try {
-    const response = await authStore.whoamiActor?.userLength();
+    const response = await authStore.whoamiActor?.getMyTransactionLength();
+    const data = await authStore.whoamiActor?.getMyContactsLength();
     transactions.value = response;
+    contacts.value = data;
     //await new Promise((resolve) => setTimeout(resolve, 2000));
   } catch (e) {
     console.log("Error fetching data");
@@ -62,14 +65,14 @@ const addData = async () => {
 };
 </script>
 <template>
-  <div v-if="isLoading">
+  <div v-show="isLoading">
     <div class="flex justify-center items-center h-screen">
       <div
         class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"
       ></div>
     </div>
   </div>
-  <div v-else>
+  <div >
    
 
     <div v-if="authStore.isConfigured === false" >
@@ -198,14 +201,14 @@ const addData = async () => {
                       <p
                         class="text-[#16151C] dark:text-white text-sm leading-[22px] font-light"
                       >
-                        Contacts
+                        Transactions
                       </p>
                     </div>
                     <div class="flex flex-row justify-between items-center">
                       <p
                         class="text-[#16151C] dark:text-white text-[30px] leading-10 font-semibold"
                       >
-                        {{ response }}
+                        {{ transactions }}
                       </p>
                       <div
                         class="flex flex-row space-x-[10px] items-center bg-[#30BE821A] p-[5px] rounded-[5px]"
@@ -242,14 +245,14 @@ const addData = async () => {
                       <p
                         class="text-[#16151C] dark:text-white text-sm leading-[22px] font-light"
                       >
-                        Users
+                        Contacts
                       </p>
                     </div>
                     <div class="flex flex-row justify-between items-center">
                       <p
                         class="text-[#16151C] dark:text-white text-[30px] leading-10 font-semibold"
                       >
-                        {{ transactions }}
+                        {{ contacts }}
                       </p>
                       <div
                         class="flex flex-row space-x-[10px] items-center bg-[#30BE821A] p-[5px] rounded-[5px]"

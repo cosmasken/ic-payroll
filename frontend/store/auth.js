@@ -101,8 +101,6 @@ export const useAuthStore = defineStore("auth", {
           this.whoamiActor = this.identity
             ? actorFromIdentity(this.identity)
             : null;
-
-          //  this.isConfigured = await this.whoamiActor.userExists();
         },
       });
     },
@@ -154,19 +152,16 @@ export const useAuthStore = defineStore("auth", {
     setUserInfo(userInfo) {
       this.userInfo = userInfo;
     },
-    async registration(firstname, lastname, email, phone) {
-      const response = await this.whoamiActor.updateUser({
+    async registration(firstname, lastname, email, phone, wallet) {
+      const response = await this.whoamiActor?.create_employee({
         name: firstname + " " + lastname,
-        email_address: email,
-        email_notifications: true,
+        email: email,
         phone_number: phone,
-        phone_notifications: true,
+        wallet : wallet
       });
       if (response.status === 200) {
-        //  this.isConfigured = true;
-        console.log(" user registered");
-        //  console.log(this.whoamiActor.userExists());
-        this.isConfigured = await this.whoamiActor.userExists();
+        console.log(" employee registered");
+         console.log(response);
       }
 
       console.log(response);

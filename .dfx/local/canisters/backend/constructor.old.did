@@ -28,6 +28,13 @@ type Result =
    err: text;
    ok: text;
  };
+type Response_3 = 
+ record {
+   data: opt Employee;
+   error_text: opt text;
+   status: nat16;
+   status_text: text;
+ };
 type Response_2 = 
  record {
    data: opt text;
@@ -75,6 +82,17 @@ type GetAccountIdentifierResult =
  };
 type GetAccountIdentifierErr = record {message: opt text;};
 type GetAccountIdentifierArgs = record {"principal": principal;};
+type Employee = 
+ record {
+   created_at: int;
+   creator: principal;
+   email: text;
+   id: nat;
+   modified_at: int;
+   name: text;
+   phone_number: text;
+   wallet: text;
+ };
 type CreateTransactionSuccess = record {transaction: Transaction__1;};
 type CreateTransactionResult = 
  variant {
@@ -101,6 +119,13 @@ type CreateTransactionArgs =
    creator: principal;
    destination: principal;
    successful: bool;
+ };
+type CreateEmployeeArgs = 
+ record {
+   email: text;
+   name: text;
+   phone_number: text;
+   wallet: text;
  };
 type AccountIdentifierToBlobSuccess = blob;
 type AccountIdentifierToBlobResult = 
@@ -130,6 +155,7 @@ type Account =
 service : {
   accountIdentifierToBlob: (AccountIdentifier) ->
    (AccountIdentifierToBlobResult);
+  create_employee: (CreateEmployeeArgs) -> (Response_3);
   getAddress: () -> (text);
   getCanisterAddress: () -> (text);
   getCanisterBalance: () -> (text);
@@ -137,8 +163,12 @@ service : {
   getFundingBalance: () -> (text);
   getInvoice: () -> (Account);
   getLogs: () -> (vec text) query;
+  getMyContacts: () -> (vec Employee);
+  getMyContactsLength: () -> (text);
+  getMyTransactionLength: () -> (text);
   getTradingAddress: () -> (text);
   getTradingBalance: () -> (text);
+  getTransactionLength: () -> (text) query;
   getUser: () -> (Response) query;
   getUsersList: () -> (vec record {
                              text;
@@ -147,6 +177,7 @@ service : {
   get_account_identifier: (GetAccountIdentifierArgs) ->
    (GetAccountIdentifierResult) query;
   get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
+  get_transactions: () -> (vec Transaction) query;
   save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
   setCourierApiKey: (text) -> (Response_2);
   transferFromCanistertoSubAccount: () -> (Result);

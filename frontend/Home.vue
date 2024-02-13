@@ -3,11 +3,12 @@ import { ref, watchEffect } from "vue";
 import { useAuthStore } from "./store/auth";
 import SkeletonLoader from "./components/SkeletonLoader.vue";
 import router from "./router/";
-import {formatCkBtc} from "./utils/formatCkBtc"
+import { CheckCircleIcon } from '@heroicons/vue/24/outline'
+import { XMarkIcon } from '@heroicons/vue/20/solid'
 
 const authStore = useAuthStore();
 const darkmode = ref(false);
-let tradingaddress = ref("");
+let unreadNotifications = ref("");
 let fundingaddress = ref("");
 let canisteraddress = ref("");
 let tradingbalance = ref("");
@@ -15,27 +16,50 @@ let fundingbalance = ref("");
 let canisterbalance = ref("");
 let transferresponse = ref("");
 let invoice = ref("");
-let isConfig = ref(false);
+let notifresponse = ref("");
+let showNotification = ref(false);
 
 const logout = () => {
   router.push("/auth");
   authStore.logout();
 };
 
-// const formatCkBtc(amount) = async () => {
 
-// }
+// watchEffect(async () => {
+//   // const res = await authStore.whoamiActor?.getInvoice();
+//   // invoice.value = await res;
+//   setInterval(
+//     async function(){
 
-// const formatCkBtc(amount) {
-//   if (amount === undefined) return "0";
-//   amount = typeof amount === "number" ? BigInt(amount) : amount;
-//   if (!amount) return "0";
-//   const integerPart = amount / 100000000n;
-//   const fractionalPart = amount % 100000000n;
-//   const fractionalPartString = fractionalPart.toString().padStart(8, "0");
-//   const fractionalPartTrimmed = fractionalPartString.replace(/0+$/, ""); // Removes trailing zeroes
-//   return `${integerPart.toLocaleString()}.${fractionalPartTrimmed}`;
-// };
+//       try{
+//         notifresponse = await authStore.whoamiActor?.getUnreadNotificationsLength();
+//     unreadNotifications.value = await notifresponse;
+//     console.log(notifresponse);  
+//       }catch(e){
+//         console.log("Error fetching data");
+//       }finally{
+//         if(unreadNotifications.value > 0){
+//           showNotification.value = true;
+//           console.log("gets here");
+//         };
+//       }
+       
+ 
+//  }, 60000);
+// });
+
+// watchEffect(async () => {
+//   // const res = await authStore.whoamiActor?.getInvoice();
+//   // invoice.value = await res;
+//   setInterval(
+//     async function(){
+//       if(unreadNotifications.value > 0){
+//           showNotification.value = true;
+//          // console.log("gets here");
+//         };
+//  }, 3000);
+// });
+
 
 const isLoading = ref(false);
 
@@ -44,10 +68,6 @@ watchEffect(async () => {
   invoice.value = await res;
 });
 
-//  watchEffect(async () => {
-//    const res = await authStore.getTransactions();
-// console.log(res);
-//  });
 
 watchEffect(async () => {
   const res = await authStore.refresh();
@@ -107,11 +127,9 @@ const toggleDarkMode = () => {
 
 <template class="font-lexend h-full w-full">
   <div
-    class="w-full p-5 h-full flex flex-row space-x-[30px] self-stretch bg-white dark:bg-[#16151C]"
-  >
+    class="w-full p-5 h-full flex flex-row space-x-[30px] self-stretch bg-white dark:bg-[#16151C]" >
     <div
-      class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-screen"
-    >
+      class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-screen">
       <div class="flex flex-col justify-between h-full">
         <div>
           <div v-if="darkmode">
@@ -146,21 +164,7 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Send</span>
-            </router-link>
-            
-            <!--router-link
-              v-if="authStore.isConfigured === true"
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/attendance"
-            >
-              <img
-                src="./assets/attendance.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Attendance</span>
-            </router-link-->
+            </router-link>         
             <router-link
               v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -187,72 +191,21 @@ const toggleDarkMode = () => {
               />
               <span>Transactions</span>
             </router-link>
-            <!--router-link
-              v-if="authStore.isConfigured === true"
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/jobs"
-            >
-              <img
-                src="./assets/jobs.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Jobs</span>
-            </router-link-->
-
-            <!--router-link
-              v-if="authStore.isConfigured === true"
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/candidates"
-            >
-              <img
-                src="./assets/candidates.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Candidates</span>
-            </router-link-->
             <router-link
               v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/candidates"
+              to="/home/notifications"
             >
               <img
                 src="./assets/candidates.png"
                 class="shrink-0 h-6 w-6"
                 alt="Vite logo"
               />
-              <span>Notifications</span>
-            </router-link>
-            <!--router-link
-              v-if="authStore.isConfigured === true"
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/leaves"
-            >
-              <img
-                src="./assets/leaves.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Leaves</span>
-            </router-link-->
-            <!--router-link
-              v-if="authStore.isConfigured === true"
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/holidays"
-            >
-              <img
-                src="./assets/holidays.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Holidays</span>
-            </router-link-->
+              <span v-if="unreadNotifications.value > 0">Notifications {{ unreadNotifications.value }}</span>
+              <span v-else>Notifications</span>
+              
+            </router-link>          
             <router-link
               v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -364,6 +317,33 @@ const toggleDarkMode = () => {
       </div>
     </div>
     <div class="w-full flex flex-col pt-4 pr-[30px] space-y-[46px]">
+        <!-- Global notification live region, render this permanently at the end of the document -->
+  <div aria-live="assertive" class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6">
+    <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+      <!-- Notification panel, dynamically insert this into the live region when it needs to be displayed -->
+      <transition enter-active-class="transform ease-out duration-300 transition" enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
+        <div v-if="showNotification" class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+          <div class="p-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <CheckCircleIcon class="h-6 w-6 text-green-400" aria-hidden="true" />
+              </div>
+              <div class="ml-3 w-0 flex-1 pt-0.5">
+                <p class="text-sm font-medium text-gray-900">Payment Received</p>
+                <p class="mt-1 text-sm text-gray-500">Go to Transactions to view it</p>
+              </div>
+              <div class="ml-4 flex flex-shrink-0">
+                <button type="button" @click="showNotification = false" class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                  <span class="sr-only">Close</span>
+                  <XMarkIcon class="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
+  </div>
       <!-- Header-->
       <div class="w-full sticky flex flex-row justify-between">
         <div class="flex flex-col">
@@ -382,20 +362,13 @@ const toggleDarkMode = () => {
               Canister Address is {{ canisteraddress }}
             </p>
           </div>
-
-          <!--p
-            class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
-          >
-            Trading {{ tradingaddress }} 👋🏻
-          </p-->
-
-          <!--p class="text-[#A2A1A8] dark:text-[#A2A1A8] font-light">Subtitle</p-->
         </div>
         <div class="flex flex-row justify-evenly items-center space-x-5">
           <div
             v-if="fundingaddress.length === 0"
             class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900 dark:border-white"
-          ></div>
+          >
+        </div>
           <div
             v-else
             class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2"

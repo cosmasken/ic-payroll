@@ -40,6 +40,7 @@
     "mo-dev": "^0.12.0",
     "pinia": "^2.1.7",
     "theme-change": "^2.5.0",
+    "vt-notifications": "^0.4.1",
     "vue": "^3.2.37",
     "vue-clipboard3": "^2.0.0",
     "vue-router": "^4.2.5",

@@ -53,6 +53,10 @@ const router = createRouter({
           component: () => import("../views/Jobs.vue"),
         },
         {
+          path: "/home/notifications",
+          component: () => import("../views/Notifications.vue"),
+        },
+        {
           path: "/home/payroll",
           component: () => import("../views/Payroll.vue"),
         },

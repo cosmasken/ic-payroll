@@ -52,6 +52,20 @@ module {
     phone_number : Text;
   };
 
+  //type representing  a user that is an employee/freelancer
+  public type Employee = {
+    id : Nat;
+    name : Text;
+    email : Text;
+    phone_number : Text;
+    creator : Principal;
+    created_at : Int;
+    modified_at : Int;
+    wallet : Text;
+  };
+
+
+
   public type Response<T> = {
     status : Nat16;
     status_text : Text;
@@ -60,10 +74,11 @@ module {
   };
 
   public type Notification = {
+    id : Nat;
+    sender : Text;
     receiver : Text;
     amount : Nat;
-    time : Text;
-    isSuccessful : Bool;
+    isRead : Bool;
   };
 
   // #region get_caller_identifier
@@ -112,20 +127,7 @@ module {
 // #endregion
 
 // #region create_transaction
-  // public type CreateTransactionArgs = {
-  //   id : Nat;
-  //   creator : Principal;
-  //   amount : Text;
-  //   from : Text;
-  //   to: Text;
-  //   memo : ?Blob;
-  // };
-  // id : Nat;
-  //   creator : Principal;
-  //   amount : Nat;
-  //   verifiedAtTime : ?Time.Time;
-  //   successful : Bool;
-  //   destination : Principal;
+
    public type CreateTransactionArgs = {
     creator : Principal;
     amount : Nat;
@@ -169,6 +171,45 @@ module {
   };
 // #endregion
 
+// #region create employee
+  public type CreateEmployeeArgs = {
+    name : Text;
+    email : Text;
+    phone_number : Text;
+    wallet : Text;
+
+  };
+  public type CreateEmployeeResult = Result.Result<CreateEmployeeSuccess, CreateEmployeeErr>;
+  public type CreateEmployeeSuccess = {
+    employee : Employee;
+  };
+  public type CreateEmployeeErr = {
+    message : ?Text;
+    kind : {
+      #InvalidUser;
+      #InvalidPrincipal;
+      #Other;
+    };
+  };
+
+  //region create notification
+  public type CreateNotificationArgs = {
+    sender : Text;
+    receiver : Text;
+    amount : Nat;
+    isRead : Bool;
+  };
+  public type CreateNotificationResult = Result.Result<CreateNotificationSuccess, CreateNotificationErr>;
+  public type CreateNotificationSuccess = {
+    notification : Notification;
+  };
+  public type CreateNotificationErr = {
+    message : ?Text;
+    kind : {
+      #InvalidNotification;
+      #Other;
+    };
+  };
 
 
 };

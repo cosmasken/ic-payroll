@@ -16,10 +16,39 @@ export const idlFactory = ({ IDL }) => {
     'ok' : AccountIdentifierToBlobSuccess,
     'err' : AccountIdentifierToBlobErr,
   });
+  const CreateEmployeeArgs = IDL.Record({
+    'name' : IDL.Text,
+    'email' : IDL.Text,
+    'wallet' : IDL.Text,
+    'phone_number' : IDL.Text,
+  });
+  const Employee = IDL.Record({
+    'id' : IDL.Nat,
+    'creator' : IDL.Principal,
+    'modified_at' : IDL.Int,
+    'name' : IDL.Text,
+    'created_at' : IDL.Int,
+    'email' : IDL.Text,
+    'wallet' : IDL.Text,
+    'phone_number' : IDL.Text,
+  });
+  const Response_3 = IDL.Record({
+    'status' : IDL.Nat16,
+    'data' : IDL.Opt(Employee),
+    'status_text' : IDL.Text,
+    'error_text' : IDL.Opt(IDL.Text),
+  });
   const Subaccount = IDL.Vec(IDL.Nat8);
   const Account = IDL.Record({
     'owner' : IDL.Principal,
     'subaccount' : IDL.Opt(Subaccount),
+  });
+  const Notification__1 = IDL.Record({
+    'id' : IDL.Nat,
+    'isRead' : IDL.Bool,
+    'sender' : IDL.Text,
+    'amount' : IDL.Nat,
+    'receiver' : IDL.Text,
   });
   const User = IDL.Record({
     'email_address' : IDL.Text,
@@ -72,6 +101,33 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Nat,
     'successful' : IDL.Bool,
   });
+  const CreateNotificationArgs = IDL.Record({
+    'isRead' : IDL.Bool,
+    'sender' : IDL.Text,
+    'amount' : IDL.Nat,
+    'receiver' : IDL.Text,
+  });
+  const Notification = IDL.Record({
+    'id' : IDL.Nat,
+    'isRead' : IDL.Bool,
+    'sender' : IDL.Text,
+    'amount' : IDL.Nat,
+    'receiver' : IDL.Text,
+  });
+  const CreateNotificationSuccess = IDL.Record({
+    'notification' : Notification,
+  });
+  const CreateNotificationErr = IDL.Record({
+    'kind' : IDL.Variant({
+      'InvalidNotification' : IDL.Null,
+      'Other' : IDL.Null,
+    }),
+    'message' : IDL.Opt(IDL.Text),
+  });
+  const CreateNotificationResult = IDL.Variant({
+    'ok' : CreateNotificationSuccess,
+    'err' : CreateNotificationErr,
+  });
   const CreateTransactionArgs = IDL.Record({
     'creator' : IDL.Principal,
     'destination' : IDL.Principal,
@@ -116,6 +172,7 @@ export const idlFactory = ({ IDL }) => {
         [AccountIdentifierToBlobResult],
         [],
       ),
+    'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_3], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
@@ -123,8 +180,15 @@ export const idlFactory = ({ IDL }) => {
     'getFundingBalance' : IDL.Func([], [IDL.Text], []),
     'getInvoice' : IDL.Func([], [Account], []),
     'getLogs' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getMyContacts' : IDL.Func([], [IDL.Vec(Employee)], []),
+    'getMyContactsLength' : IDL.Func([], [IDL.Text], []),
+    'getMyTransactionLength' : IDL.Func([], [IDL.Text], []),
+    'getNotifications' : IDL.Func([], [IDL.Vec(Notification__1)], []),
     'getTradingAddress' : IDL.Func([], [IDL.Text], []),
     'getTradingBalance' : IDL.Func([], [IDL.Text], []),
+    'getTransactionLength' : IDL.Func([], [IDL.Text], ['query']),
+    'getUnreadNotifications' : IDL.Func([], [IDL.Vec(Notification__1)], []),
+    'getUnreadNotificationsLength' : IDL.Func([], [IDL.Text], []),
     'getUser' : IDL.Func([], [Response], ['query']),
     'getUsersList' : IDL.Func(
         [],
@@ -142,6 +206,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
+    'save_notification' : IDL.Func(
+        [CreateNotificationArgs],
+        [CreateNotificationResult],
+        [],
+      ),
     'save_transaction' : IDL.Func(
         [CreateTransactionArgs],
         [CreateTransactionResult],

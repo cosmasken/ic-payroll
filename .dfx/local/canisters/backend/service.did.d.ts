@@ -24,6 +24,7 @@ export interface Backend {
     [AccountIdentifier],
     AccountIdentifierToBlobResult
   >,
+  'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_3>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
@@ -31,8 +32,15 @@ export interface Backend {
   'getFundingBalance' : ActorMethod<[], string>,
   'getInvoice' : ActorMethod<[], Account>,
   'getLogs' : ActorMethod<[], Array<string>>,
+  'getMyContacts' : ActorMethod<[], Array<Employee>>,
+  'getMyContactsLength' : ActorMethod<[], string>,
+  'getMyTransactionLength' : ActorMethod<[], string>,
+  'getNotifications' : ActorMethod<[], Array<Notification__1>>,
   'getTradingAddress' : ActorMethod<[], string>,
   'getTradingBalance' : ActorMethod<[], string>,
+  'getTransactionLength' : ActorMethod<[], string>,
+  'getUnreadNotifications' : ActorMethod<[], Array<Notification__1>>,
+  'getUnreadNotificationsLength' : ActorMethod<[], string>,
   'getUser' : ActorMethod<[], Response>,
   'getUsersList' : ActorMethod<[], Array<[string, User]>>,
   'get_account_identifier' : ActorMethod<
@@ -41,6 +49,10 @@ export interface Backend {
   >,
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
   'get_transactions' : ActorMethod<[], Array<Transaction>>,
+  'save_notification' : ActorMethod<
+    [CreateNotificationArgs],
+    CreateNotificationResult
+  >,
   'save_transaction' : ActorMethod<
     [CreateTransactionArgs],
     CreateTransactionResult
@@ -57,6 +69,26 @@ export interface Backend {
   'userLength' : ActorMethod<[], string>,
   'whoami' : ActorMethod<[], Principal>,
 }
+export interface CreateEmployeeArgs {
+  'name' : string,
+  'email' : string,
+  'wallet' : string,
+  'phone_number' : string,
+}
+export interface CreateNotificationArgs {
+  'isRead' : boolean,
+  'sender' : string,
+  'amount' : bigint,
+  'receiver' : string,
+}
+export interface CreateNotificationErr {
+  'kind' : { 'InvalidNotification' : null } |
+    { 'Other' : null },
+  'message' : [] | [string],
+}
+export type CreateNotificationResult = { 'ok' : CreateNotificationSuccess } |
+  { 'err' : CreateNotificationErr };
+export interface CreateNotificationSuccess { 'notification' : Notification }
 export interface CreateTransactionArgs {
   'creator' : Principal,
   'destination' : Principal,
@@ -76,6 +108,16 @@ export interface CreateTransactionErr {
 export type CreateTransactionResult = { 'ok' : CreateTransactionSuccess } |
   { 'err' : CreateTransactionErr };
 export interface CreateTransactionSuccess { 'transaction' : Transaction__1 }
+export interface Employee {
+  'id' : bigint,
+  'creator' : Principal,
+  'modified_at' : bigint,
+  'name' : string,
+  'created_at' : bigint,
+  'email' : string,
+  'wallet' : string,
+  'phone_number' : string,
+}
 export interface GetAccountIdentifierArgs { 'principal' : Principal }
 export interface GetAccountIdentifierErr { 'message' : [] | [string] }
 export type GetAccountIdentifierResult = {
@@ -96,6 +138,20 @@ export interface GetTransactionErr {
 export type GetTransactionResult = { 'ok' : GetTransactionSuccess } |
   { 'err' : GetTransactionErr };
 export interface GetTransactionSuccess { 'transaction' : Transaction__1 }
+export interface Notification {
+  'id' : bigint,
+  'isRead' : boolean,
+  'sender' : string,
+  'amount' : bigint,
+  'receiver' : string,
+}
+export interface Notification__1 {
+  'id' : bigint,
+  'isRead' : boolean,
+  'sender' : string,
+  'amount' : bigint,
+  'receiver' : string,
+}
 export interface Response {
   'status' : number,
   'data' : [] | [User],
@@ -111,6 +167,12 @@ export interface Response_1 {
 export interface Response_2 {
   'status' : number,
   'data' : [] | [string],
+  'status_text' : string,
+  'error_text' : [] | [string],
+}
+export interface Response_3 {
+  'status' : number,
+  'data' : [] | [Employee],
   'status_text' : string,
   'error_text' : [] | [string],
 }

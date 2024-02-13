@@ -39,6 +39,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   type Transaction = Types.Transaction;
   type User = Types.User;
   type Notification = Types.Notification;
+  type Employee = Types.Employee;
    public type TransactionId = Nat32;
 // #endregion
 
@@ -48,11 +49,17 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   private stable var courierApiKey : Text = "";
   private var logData = Buffer.Buffer<Text>(0);
   // The user data store. The key is the user's principal ID.
- private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
- stable var entries : [(Nat, Transaction)] = [];
+  private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
+  stable var entries : [(Nat, Transaction)] = [];
+  stable var users : [(Nat, Employee)] = [];
+  stable var notifs : [(Nat, Notification)] = [];
   stable var transactionCounter : Nat = 0;
+   stable var contactsCounter : Nat = 0;
+   stable var notificationsCounter : Nat = 0;
   let transactions: HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(entries), entries.size(), Nat.equal, Hash.hash);
-let MAX_TRANSACTIONS = 30_000;
+  let contacts: HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(users), users.size(), Nat.equal, Hash.hash);
+  let notifications: HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notifs), notifs.size(), Nat.equal, Hash.hash);
+  let MAX_TRANSACTIONS = 30_000;
 
 
   public shared ({ caller }) func getAddress() : async Text {
@@ -339,7 +346,6 @@ let MAX_TRANSACTIONS = 30_000;
 
 
     let transaction = await save_transaction({
-     // id = 4;
       amount=amount;
       creator= caller;
       destination = Principal.fromText(receiver);
@@ -351,6 +357,11 @@ let MAX_TRANSACTIONS = 30_000;
 switch(transaction) {
   case (#ok(transaction)) {  
     Debug.print("Created new transaction: " # debug_show(transaction)) ;
+     let notification = save_notification({
+      amount=amount;
+      sender= Principal.toText(caller);
+      receiver = receiver;
+      isRead  = false;} );
 
      return {
         status = 200;
@@ -674,31 +685,7 @@ switch(transaction) {
         if (i.creator == caller) {
           return #ok({transaction = i});
         };
-        // If additional permissions are provided
-        // switch (i.permissions) {
-        //   case (null) {
-        //     return #err({
-        //       message = ?"You do not have permission to view this transaction";
-        //       kind = #NotAuthorized;
-        //     });
-        //   };
-        //   case (?permissions) {
-        //     let hasPermission = Array.find<Principal>(
-        //       permissions.canGet,
-        //       func (x : Principal) : Bool {
-        //         return x == caller;
-        //       }
-        //     );
-        //     if (Option.isSome(hasPermission)) {
-        //       return #ok({invoice = i});
-        //     } else {
-        //       return #err({
-        //         message = ?"You do not have permission to view this invoice";
-        //         kind = #NotAuthorized;
-        //       });
-        //     };
-        //   };
-        // };
+     
         #ok({transaction = i});
       };
     };
@@ -722,12 +709,207 @@ switch(transaction) {
       };
 
 // #endregion
+
+
+
   // region get no of transactions
   public query func getTransactionLength() : async Text {
     var size = transactions.size();
     return Nat.toText(size);
   };
 
+  //get no of my transactions
+  public shared ({caller}) func getMyTransactionLength() : async Text {
+    let allEntries
+    = Iter.toArray(transactions.entries());
+    var size = 0;
+    for ((_, transaction) in allEntries.vals()){
+      if(transaction.creator == caller){
+        size += 1;
+      };
+    };
+    return Nat.toText(size);
+  };
+
+  // #region Create User
+  public shared ({caller}) func create_employee (args: Types.CreateEmployeeArgs) : async Types.Response<Employee> {
+    let id : Nat = contactsCounter;
+    // increment counter
+    contactsCounter += 1;
+
+    let employee : Employee = {
+      id;
+      name = args.name;
+      email = args.email;
+      phone_number = args.phone_number;
+      creator = caller ;
+      created_at = Time.now();
+      modified_at = Time.now();
+      wallet = args.wallet;
+    };
+
+    contacts.put(id, employee);
+
+     {status = 200;
+      status_text = "OK";
+      data = ?employee;
+      error_text = null;
+    };
+   // return #ok({employee});
+  };
+
+//get no of employees added by caller
+public shared ({caller}) func getMyContactsLength() : async Text { 
+    let allEntries
+    = Iter.toArray(contacts.entries());
+    var size = 0;
+    for ((_, contact) in allEntries.vals()){
+      if(contact.creator == caller){
+        size += 1;
+      };
+    };
+    return Nat.toText(size);
+  };
+
+  //get employees added by caller
+  public shared ({caller}) func getMyContacts() : async [Employee] {
+    let allEntries = Iter.toArray(contacts.entries());
+  let my_contacts = Buffer.Buffer<Employee>(50);
+  // let outputArray : [Transaction] = [];
+    for ((_, contact) in allEntries.vals()){
+      if(contact.creator == caller){
+        my_contacts.add(contact);
+       // outputArray := Array.append(outputArray, [(transaction)]);
+        Debug.print("Contact: " # debug_show(contact));
+      };
+    };
+
+    return Buffer.toArray<Employee>(my_contacts);
+      };
+
+
+        public shared ({caller}) func save_notification (args: Types.CreateNotificationArgs) : async Types.CreateNotificationResult {
+    let id : Nat = notificationsCounter;
+    // increment counter
+    notificationsCounter += 1;
+
+
+
+     let notification : Notification = {
+          id;
+          sender = args.sender;
+          receiver = args.receiver;
+          amount = args.amount;
+          isRead =args.isRead
+        };
+    
+        notifications.put(id, notification);
+
+        return #ok({notification});
+  };
+  //get notifications added by caller
+  public shared ({caller}) func getNotifications() : async [Notification] {
+    let allEntries = Iter.toArray(notifications.entries());
+  let my_notifications = Buffer.Buffer<Notification>(50);
+  // let outputArray : [Transaction] = [];
+    for ((_, notification) in allEntries.vals()){
+      if(notification.sender == Principal.toText(caller)){
+        my_notifications.add(notification);
+       // outputArray := Array.append(outputArray, [(transaction)]);
+        Debug.print("Notification: " # debug_show(notification));
+      };
+    };
+
+    return Buffer.toArray<Notification>(my_notifications);
+      };
+
+      ///get no of notifications added by caller
+    //   public shared ({caller}) func getMyNotificationsLength() : async Text {
+    // let allEntries
+    // = Iter.toArray(notifications.entries());
+    // var size = 0;
+    // for ((_, notification) in allEntries.vals()){
+    //   if(notification.sender == Principal.toText(caller)){
+
+
+    //     size += 1;
+    //   };
+    // };
+    //   return Nat.toText(size);
+    // };
+    //get notifications added by caller and not read
+    public shared ({caller}) func getUnreadNotifications() : async [Notification] {
+    let allEntries = Iter.toArray(notifications.entries());
+  let my_notifications = Buffer.Buffer<Notification>(50);
+  // let outputArray : [Transaction] = [];
+    for ((_, notification) in allEntries.vals()){
+      if(notification.receiver == Principal.toText(caller) ){
+
+        if(notification.isRead == false){
+      my_notifications.add(notification);
+        Debug.print("Notification: " # debug_show(notification));
+        }
+       
+       // outputArray := Array.append(outputArray, [(transaction)]);
+       
+      };
+    };
+
+    return Buffer.toArray<Notification>(my_notifications);
+      };
+
+      //get no of notifications added by caller and not read
+      public shared ({caller}) func getUnreadNotificationsLength() : async Text {
+    let allEntries
+    = Iter.toArray(notifications.entries());
+    var size = 0;
+    for ((_, notification) in allEntries.vals()){
+      if(notification.receiver == Principal.toText(caller) ){
+        if(notification.isRead == false){
+           size += 1;
+        }
+       
+      };
+    };
+      return Nat.toText(size);
+    };
+
+    //mark notification as read
+    // public shared ({caller}) func markNotificationAsRead(id : Nat) : async Types.Response<Notification> {
+    // let notification = notifications.get(id);
+    // switch(notification){
+    //   case(null){
+    //     return {
+    //       status = 404;
+    //       status_text = "Not Found";
+    //       data = null;
+    //       error_text = ?"Notification not found";
+    //     };
+    //   };
+    //   case (?i) {
+    //     if (i.receiver == Principal.toText(caller)) {
+    //       i.isRead = true;
+    //       notifications.put(id, i);
+    //       return {
+    //         status = 200;
+    //         status_text = "OK";
+    //         data = ?i;
+    //         error_text = null;
+    //       };
+    //     };
+    //     return {
+    //       status = 403;
+    //       status_text = "Forbidden";
+    //       data = null;
+    //       error_text = ?"You are not allowed to mark this notification as read";
+    //     };
+    //   };
+    // };
+    //  };
+
 
 
 };
+
+
+

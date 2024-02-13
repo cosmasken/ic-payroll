@@ -2,6 +2,18 @@
 type AssocList<K, V> = List<(K, V)>;
 type AssocList__1<K, V> = AssocList<K, V>;
 type Branch<K, V> = {left : Trie<K, V>; right : Trie<K, V>; size : Nat};
+type Employee =
+  {
+    created_at : Int;
+    creator : Principal;
+    email : Text;
+    id : Nat;
+    modified_at : Int;
+    name : Text;
+    phone_number : Text;
+    wallet : Text
+  };
+type Employee__1 = Employee;
 type Hash = Nat32;
 type Key__1<K> = {hash : Hash; key : K};
 type Leaf<K, V> = {keyvals : AssocList__1<Key__1<K>, V>; size : Nat};
@@ -26,10 +38,12 @@ type User =
   };
 type User__1 = User;
 actor {
+  stable var contactsCounter : Nat;
   stable var courierApiKey : Text;
   stable var entries : [(Nat, Transaction__2)];
   stable var latestTransactionIndex : Nat;
   stable var transactionCounter : Nat;
   stable var userStore :
-    {#branch : Branch<Text, User__1>; #empty; #leaf : Leaf<Text, User__1>}
+    {#branch : Branch<Text, User__1>; #empty; #leaf : Leaf<Text, User__1>};
+  stable var users : [(Nat, Employee__1)]
 };

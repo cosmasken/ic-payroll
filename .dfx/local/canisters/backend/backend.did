@@ -28,6 +28,13 @@ type Result =
    err: text;
    ok: text;
  };
+type Response_3 = 
+ record {
+   data: opt Employee;
+   error_text: opt text;
+   status: nat16;
+   status_text: text;
+ };
 type Response_2 = 
  record {
    data: opt text;
@@ -48,6 +55,22 @@ type Response =
    error_text: opt text;
    status: nat16;
    status_text: text;
+ };
+type Notification__1 = 
+ record {
+   amount: nat;
+   id: nat;
+   isRead: bool;
+   receiver: text;
+   sender: text;
+ };
+type Notification = 
+ record {
+   amount: nat;
+   id: nat;
+   isRead: bool;
+   receiver: text;
+   sender: text;
  };
 type GetTransactionSuccess = record {transaction: Transaction__1;};
 type GetTransactionResult = 
@@ -75,6 +98,17 @@ type GetAccountIdentifierResult =
  };
 type GetAccountIdentifierErr = record {message: opt text;};
 type GetAccountIdentifierArgs = record {"principal": principal;};
+type Employee = 
+ record {
+   created_at: int;
+   creator: principal;
+   email: text;
+   id: nat;
+   modified_at: int;
+   name: text;
+   phone_number: text;
+   wallet: text;
+ };
 type CreateTransactionSuccess = record {transaction: Transaction__1;};
 type CreateTransactionResult = 
  variant {
@@ -102,10 +136,39 @@ type CreateTransactionArgs =
    destination: principal;
    successful: bool;
  };
+type CreateNotificationSuccess = record {notification: Notification;};
+type CreateNotificationResult = 
+ variant {
+   err: CreateNotificationErr;
+   ok: CreateNotificationSuccess;
+ };
+type CreateNotificationErr = 
+ record {
+   kind: variant {
+           InvalidNotification;
+           Other;
+         };
+   message: opt text;
+ };
+type CreateNotificationArgs = 
+ record {
+   amount: nat;
+   isRead: bool;
+   receiver: text;
+   sender: text;
+ };
+type CreateEmployeeArgs = 
+ record {
+   email: text;
+   name: text;
+   phone_number: text;
+   wallet: text;
+ };
 type Backend = 
  service {
    accountIdentifierToBlob: (AccountIdentifier) ->
     (AccountIdentifierToBlobResult);
+   create_employee: (CreateEmployeeArgs) -> (Response_3);
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);
@@ -114,8 +177,15 @@ type Backend =
    getInvoice: () -> (Account);
    /// * Get latest log items. Log output is capped at 100 items.
    getLogs: () -> (vec text) query;
+   getMyContacts: () -> (vec Employee);
+   getMyContactsLength: () -> (text);
+   getMyTransactionLength: () -> (text);
+   getNotifications: () -> (vec Notification__1);
    getTradingAddress: () -> (text);
    getTradingBalance: () -> (text);
+   getTransactionLength: () -> (text) query;
+   getUnreadNotifications: () -> (vec Notification__1);
+   getUnreadNotificationsLength: () -> (text);
    /// * High-Level API
    /// *  Get the merchant's information
    getUser: () -> (Response) query;
@@ -127,6 +197,7 @@ type Backend =
     (GetAccountIdentifierResult) query;
    get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
    get_transactions: () -> (vec Transaction) query;
+   save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
    save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
    /// * Set the courier API key. Only the owner can set the courier API key.
    setCourierApiKey: (text) -> (Response_2);
