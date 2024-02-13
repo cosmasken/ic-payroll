@@ -1,20 +1,25 @@
 <template>
-  <div class="space-y-2 ">
-    <h1 class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold">Transactions</h1>
-    <p class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold">
-      This is a list of all your transactions
-    </p>
-    <div 
-    class=" p-2 "
-    v-for="notification in notifications" :key="notification.id">
-
-   
-    <TransactionCard :sender="notification.sender" :id="notification.id" :receiver="notification.receiver"
-    :amount="notification.amount" 
-    />
-     </div>
-   
-  </div>
+<!--div class="flex items-center justify-center h-screen bg-gray-900"-->
+      <div class="dark:bg-gray-800 bg-white rounded-lg shadow-xl p-8 w-full h-full">
+        <div class="mb-4">
+          <h1 class="font-semibold text-gray-50">Notifications</h1>
+        </div>
+        <div class=" p-2 " v-for="notification in notifications" :key="notification.id">
+          <div class="flex items-center mb-4">
+          <div class="mr-4">
+            <button class="inline-flex items-center justify-center w-14 h-14 text-blue-100 bg-gray-700 rounded-full">
+            gg    
+            </button>
+          </div>
+          <div>
+            <p class="font-semibold dark:text-gray-50 text-gray-800">You received a payment of <span class="text-blue-500 font-bold">{{ notification.amount}}</span> from {{notification.sender}}</p>
+            <span class="text-xs dark:text-gray-500 text-gray-800">12 min ago</span>
+          </div>
+        </div>
+         
+     </div>      
+      </div>
+ 
 </template>
 <script setup>
 import { useAuthStore } from "../store/auth";
@@ -27,7 +32,7 @@ let notifications = ref([]);
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.getNotifications();
   notifications.value = await res;
-  console.log(notifications);
+  console.log(res);
 });
 
 

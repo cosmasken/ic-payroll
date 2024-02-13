@@ -807,6 +807,7 @@ public shared ({caller}) func getMyContactsLength() : async Text {
 
         return #ok({notification});
   };
+
   //get notifications added by caller
   public shared ({caller}) func getNotifications() : async [Notification] {
     let allEntries = Iter.toArray(notifications.entries());

@@ -69,6 +69,7 @@ export const useAuthStore = defineStore("auth", {
       fundingaddress: null,
       canisteraddress: null,
       canisterbalance: null,
+      notifications: [],
       isConfigured: null,
       userInfo: null,
     };
@@ -118,6 +119,7 @@ export const useAuthStore = defineStore("auth", {
       const fundingaddress = await this.whoamiActor.getFundingAddress();
       const canisteraddress = await this.whoamiActor.getCanisterAddress();
       const canisterbalance = await this.whoamiActor.getCanisterBalance();
+      const notifications = await this.whoamiActor.getNotifications();
       const config = await this.whoamiActor.userExists();
       this.fundingbalance = await fundingbalance;
       this.tradingbalance = await tradingbalance;
