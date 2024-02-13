@@ -33,6 +33,10 @@ const router = createRouter({
           component: () => import("../views/Transfer.vue"),
         },
         {
+          path: "/home/request",
+          component: () => import("../views/Request.vue"),
+        },
+        {
           path: "/home/candidates",
           component: () => import("../views/Candidates.vue"),
         },
@@ -47,6 +51,10 @@ const router = createRouter({
         {
           path: "/home/transactions",
           component: () => import("../views/Transactions.vue"),
+        },
+        {
+          path: "/home/invoices",
+          component: () => import("../views/Invoices.vue"),
         },
         {
           path: "/home/jobs",

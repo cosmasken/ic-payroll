@@ -25,10 +25,11 @@ module {
   };
 
   public type Invoice = {
-    from : Principal;
-    to : Principal;
+    id: Nat;
+    creator : Principal;
+    payer : Principal;
     amount : Nat;
-    memo : Text;
+    memo : ?Text;
     status : InvoiceStatus;
     created_at : Int;
     modified_at : Int;
@@ -41,8 +42,6 @@ module {
     successful : Bool;
     destination : Principal;
   };
-
-
 
     public type User = {
     name : Text;
@@ -207,6 +206,35 @@ module {
     message : ?Text;
     kind : {
       #InvalidNotification;
+      #Other;
+    };
+  };
+
+//creator : Principal;
+    //payer : Principal;
+   // amount : Nat;
+    //memo : ?Text;
+   // status : InvoiceStatus;
+   // created_at : Int;
+   // modified_at : Int;
+
+  //region create invoice
+   public type CreateInvoiceArgs = {
+    
+    payer : Text;
+    amount : Text;
+    memo: ?Text;
+
+  };
+  public type CreateInvoiceResult = Result.Result<CreateInvoiceSuccess, CreateInvoiceErr>;
+  public type CreateInvoiceSuccess = {
+    invoice : Invoice;
+  };
+  public type CreateInvoiceErr = {
+    message : ?Text;
+    kind : {
+      #InvalidUser;
+      #InvalidId;
       #Other;
     };
   };

@@ -164,7 +164,20 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Send</span>
-            </router-link>         
+            </router-link>  
+            <router-link
+              v-if="authStore.isConfigured === true"
+              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
+              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
+              to="/home/request"
+            >
+              <img
+                src="./assets/payroll.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
+              <span>Request</span>
+            </router-link>        
             <router-link
               v-if="authStore.isConfigured === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -190,6 +203,19 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Transactions</span>
+            </router-link>
+            <router-link
+              v-if="authStore.isConfigured === true"
+              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
+              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
+              to="/home/invoices"
+            >
+              <img
+                src="./assets/payroll.png"
+                class="shrink-0 h-6 w-6"
+                alt="Vite logo"
+              />
+              <span>Invoices</span>
             </router-link>
             <router-link
               v-if="authStore.isConfigured === true"

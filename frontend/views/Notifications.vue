@@ -5,7 +5,7 @@
           <h1 class="font-semibold text-gray-50">Notifications</h1>
         </div>
         <div class=" p-2 " v-for="notification in notifications" :key="notification.id">
-          <div class="flex items-center mb-4">
+          <div class="flex items-center mb-4 p-2 rounded-[10px] border border-gray-600">
           <div class="mr-4">
             <button class="inline-flex items-center justify-center w-14 h-14 text-blue-100 bg-gray-700 rounded-full">
             gg    

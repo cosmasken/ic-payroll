@@ -64,6 +64,7 @@ export const useAuthStore = defineStore("auth", {
       payments: null,
       registrationData: {},
       transferArgs: {},
+      requestArgs: {},
       tradingbalance: null,
       fundingbalance: null,
       fundingaddress: null,
@@ -168,6 +169,15 @@ export const useAuthStore = defineStore("auth", {
 
       console.log(response);
     },
+
+    async createInvoice(amount, payer) {
+      const response = await this.whoamiActor?.create_invoice({
+        amount: amount,
+        payer: payer
+      });
+    
+      console.log(response);
+    }
   },
   getters: {
     getConfiguration(state) {

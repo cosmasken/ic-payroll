@@ -40,6 +40,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   type User = Types.User;
   type Notification = Types.Notification;
   type Employee = Types.Employee;
+  type Invoice = Types.Invoice;
    public type TransactionId = Nat32;
 // #endregion
 
@@ -53,13 +54,17 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   stable var entries : [(Nat, Transaction)] = [];
   stable var users : [(Nat, Employee)] = [];
   stable var notifs : [(Nat, Notification)] = [];
+stable var invo : [(Nat, Invoice)] = [];
   stable var transactionCounter : Nat = 0;
    stable var contactsCounter : Nat = 0;
    stable var notificationsCounter : Nat = 0;
+   stable var invoiceCounter : Nat = 0;
   let transactions: HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(entries), entries.size(), Nat.equal, Hash.hash);
   let contacts: HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(users), users.size(), Nat.equal, Hash.hash);
   let notifications: HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notifs), notifs.size(), Nat.equal, Hash.hash);
   let MAX_TRANSACTIONS = 30_000;
+  let invoices: HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invo), invo.size(), Nat.equal, Hash.hash);
+  
 
 
   public shared ({ caller }) func getAddress() : async Text {
@@ -824,20 +829,7 @@ public shared ({caller}) func getMyContactsLength() : async Text {
     return Buffer.toArray<Notification>(my_notifications);
       };
 
-      ///get no of notifications added by caller
-    //   public shared ({caller}) func getMyNotificationsLength() : async Text {
-    // let allEntries
-    // = Iter.toArray(notifications.entries());
-    // var size = 0;
-    // for ((_, notification) in allEntries.vals()){
-    //   if(notification.sender == Principal.toText(caller)){
 
-
-    //     size += 1;
-    //   };
-    // };
-    //   return Nat.toText(size);
-    // };
     //get notifications added by caller and not read
     public shared ({caller}) func getUnreadNotifications() : async [Notification] {
     let allEntries = Iter.toArray(notifications.entries());
@@ -907,6 +899,52 @@ public shared ({caller}) func getMyContactsLength() : async Text {
     //   };
     // };
     //  };
+
+    //create invoice
+     public shared ({caller}) func create_invoice (args: Types.CreateInvoiceArgs) : async Types.CreateInvoiceResult {
+    let id : Nat = invoiceCounter;
+    // increment counter
+    invoiceCounter += 1;
+
+    let invoice : Invoice = {
+      id;
+    creator : Princiapl.toText(caller);
+    payer = args.payer;
+   amount = args.amount;
+    memo : ?args.memo;
+   status = false;
+   created_at = Time.now();
+   modified_at = Time.now();
+    };
+
+    invoices.put(id, invoice);
+return #ok({invoice});
+
+  };
+
+  //region get invoices that have been according to invoice payer or invoice creator .
+  public shared ({caller}) func get_invoices() : async [Invoice] {
+    let allEntries = Iter.toArray(invoices.entries());
+  let my_invoices = Buffer.Buffer<Invoice>(50);
+  // let outputArray : [Transaction] = [];
+    for ((_, invoice) in allEntries.vals()){
+      if(invoice.payer == Principal.toText(caller)){
+        my_invoices.add(invoice);
+       // outputArray := Array.append(outputArray, [(transaction)]);
+        Debug.print("Invoice: " # debug_show(invoice));
+      };
+      if(invoice.payer == Principal.toText(caller)){
+        my_invoices.add(invoice);
+       // outputArray := Array.append(outputArray, [(transaction)]);
+        Debug.print("Invoice: " # debug_show(invoice));
+      };
+    };
+
+    return Buffer.toArray<Invoice>(my_invoices);
+      };
+
+      //if user is creator show invoices 
+
 
 
 
