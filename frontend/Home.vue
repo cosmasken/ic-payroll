@@ -25,28 +25,28 @@ const logout = () => {
 };
 
 
-// watchEffect(async () => {
-//   // const res = await authStore.whoamiActor?.getInvoice();
-//   // invoice.value = await res;
-//   setInterval(
-//     async function(){
+watchEffect(async () => {
+  // const res = await authStore.whoamiActor?.getInvoice();
+  // invoice.value = await res;
+  setInterval(
+    async function(){
 
-//       try{
-//         notifresponse = await authStore.whoamiActor?.getUnreadNotificationsLength();
-//     unreadNotifications.value = await notifresponse;
-//     console.log(notifresponse);  
-//       }catch(e){
-//         console.log("Error fetching data");
-//       }finally{
-//         if(unreadNotifications.value > 0){
-//           showNotification.value = true;
-//           console.log("gets here");
-//         };
-//       }
+      try{
+        notifresponse = await authStore.whoamiActor?.getUnreadNotificationsLength();
+    unreadNotifications.value = await notifresponse;
+    console.log(notifresponse);  
+      }catch(e){
+        console.log("Error fetching data");
+      }finally{
+        if(unreadNotifications.value > 0){
+          showNotification.value = true;
+          console.log("gets here");
+        };
+      }
        
  
-//  }, 60000);
-// });
+ }, 60000);
+});
 
 // watchEffect(async () => {
 //   // const res = await authStore.whoamiActor?.getInvoice();
@@ -153,7 +153,7 @@ const toggleDarkMode = () => {
             </router-link>
       
             <router-link
-              v-if="authStore.isConfigured === true"
+              v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/transfer"
@@ -164,22 +164,9 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Send</span>
-            </router-link>  
+            </router-link>         
             <router-link
-              v-if="authStore.isConfigured === true"
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/request"
-            >
-              <img
-                src="./assets/payroll.png"
-                class="shrink-0 h-6 w-6"
-                alt="Vite logo"
-              />
-              <span>Request</span>
-            </router-link>        
-            <router-link
-              v-if="authStore.isConfigured === true"
+              v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/contacts"
@@ -192,7 +179,7 @@ const toggleDarkMode = () => {
               <span>Contacts</span>
             </router-link>
             <router-link
-              v-if="authStore.isConfigured === true"
+              v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/transactions"
@@ -205,7 +192,7 @@ const toggleDarkMode = () => {
               <span>Transactions</span>
             </router-link>
             <router-link
-              v-if="authStore.isConfigured === true"
+              v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/invoices"
@@ -218,7 +205,7 @@ const toggleDarkMode = () => {
               <span>Invoices</span>
             </router-link>
             <router-link
-              v-if="authStore.isConfigured === true"
+              v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/notifications"
@@ -233,7 +220,7 @@ const toggleDarkMode = () => {
               
             </router-link>          
             <router-link
-              v-if="authStore.isConfigured === true"
+              v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
               to="/home/settings"

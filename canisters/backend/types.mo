@@ -26,17 +26,18 @@ module {
 
   public type Invoice = {
     id: Nat;
-    creator : Principal;
-    payer : Principal;
-    amount : Nat;
+    creator : Text;
+    payer : Text;
+    amount : Text;
     memo : ?Text;
-    status : InvoiceStatus;
+    status : Bool;
     created_at : Int;
     modified_at : Int;
   };
 
     public type Transaction = {
     id : Nat;
+    created_at : Int;
     creator : Principal;
     amount : Nat;
     successful : Bool;
@@ -54,15 +55,11 @@ module {
   //type representing  a user that is an employee/freelancer
   public type Employee = {
     id : Nat;
-    name : Text;
-    email : Text;
-    phone_number : Text;
+    wallet : Text;
     creator : Principal;
     created_at : Int;
     modified_at : Int;
-    wallet : Text;
   };
-
 
 
   public type Response<T> = {
@@ -172,11 +169,7 @@ module {
 
 // #region create employee
   public type CreateEmployeeArgs = {
-    name : Text;
-    email : Text;
-    phone_number : Text;
     wallet : Text;
-
   };
   public type CreateEmployeeResult = Result.Result<CreateEmployeeSuccess, CreateEmployeeErr>;
   public type CreateEmployeeSuccess = {
@@ -209,14 +202,6 @@ module {
       #Other;
     };
   };
-
-//creator : Principal;
-    //payer : Principal;
-   // amount : Nat;
-    //memo : ?Text;
-   // status : InvoiceStatus;
-   // created_at : Int;
-   // modified_at : Int;
 
   //region create invoice
    public type CreateInvoiceArgs = {

@@ -73,7 +73,6 @@ stable var invo : [(Nat, Invoice)] = [];
       subaccount = ?toSubaccount(caller);
     };
     let address = addressConverter_.toText(acc);
-    Debug.print("address:  is  " # debug_show (address));
     return address;
   };
 
@@ -113,7 +112,7 @@ stable var invo : [(Nat, Invoice)] = [];
      /**
     *  Check if user exists and return Bool
     */
-  public query (context) func userExists() : async Bool {
+  public query (context) func isRegistered() : async Bool {
     let caller : Principal = context.caller;
 
     switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
@@ -160,7 +159,6 @@ stable var invo : [(Nat, Invoice)] = [];
 
   public query func getUsersList() : async [(Text, User)] {
     let usersArray : [(Text, User)] = Iter.toArray(Trie.iter(userStore));
-    Debug.print(debug_show (usersArray));
     return usersArray;
   };
 
@@ -171,7 +169,6 @@ stable var invo : [(Nat, Invoice)] = [];
   };
 
   public shared ({ caller }) func getInvoice() : async Types.Account {
-    Debug.print(debug_show (toAccount({ caller; canister = Principal.fromActor(this) })));
     return toAccount({ caller; canister = Principal.fromActor(this) });
 
   };
@@ -252,7 +249,7 @@ stable var invo : [(Nat, Invoice)] = [];
       return #err("Not enough funds available in the Account. Make sure you send at least 100 ckSats.");
     };
 
-    Debug.print("balance:  is  " # debug_show (balance));
+    //Debug.print("balance:  is  " # debug_show (balance));
 
     try {
       // if enough funds were sent, move them to the canisters default account
@@ -270,7 +267,7 @@ stable var invo : [(Nat, Invoice)] = [];
         }
       );
 
-      Debug.print("transferresult:  is  " # debug_show (transferResult));
+      //Debug.print("transferresult:  is  " # debug_show (transferResult));
 
       switch (transferResult) {
         case (#Err(transferError)) {
@@ -359,39 +356,39 @@ stable var invo : [(Nat, Invoice)] = [];
 
     
 
-switch(transaction) {
-  case (#ok(transaction)) {  
-    Debug.print("Created new transaction: " # debug_show(transaction)) ;
-     let notification = save_notification({
-      amount=amount;
-      sender= Principal.toText(caller);
-      receiver = receiver;
-      isRead  = false;} );
+      switch(transaction) {
+        case (#ok(transaction)) {  
+        //  Debug.print("Created new transaction: " # debug_show(transaction)) ;
+          let notification = save_notification({
+            amount=amount;
+            sender= Principal.toText(caller);
+            receiver = receiver;
+            isRead  = false;} );
 
-     return {
-        status = 200;
-        status_text = "Transfer to " # receiver # " is successful";
-        data = null;
-        error_text = ?"";
+          return {
+              status = 200;
+              status_text = "Transfer to " # receiver # " is successful";
+              data = null;
+              error_text = ?"";
+            };
+        };
+
+        case (#err(message)) {
+        //  Debug.print("Transaction failed: " # debug_show(transaction)) ;
+
+          return {
+              status = 403;
+              status_text = "Transfer to " # receiver # " is failed";
+              data = null;
+              error_text = ?"";
+            };
+
+          // Debug.print("Failed to create user with the error: " # message) };
       };
-  };
-
-  case (#err(message)) {
-    Debug.print("Transaction failed: " # debug_show(transaction)) ;
-
-     return {
-        status = 403;
-        status_text = "Transfer to " # receiver # " is failed";
-        data = null;
-        error_text = ?"";
-      };
-
-    // Debug.print("Failed to create user with the error: " # message) };
-};
     //check if transaction is ok or error
-};
+      };
           
-  };
+      };
 
   //transfer from account to canister subaccount
   //works
@@ -504,6 +501,7 @@ switch(transaction) {
   system func timer(setGlobalTimer : Nat64 -> ()) : async () {
     let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
     setGlobalTimer(next);
+   // await check_something();
     await notify();
   };
 
@@ -546,8 +544,8 @@ switch(transaction) {
     };
 
     var response = await CkBtcLedger.get_transactions({
-      start = start;
-      length = 1;
+      start = 0;
+      length = 100;
     });
 
     if (Array.size(response.transactions) > 0) {
@@ -562,6 +560,7 @@ switch(transaction) {
               case (?user) {
                 if (user.email_notifications or user.phone_notifications) {
                   log("Sending notification to: " # debug_show (user.email_address));
+                  Debug.print("Sending notification to:: " # debug_show(user.email_address));
                   await sendNotification(user, t);
                 };
               };
@@ -665,6 +664,7 @@ switch(transaction) {
 
      let transaction : Transaction = {
           id;
+          created_at = Time.now();
           creator = args.creator;
           destination = args.destination;
           amount = args.amount;
@@ -706,8 +706,15 @@ switch(transaction) {
       if(transaction.creator == caller){
         my_transactions.add(transaction);
        // outputArray := Array.append(outputArray, [(transaction)]);
-        Debug.print("Transaction: " # debug_show(transaction));
+        Debug.print("Sent Transaction: " # debug_show(transaction));
       };
+
+      if(transaction.destination == caller){
+        my_transactions.add(transaction);
+       // outputArray := Array.append(outputArray, [(transaction)]);
+        Debug.print("Received Transaction: " # debug_show(transaction));
+      };
+
     };
 
     return Buffer.toArray<Transaction>(my_transactions);
@@ -744,9 +751,6 @@ switch(transaction) {
 
     let employee : Employee = {
       id;
-      name = args.name;
-      email = args.email;
-      phone_number = args.phone_number;
       creator = caller ;
       created_at = Time.now();
       modified_at = Time.now();
@@ -785,7 +789,7 @@ public shared ({caller}) func getMyContactsLength() : async Text {
       if(contact.creator == caller){
         my_contacts.add(contact);
        // outputArray := Array.append(outputArray, [(transaction)]);
-        Debug.print("Contact: " # debug_show(contact));
+       // Debug.print("Contact: " # debug_show(contact));
       };
     };
 
@@ -822,7 +826,7 @@ public shared ({caller}) func getMyContactsLength() : async Text {
       if(notification.sender == Principal.toText(caller)){
         my_notifications.add(notification);
        // outputArray := Array.append(outputArray, [(transaction)]);
-        Debug.print("Notification: " # debug_show(notification));
+       // Debug.print("Notification: " # debug_show(notification));
       };
     };
 
@@ -840,7 +844,7 @@ public shared ({caller}) func getMyContactsLength() : async Text {
 
         if(notification.isRead == false){
       my_notifications.add(notification);
-        Debug.print("Notification: " # debug_show(notification));
+      //  Debug.print("Notification: " # debug_show(notification));
         }
        
        // outputArray := Array.append(outputArray, [(transaction)]);
@@ -901,50 +905,91 @@ public shared ({caller}) func getMyContactsLength() : async Text {
     //  };
 
     //create invoice
-     public shared ({caller}) func create_invoice (args: Types.CreateInvoiceArgs) : async Types.CreateInvoiceResult {
-    let id : Nat = invoiceCounter;
-    // increment counter
-    invoiceCounter += 1;
+  //    public shared ({caller}) func create_invoice (args: Types.CreateInvoiceArgs) : async Types.CreateInvoiceResult {
+  //   let id : Nat = invoiceCounter;
 
-    let invoice : Invoice = {
-      id;
-    creator : Princiapl.toText(caller);
-    payer = args.payer;
-   amount = args.amount;
-    memo : ?args.memo;
-   status = false;
-   created_at = Time.now();
-   modified_at = Time.now();
-    };
+  //   let creator = Principal.toText(caller);
+  //   // increment counter
+  //   invoiceCounter += 1;
 
-    invoices.put(id, invoice);
-return #ok({invoice});
+  //   let invoice : Invoice = {
+  //     id;
+  //   creator : creator;
+  //   payer = args.payer;
+  //  amount = args.amount;
+  //   memo : ?args.memo;
+  //  status = false;
+  //  created_at = Time.now();
+  //  modified_at = Time.now();
+  //   };
 
-  };
+  //   invoices.put(id, invoice);
+  //   return #ok({invoice});
+
+  //    };
 
   //region get invoices that have been according to invoice payer or invoice creator .
-  public shared ({caller}) func get_invoices() : async [Invoice] {
-    let allEntries = Iter.toArray(invoices.entries());
-  let my_invoices = Buffer.Buffer<Invoice>(50);
-  // let outputArray : [Transaction] = [];
-    for ((_, invoice) in allEntries.vals()){
-      if(invoice.payer == Principal.toText(caller)){
-        my_invoices.add(invoice);
-       // outputArray := Array.append(outputArray, [(transaction)]);
-        Debug.print("Invoice: " # debug_show(invoice));
-      };
-      if(invoice.payer == Principal.toText(caller)){
-        my_invoices.add(invoice);
-       // outputArray := Array.append(outputArray, [(transaction)]);
-        Debug.print("Invoice: " # debug_show(invoice));
-      };
-    };
+  // public shared ({caller}) func get_invoices() : async [Invoice] {
+  //   let allEntries = Iter.toArray(invoices.entries());
+  // let my_invoices = Buffer.Buffer<Invoice>(50);
+  // // let outputArray : [Transaction] = [];
+  //   for ((_, invoice) in allEntries.vals()){
+  //     if(invoice.payer == Principal.toText(caller)){
+  //       my_invoices.add(invoice);
+  //      // outputArray := Array.append(outputArray, [(transaction)]);
+  //       Debug.print("Invoice: " # debug_show(invoice));
+  //     };
+  //     if(invoice.payer == Principal.toText(caller)){
+  //       my_invoices.add(invoice);
+  //      // outputArray := Array.append(outputArray, [(transaction)]);
+  //       Debug.print("Invoice: " # debug_show(invoice));
+  //     };
+  //   };
 
-    return Buffer.toArray<Invoice>(my_invoices);
-      };
+  //   return Buffer.toArray<Invoice>(my_invoices);
+  //     };
 
       //if user is creator show invoices 
 
+public func check_something() : async () {
+
+   var start : Nat = _startBlock;
+    if (latestTransactionIndex > 0) {
+      start := latestTransactionIndex + 1;
+    };
+
+    var response = await CkBtcLedger.get_transactions({
+      start = start;
+      length = 100;
+    });
+
+   //  Debug.print("result is :  successful " # debug_show(response.transactions) );
+ if (response.transactions[0].kind == "transfer") {
+        let t = response.transactions[0];
+     //   Debug.print("transactions:  are successful " # debug_show(response.transactions[0]) );
+        switch (t.transfer) {
+          case (?transfer) {
+            let to = transfer.to.owner;
+            switch (Trie.get(userStore, userKey(Principal.toText(to)), Text.equal)) {
+              case (?user) {
+           //     Debug.print("user with transaction :  is  " # debug_show(user));
+                // if (user.email_notifications or user.phone_notifications) {
+                //   log("Sending notification to: " # debug_show (user.email_address));
+                //   await sendNotification(user, t);
+                // };
+              };
+              case null {
+                // No action required if merchant not found
+              };
+            };
+          };
+          case null {
+            // No action required if transfer is null
+          };
+        };
+      };
+
+}
 
 
 

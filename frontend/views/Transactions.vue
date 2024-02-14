@@ -10,7 +10,7 @@
 
    
     <TransactionCard :sender="transaction.creator" :id="transaction.id" :receiver="transaction.destination"
-    :amount="transaction.amount" 
+    :amount="transaction.amount"  
     />
      </div>
    

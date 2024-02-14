@@ -24,6 +24,7 @@ export interface Backend {
     [AccountIdentifier],
     AccountIdentifierToBlobResult
   >,
+  'check_something' : ActorMethod<[], undefined>,
   'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_3>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
@@ -49,6 +50,7 @@ export interface Backend {
   >,
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
   'get_transactions' : ActorMethod<[], Array<Transaction>>,
+  'isRegistered' : ActorMethod<[], boolean>,
   'save_notification' : ActorMethod<
     [CreateNotificationArgs],
     CreateNotificationResult
@@ -65,16 +67,10 @@ export interface Backend {
     Response_1
   >,
   'updateUser' : ActorMethod<[User], Response>,
-  'userExists' : ActorMethod<[], boolean>,
   'userLength' : ActorMethod<[], string>,
   'whoami' : ActorMethod<[], Principal>,
 }
-export interface CreateEmployeeArgs {
-  'name' : string,
-  'email' : string,
-  'wallet' : string,
-  'phone_number' : string,
-}
+export interface CreateEmployeeArgs { 'wallet' : string }
 export interface CreateNotificationArgs {
   'isRead' : boolean,
   'sender' : string,
@@ -112,11 +108,8 @@ export interface Employee {
   'id' : bigint,
   'creator' : Principal,
   'modified_at' : bigint,
-  'name' : string,
   'created_at' : bigint,
-  'email' : string,
   'wallet' : string,
-  'phone_number' : string,
 }
 export interface GetAccountIdentifierArgs { 'principal' : Principal }
 export interface GetAccountIdentifierErr { 'message' : [] | [string] }
@@ -183,6 +176,7 @@ export interface Transaction {
   'id' : bigint,
   'creator' : Principal,
   'destination' : Principal,
+  'created_at' : bigint,
   'amount' : bigint,
   'successful' : boolean,
 }
@@ -190,6 +184,7 @@ export interface Transaction__1 {
   'id' : bigint,
   'creator' : Principal,
   'destination' : Principal,
+  'created_at' : bigint,
   'amount' : bigint,
   'successful' : boolean,
 }

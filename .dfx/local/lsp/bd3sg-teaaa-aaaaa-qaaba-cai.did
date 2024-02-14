@@ -17,6 +17,7 @@ type Backend = service {
   accountIdentifierToBlob : (AccountIdentifier) -> (
       AccountIdentifierToBlobResult,
     );
+  check_something : () -> ();
   create_employee : (CreateEmployeeArgs) -> (Response_3);
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
@@ -41,6 +42,7 @@ type Backend = service {
     ) query;
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions : () -> (vec Transaction) query;
+  isRegistered : () -> (bool) query;
   save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
   save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
   setCourierApiKey : (text) -> (Response_2);
@@ -48,16 +50,10 @@ type Backend = service {
   transferFromSubAccountToCanister : (nat) -> (Result);
   transferFromSubAccountToSubAccount : (text, nat) -> (Response_1);
   updateUser : (User) -> (Response);
-  userExists : () -> (bool) query;
   userLength : () -> (text) query;
   whoami : () -> (principal);
 };
-type CreateEmployeeArgs = record {
-  name : text;
-  email : text;
-  wallet : text;
-  phone_number : text;
-};
+type CreateEmployeeArgs = record { wallet : text };
 type CreateNotificationArgs = record {
   isRead : bool;
   sender : text;
@@ -100,11 +96,8 @@ type Employee = record {
   id : nat;
   creator : principal;
   modified_at : int;
-  name : text;
   created_at : int;
-  email : text;
   wallet : text;
-  phone_number : text;
 };
 type GetAccountIdentifierArgs = record { "principal" : principal };
 type GetAccountIdentifierErr = record { message : opt text };
@@ -169,6 +162,7 @@ type Transaction = record {
   id : nat;
   creator : principal;
   destination : principal;
+  created_at : int;
   amount : nat;
   successful : bool;
 };
@@ -176,6 +170,7 @@ type Transaction__1 = record {
   id : nat;
   creator : principal;
   destination : principal;
+  created_at : int;
   amount : nat;
   successful : bool;
 };

@@ -33,10 +33,6 @@ const router = createRouter({
           component: () => import("../views/Transfer.vue"),
         },
         {
-          path: "/home/request",
-          component: () => import("../views/Request.vue"),
-        },
-        {
           path: "/home/candidates",
           component: () => import("../views/Candidates.vue"),
         },

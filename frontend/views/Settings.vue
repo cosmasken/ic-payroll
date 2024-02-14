@@ -80,9 +80,9 @@ const cancel = () => {
     <div class="card-body">
       <div>
         <h2 class="card-title">Profile</h2>
-        <p class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold">Name: {{ name }}</p>
-        <p class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold">Email: {{ email }}</p>
-        <p class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold">Phone:  {{ phone }}</p>
+        <p class="uppercase tracking-widest text-gray-800  font-semibold">Name: {{ name }}</p>
+        <p class="uppercase tracking-widest text-gray-800  font-semibold">Email: {{ email }}</p>
+        <p class="uppercase tracking-widest text-gray-800  font-semibold">Phone:  {{ phone }}</p>
         
         <!--div class="card-actions justify-end">
           <button class="btn btn-primary">Okay</button>

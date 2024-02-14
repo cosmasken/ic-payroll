@@ -20,7 +20,7 @@
                 ></path>
               </svg>
             </div>
-            <p class="truncate text-sm leading-6 text-black"> Transaction Id:{{ id }}</p>
+            <p class="truncate text-sm leading-6 text-black">Transaction Id : {{ id }}</p>
           </div>
           <div>
             <span
@@ -31,7 +31,8 @@
                   <circle cx="3" cy="3" r="3" />
                 </svg>
               </div-->
-              Successful</span
+              
+              {{ created_at }}</span
             >
           </div>
         </div>
@@ -60,7 +61,11 @@
     'sender',
     'id',
     'receiver',
-    'amount'
-  ])
+    'amount',
+    'created_at'
+  ]);
+
+ // let myDate = new Date(timestamp.seconds * 1000)
+
   </script>
   

@@ -4,18 +4,10 @@ import { ref, watchEffect } from "vue";
 import OverviewCard from "../components/OverviewCard.vue";
 import { useAuthStore } from "../store/auth";
 const authStore = useAuthStore();
-let response = ref(0);
 let transactions = ref(0);
 let contacts = ref(0);
 let isLoading = ref(false);
-let walletAddress = ref("");
 let tradingbalance = ref("");
-
-const getTime = () => {
-  const date = new Date();
-  const time = date.getTime();
-  return time;
-};
 
 
 watchEffect(async () => {
@@ -25,10 +17,10 @@ watchEffect(async () => {
 watchEffect(async () => {
   isLoading.value = true;
   try {
-    const response = await authStore.whoamiActor?.getMyTransactionLength();
-    const data = await authStore.whoamiActor?.getMyContactsLength();
-    transactions.value = response;
-    contacts.value = data;
+    const transactionLength = await authStore.whoamiActor?.getMyTransactionLength();
+    const contactsLength = await authStore.whoamiActor?.getMyContactsLength();
+    transactions.value = transactionLength;
+    contacts.value = contactsLength;
     //await new Promise((resolve) => setTimeout(resolve, 2000));
   } catch (e) {
     console.log("Error fetching data");
@@ -41,7 +33,6 @@ const registrationData = {
   last_name: "",
   email: "",
   phone_number: "",
-  wallet_address: authStore.fundingaddress,
 };
 const addData = async () => {
   isLoading.value = true;
@@ -54,13 +45,13 @@ const addData = async () => {
   console.log(firstname, lastname, email, phone);
 
   try {
-    const response = authStore.registration(firstname, lastname, email, phone);
+    const response = authStore.update_user(firstname, lastname, email, phone);
     await new Promise((resolve) => setTimeout(resolve, 2000));
   } catch (error) {
     console.error("Error submitting data:", error);
   } finally {
     isLoading.value = false;
-    // authStore.configure();
+   
   }
 };
 </script>
@@ -75,7 +66,7 @@ const addData = async () => {
   <div >
    
 
-    <div v-if="authStore.isConfigured === false" >
+    <div v-if="authStore.isRegistered === false" >
       <div class="flex items-center justify-center h-screen">
         <div class="text-center card">
           <p class="text-lg font-semibold mb-3">Welcome to the app!</p>
@@ -134,13 +125,10 @@ const addData = async () => {
       </div>
     </div>
 
-    <div v-else >
+    <div v-else>
       <div class="p-5 flex flex-col gap-5">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div
-    class="rounded-lg py-2 px-4 shadow-sm bg-[#EDFFFB]"
-   
-  >
+          <div class="rounded-lg py-2 px-4 shadow-sm bg-[#EDFFFB]">
     <div class="flex flex-col space-y-2">
       <p class="text-base font-semibold text-[#36B293]">
         Balance
@@ -282,5 +270,6 @@ const addData = async () => {
         </div>
       </div>
     </div>
+
   </div>
 </template>

@@ -24,10 +24,10 @@ const authStore = useAuthStore();
 let invoices = ref([]);
 
 
-watchEffect(async () => {
-  const res = await authStore.whoamiActor?.get_invoices();
-  invoices.value = await res;
-});
+// watchEffect(async () => {
+//   const res = await authStore.whoamiActor?.get_invoices();
+//   invoices.value = await res;
+// });
 
 
 </script>

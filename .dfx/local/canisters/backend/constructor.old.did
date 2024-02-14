@@ -9,6 +9,7 @@ type User =
 type Transaction__1 = 
  record {
    amount: nat;
+   created_at: int;
    creator: principal;
    destination: principal;
    id: nat;
@@ -17,6 +18,7 @@ type Transaction__1 =
 type Transaction = 
  record {
    amount: nat;
+   created_at: int;
    creator: principal;
    destination: principal;
    id: nat;
@@ -56,6 +58,22 @@ type Response =
    status: nat16;
    status_text: text;
  };
+type Notification__1 = 
+ record {
+   amount: nat;
+   id: nat;
+   isRead: bool;
+   receiver: text;
+   sender: text;
+ };
+type Notification = 
+ record {
+   amount: nat;
+   id: nat;
+   isRead: bool;
+   receiver: text;
+   sender: text;
+ };
 type GetTransactionSuccess = record {transaction: Transaction__1;};
 type GetTransactionResult = 
  variant {
@@ -86,11 +104,8 @@ type Employee =
  record {
    created_at: int;
    creator: principal;
-   email: text;
    id: nat;
    modified_at: int;
-   name: text;
-   phone_number: text;
    wallet: text;
  };
 type CreateTransactionSuccess = record {transaction: Transaction__1;};
@@ -120,13 +135,28 @@ type CreateTransactionArgs =
    destination: principal;
    successful: bool;
  };
-type CreateEmployeeArgs = 
- record {
-   email: text;
-   name: text;
-   phone_number: text;
-   wallet: text;
+type CreateNotificationSuccess = record {notification: Notification;};
+type CreateNotificationResult = 
+ variant {
+   err: CreateNotificationErr;
+   ok: CreateNotificationSuccess;
  };
+type CreateNotificationErr = 
+ record {
+   kind: variant {
+           InvalidNotification;
+           Other;
+         };
+   message: opt text;
+ };
+type CreateNotificationArgs = 
+ record {
+   amount: nat;
+   isRead: bool;
+   receiver: text;
+   sender: text;
+ };
+type CreateEmployeeArgs = record {wallet: text;};
 type AccountIdentifierToBlobSuccess = blob;
 type AccountIdentifierToBlobResult = 
  variant {
@@ -155,6 +185,7 @@ type Account =
 service : {
   accountIdentifierToBlob: (AccountIdentifier) ->
    (AccountIdentifierToBlobResult);
+  check_something: () -> ();
   create_employee: (CreateEmployeeArgs) -> (Response_3);
   getAddress: () -> (text);
   getCanisterAddress: () -> (text);
@@ -166,9 +197,12 @@ service : {
   getMyContacts: () -> (vec Employee);
   getMyContactsLength: () -> (text);
   getMyTransactionLength: () -> (text);
+  getNotifications: () -> (vec Notification__1);
   getTradingAddress: () -> (text);
   getTradingBalance: () -> (text);
   getTransactionLength: () -> (text) query;
+  getUnreadNotifications: () -> (vec Notification__1);
+  getUnreadNotificationsLength: () -> (text);
   getUser: () -> (Response) query;
   getUsersList: () -> (vec record {
                              text;
@@ -178,13 +212,14 @@ service : {
    (GetAccountIdentifierResult) query;
   get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions: () -> (vec Transaction) query;
+  isRegistered: () -> (bool) query;
+  save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
   save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
   setCourierApiKey: (text) -> (Response_2);
   transferFromCanistertoSubAccount: () -> (Result);
   transferFromSubAccountToCanister: (nat) -> (Result);
   transferFromSubAccountToSubAccount: (text, nat) -> (Response_1);
   updateUser: (User) -> (Response);
-  userExists: () -> (bool) query;
   userLength: () -> (text) query;
   whoami: () -> (principal);
 }

@@ -6,21 +6,34 @@ type Employee =
   {
     created_at : Int;
     creator : Principal;
-    email : Text;
     id : Nat;
     modified_at : Int;
-    name : Text;
-    phone_number : Text;
     wallet : Text
   };
 type Employee__1 = Employee;
 type Hash = Nat32;
+type Invoice =
+  {
+    amount : Text;
+    created_at : Int;
+    creator : Text;
+    id : Nat;
+    memo : ?Text;
+    modified_at : Int;
+    payer : Text;
+    status : Bool
+  };
+type Invoice__1 = Invoice;
 type Key__1<K> = {hash : Hash; key : K};
 type Leaf<K, V> = {keyvals : AssocList__1<Key__1<K>, V>; size : Nat};
 type List<T> = ?(T, List<T>);
+type Notification =
+  {amount : Nat; id : Nat; isRead : Bool; receiver : Text; sender : Text};
+type Notification__1 = Notification;
 type Transaction =
   {
     amount : Nat;
+    created_at : Int;
     creator : Principal;
     destination : Principal;
     id : Nat;
@@ -41,7 +54,11 @@ actor {
   stable var contactsCounter : Nat;
   stable var courierApiKey : Text;
   stable var entries : [(Nat, Transaction__2)];
+  stable var invo : [(Nat, Invoice__1)];
+  stable var invoiceCounter : Nat;
   stable var latestTransactionIndex : Nat;
+  stable var notificationsCounter : Nat;
+  stable var notifs : [(Nat, Notification__1)];
   stable var transactionCounter : Nat;
   stable var userStore :
     {#branch : Branch<Text, User__1>; #empty; #leaf : Leaf<Text, User__1>};

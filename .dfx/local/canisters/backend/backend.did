@@ -9,6 +9,7 @@ type User =
 type Transaction__1 = 
  record {
    amount: nat;
+   created_at: int;
    creator: principal;
    destination: principal;
    id: nat;
@@ -17,6 +18,7 @@ type Transaction__1 =
 type Transaction = 
  record {
    amount: nat;
+   created_at: int;
    creator: principal;
    destination: principal;
    id: nat;
@@ -102,11 +104,8 @@ type Employee =
  record {
    created_at: int;
    creator: principal;
-   email: text;
    id: nat;
    modified_at: int;
-   name: text;
-   phone_number: text;
    wallet: text;
  };
 type CreateTransactionSuccess = record {transaction: Transaction__1;};
@@ -157,17 +156,12 @@ type CreateNotificationArgs =
    receiver: text;
    sender: text;
  };
-type CreateEmployeeArgs = 
- record {
-   email: text;
-   name: text;
-   phone_number: text;
-   wallet: text;
- };
+type CreateEmployeeArgs = record {wallet: text;};
 type Backend = 
  service {
    accountIdentifierToBlob: (AccountIdentifier) ->
     (AccountIdentifierToBlobResult);
+   check_something: () -> ();
    create_employee: (CreateEmployeeArgs) -> (Response_3);
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
@@ -197,6 +191,8 @@ type Backend =
     (GetAccountIdentifierResult) query;
    get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
    get_transactions: () -> (vec Transaction) query;
+   /// *  Check if user exists and return Bool
+   isRegistered: () -> (bool) query;
    save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
    save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
    /// * Set the courier API key. Only the owner can set the courier API key.
@@ -206,8 +202,6 @@ type Backend =
    transferFromSubAccountToSubAccount: (text, nat) -> (Response_1);
    /// * Update the merchant's information
    updateUser: (User) -> (Response);
-   /// *  Check if user exists and return Bool
-   userExists: () -> (bool) query;
    userLength: () -> (text) query;
    whoami: () -> (principal);
  };

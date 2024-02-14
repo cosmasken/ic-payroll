@@ -16,21 +16,13 @@ export const idlFactory = ({ IDL }) => {
     'ok' : AccountIdentifierToBlobSuccess,
     'err' : AccountIdentifierToBlobErr,
   });
-  const CreateEmployeeArgs = IDL.Record({
-    'name' : IDL.Text,
-    'email' : IDL.Text,
-    'wallet' : IDL.Text,
-    'phone_number' : IDL.Text,
-  });
+  const CreateEmployeeArgs = IDL.Record({ 'wallet' : IDL.Text });
   const Employee = IDL.Record({
     'id' : IDL.Nat,
     'creator' : IDL.Principal,
     'modified_at' : IDL.Int,
-    'name' : IDL.Text,
     'created_at' : IDL.Int,
-    'email' : IDL.Text,
     'wallet' : IDL.Text,
-    'phone_number' : IDL.Text,
   });
   const Response_3 = IDL.Record({
     'status' : IDL.Nat16,
@@ -77,6 +69,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat,
     'creator' : IDL.Principal,
     'destination' : IDL.Principal,
+    'created_at' : IDL.Int,
     'amount' : IDL.Nat,
     'successful' : IDL.Bool,
   });
@@ -98,6 +91,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat,
     'creator' : IDL.Principal,
     'destination' : IDL.Principal,
+    'created_at' : IDL.Int,
     'amount' : IDL.Nat,
     'successful' : IDL.Bool,
   });
@@ -172,6 +166,7 @@ export const idlFactory = ({ IDL }) => {
         [AccountIdentifierToBlobResult],
         [],
       ),
+    'check_something' : IDL.Func([], [], []),
     'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_3], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
@@ -206,6 +201,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
+    'isRegistered' : IDL.Func([], [IDL.Bool], ['query']),
     'save_notification' : IDL.Func(
         [CreateNotificationArgs],
         [CreateNotificationResult],
@@ -225,7 +221,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'updateUser' : IDL.Func([User], [Response], []),
-    'userExists' : IDL.Func([], [IDL.Bool], ['query']),
     'userLength' : IDL.Func([], [IDL.Text], ['query']),
     'whoami' : IDL.Func([], [IDL.Principal], []),
   });

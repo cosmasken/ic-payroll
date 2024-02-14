@@ -71,7 +71,7 @@ export const useAuthStore = defineStore("auth", {
       canisteraddress: null,
       canisterbalance: null,
       notifications: [],
-      isConfigured: null,
+      isRegistered: null,
       userInfo: null,
     };
   },
@@ -87,7 +87,7 @@ export const useAuthStore = defineStore("auth", {
       this.identity = identity;
       this.whoamiActor = whoamiActor;
       this.isReady = true;
-      this.isConfigured = false;
+      this.isRegistered = false;
     },
     async login() {
       const authClient = toRaw(this.authClient);
@@ -103,6 +103,9 @@ export const useAuthStore = defineStore("auth", {
           this.whoamiActor = this.identity
             ? actorFromIdentity(this.identity)
             : null;
+
+          this.isRegistered = await this.whoamiActor.isRegistered();
+          console.log("is registered" + this.isRegistered )
         },
       });
     },
@@ -110,7 +113,7 @@ export const useAuthStore = defineStore("auth", {
     async getBalance() {
       // const whoamiActor = toRaw(this.whoamiActor);
       const balance = await whoamiActor.getTradingBalance();
-      this.balance = await balance;
+      this.tradingbalance = await balance;
     },
 
     async refresh() {
@@ -121,13 +124,13 @@ export const useAuthStore = defineStore("auth", {
       const canisteraddress = await this.whoamiActor.getCanisterAddress();
       const canisterbalance = await this.whoamiActor.getCanisterBalance();
       const notifications = await this.whoamiActor.getNotifications();
-      const config = await this.whoamiActor.userExists();
+      const registered = await this.whoamiActor.isRegistered();
       this.fundingbalance = await fundingbalance;
       this.tradingbalance = await tradingbalance;
       this.fundingaddress = await fundingaddress;
       this.canisteraddress = await canisteraddress;
       this.canisterbalance = await canisterbalance;
-      this.isConfigured = await config;
+      this.isRegistered = await registered;
     },
     async logout() {
       const authClient = toRaw(this.authClient);
@@ -155,19 +158,33 @@ export const useAuthStore = defineStore("auth", {
     setUserInfo(userInfo) {
       this.userInfo = userInfo;
     },
-    async registration(firstname, lastname, email, phone, wallet) {
-      const response = await this.whoamiActor?.create_employee({
+    async update_user(firstname, lastname, email, phone) {
+      const response = await this.whoamiActor?.updateUser({
         name: firstname + " " + lastname,
-        email: email,
+        email_address: email,
         phone_number: phone,
-        wallet : wallet
+        email_notifications: true,
+        phone_notifications: true,
+      });
+      console.log(response);
+      if (response.status === 200) {
+        console.log(" user registered");
+         console.log(response);
+         this.isRegistered = true;
+      }
+
+      console.log(response);
+    },
+
+    async create_employee(wallet) {
+      const response = await this.whoamiActor?.create_employee({
+        wallet : wallet,
       });
       if (response.status === 200) {
         console.log(" employee registered");
          console.log(response);
       }
 
-      console.log(response);
     },
 
     async createInvoice(amount, payer) {
@@ -180,8 +197,8 @@ export const useAuthStore = defineStore("auth", {
     }
   },
   getters: {
-    getConfiguration(state) {
-      return state.isConfigured;
+    registrationStatus(state) {
+      return state.isRegistered;
     },
   },
 });
