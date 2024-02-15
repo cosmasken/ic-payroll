@@ -46,8 +46,6 @@ module {
     destination : Text;
   };
 
-  
-
   public type Transaction = {
     id : Nat;
     created_at : Int;

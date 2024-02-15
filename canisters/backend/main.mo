@@ -31,6 +31,7 @@ import CRC32 "./CRC32";
 import Hash "mo:base/Hash";
 import Random "mo:base/Random";
 import Hex "./Hex";
+import Timer "mo:base/Timer";
 
 shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
@@ -45,6 +46,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   type Invoice = Types.Invoice;
   public type TransactionId = Nat32;
   let r = Random.Finite("username");
+  
   // #endregion
 
   let addressConverter_ = Utils.addressConverter;
@@ -54,18 +56,18 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   private var logData = Buffer.Buffer<Text>(0);
   // The user data store. The key is the user's principal ID.
   private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
-  stable var entries : [(Nat, Transaction)] = [];
-  stable var users : [(Nat, Employee)] = [];
-  stable var notifs : [(Nat, Notification)] = [];
+  stable var transactionsStable : [(Nat, Transaction)] = [];
+  stable var contactsStable : [(Nat, Employee)] = [];
+  stable var notificationsSable : [(Nat, Notification)] = [];
   stable var invo : [(Nat, Invoice)] = [];
   stable var transactionCounter : Nat = 0;
   stable var contactsCounter : Nat = 0;
   stable var notificationsCounter : Nat = 0;
   stable var invoiceCounter : Nat = 0;
-  let transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(entries), entries.size(), Nat.equal, Hash.hash);
-  let contacts : HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(users), users.size(), Nat.equal, Hash.hash);
-  let notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notifs), notifs.size(), Nat.equal, Hash.hash);
-  let MAX_TRANSACTIONS = 30_000;
+  var transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
+  var contacts : HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
+  var notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notificationsSable), notificationsSable.size(), Nat.equal, Hash.hash);
+  var MAX_TRANSACTIONS = 30_000;
   let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invo), invo.size(), Nat.equal, Hash.hash);
 
   public shared ({ caller }) func getAddress() : async Text {
@@ -76,6 +78,11 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     let address = addressConverter_.toText(acc);
     return address;
   };
+
+  func checkAndWaterPlants() : async () {
+    Debug.print("chceking flowers");
+  };
+  let daily = Timer.recurringTimer(#seconds(1 * 60 * 1), checkAndWaterPlants);
 
   public func testRandom() : async ?Bool {
     return r.coin();
@@ -669,16 +676,28 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     };
   };
 
-  system func postupgrade() {
-    // Make sure we start to montitor transactions from the block set on deployment
-    latestTransactionIndex := _startBlock;
+   // #region Upgrade Hooks
+  system func preupgrade() {
+    transactionsStable := Iter.toArray(transactions.entries());
+    contactsStable := Iter.toArray(contacts.entries());
+    notificationsSable := Iter.toArray(notifications.entries());
   };
 
-  // #region Upgrade Hooks
-  system func preupgrade() {
-    entries := Iter.toArray(transactions.entries());
-    users := Iter.toArray(contacts.entries());
+ 
+  system func postupgrade() {
+     // Make sure we start to montitor transactions from the block set on deployment
+      latestTransactionIndex := _startBlock;
+      transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
+     // transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), contactsStable.size(), Nat.equal, Hash.hash);
+      transactionsStable := [];
+      contacts := HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
+      contactsStable := [];
+      notifications := HashMap.fromIter(Iter.fromArray(notificationsSable), notificationsSable.size(), Nat.equal, Hash.hash);
+      notificationsSable := [];
+      
   };
+
+ 
   // #endregion
 
   // #region Create Invoice
@@ -880,7 +899,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
           my_notifications.add(notification);
         };
 
-
       };
     };
 
@@ -919,84 +937,82 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       }
     );
     Debug.print("balance: " # debug_show (balance));
-   
+
     if (balance < total) {
-      let data: [PayrollType] =  Buffer.toArray<PayrollType>(payroll);
-       return {
-          status = 403;
-          status_text = "Insufficient Balance";
-          data = null;
-          error_text = null;
-        };
-    }else{
-
-
-    for (receiver in receivers.vals()) {
-       Debug.print("receiver: " # debug_show (receiver));
-
-      try {
-        let transferResult = await CkBtcLedger.icrc1_transfer(
-          {
-            amount = receiver.amount;
-            from_subaccount = ?toSubaccount(caller);
-            created_at_time = null;
-            fee = ?10;
-            memo = null;
-            to = {
-              owner = Principal.fromActor(this);
-              subaccount = ?toSubaccount(Principal.fromText(receiver.destination));
-            };
-          }
-        );
-        switch (transferResult) {
-          case (#Ok(index)) {
-          //  payroll.add(receiver);
-            // return {
-            //   status = 200;
-            //   status_text = "Accepted";
-            //   data = ?Buffer.toArray<PayrollType>(payroll);
-            //   error_text = ?"Funds Transferred:\n";
-            // };
-          };
-
-          case (#Err(transferError)) {
-            // return {
-            //   status = 405;
-            //   status_text = "Forbidden";
-            //   data = ?Buffer.toArray<PayrollType>(payroll);
-            //   error_text = ?"Couldn't transfer funds to account:\n";
-            // };
-
-          };
-          case (_) {
-          //    return {
-          //   status = 500;
-          //   status_text = "Internal Server Error";
-          //   data = null;
-          //   error_text = ?"Unexpected error occurred";
-          // };
-          };
-        };
-      } catch (error : Error) {
-        // return {
-        //   status = 406;
-        //   status_text = "Rejected";
-        //   data = ?Buffer.toArray<PayrollType>(payroll);
-        //   error_text = ?"Payroll failed";
-        // };
+      let data : [PayrollType] = Buffer.toArray<PayrollType>(payroll);
+      return {
+        status = 403;
+        status_text = "Insufficient Balance";
+        data = null;
+        error_text = null;
       };
-    };
-     
+    } else {
+
+      for (receiver in receivers.vals()) {
+        Debug.print("receiver: " # debug_show (receiver));
+
+        try {
+          let transferResult = await CkBtcLedger.icrc1_transfer(
+            {
+              amount = receiver.amount;
+              from_subaccount = ?toSubaccount(caller);
+              created_at_time = null;
+              fee = ?10;
+              memo = null;
+              to = {
+                owner = Principal.fromActor(this);
+                subaccount = ?toSubaccount(Principal.fromText(receiver.destination));
+              };
+            }
+          );
+          switch (transferResult) {
+            case (#Ok(index)) {
+              //  payroll.add(receiver);
+              // return {
+              //   status = 200;
+              //   status_text = "Accepted";
+              //   data = ?Buffer.toArray<PayrollType>(payroll);
+              //   error_text = ?"Funds Transferred:\n";
+              // };
+            };
+
+            case (#Err(transferError)) {
+              // return {
+              //   status = 405;
+              //   status_text = "Forbidden";
+              //   data = ?Buffer.toArray<PayrollType>(payroll);
+              //   error_text = ?"Couldn't transfer funds to account:\n";
+              // };
+
+            };
+            case (_) {
+              //    return {
+              //   status = 500;
+              //   status_text = "Internal Server Error";
+              //   data = null;
+              //   error_text = ?"Unexpected error occurred";
+              // };
+            };
+          };
+        } catch (error : Error) {
+          // return {
+          //   status = 406;
+          //   status_text = "Rejected";
+          //   data = ?Buffer.toArray<PayrollType>(payroll);
+          //   error_text = ?"Payroll failed";
+          // };
+        };
+      };
+
     };
 
     {
-          status = 200;
-          status_text = "Transfer Successful";
-          data = null;
-          error_text = null;
-        };
+      status = 200;
+      status_text = "Transfer Successful";
+      data = null;
+      error_text = null;
+    };
 
-
-};
+  };
 
 };

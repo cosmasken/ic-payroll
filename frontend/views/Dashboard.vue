@@ -156,14 +156,28 @@ const addData = async () => {
             currency1color="#4C98FF"
             currency2color="#F6BB22"
           />
-          <OverviewCard
+          <div class="rounded-lg py-2 px-4 shadow-sm bg-[#FFF]">
+            <div class="flex flex-col space-y-2">
+              <p class="text-base font-semibold text-[#1F2937]">Transactions</p>
+
+              <div
+                class="flex basis-1/2 flex-col border-r border-gray-300 shrink-0"
+              >
+                <p class="text-xs font-normal">CKBTC</p>
+                <p class="font-semibold text-2xl text-[#36B293]">
+                  {{ transactions }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <!--OverviewCard
             header="Transactions"
             currency1="CKBTC"
             headercolor="#1F2937"
             bgcolor="#FFF"
             currency1color="#36B293"
             currency2color="#F6BB22"
-          />
+          /-->
         </div>
 
         <div class="flex flex-row">
