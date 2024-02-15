@@ -166,17 +166,24 @@ npm install
 npm run dev
 ```
 
-### Step 8: Login and start transacting
+### Step 8: Generate did files
+```bash
+dfx generate backend
+```
+
+This generates the did files for the backend canister. You can find the generated files in the `./src/declarations/backend` directory.This is what allows you to call the backend canister from the frontend.
+
+### Step 9: Login and start transacting
 Go to http://localhost:3000 and login with the Internet Identity
 
-### Step 9: Get funds
+### Step 10: Get funds
 ```bash
 npm run mint
 ```
 
-Enter the amount of ckBTC you want to mint and the principal you want to mint to. The principal is the Internet Identity principal of the user you want to mint to. You can find the principal by logging in to the frontend and copying the principal from the URL.Also send some funds to the canister so you can receive funds in your canister subaccount
+Enter the amount of ckBTC you want to mint and the principal you want to mint to. The principal is the Internet Identity principal of the user you want to mint to. You can find the principal by logging in to the frontend and copying the principal from the URL.Also send some funds to the canister so you can receive funds when you request test tokens
 
-### Step 10: Start transacting
+### Step 11: Start transacting
 You can now start transacting with the app. You can send funds to other users and receive funds from other users.
 
 Note that you need to refresh manually to see the updated balance after a transaction.
