@@ -24,8 +24,7 @@ export interface Backend {
     [AccountIdentifier],
     AccountIdentifierToBlobResult
   >,
-  'check_something' : ActorMethod<[], undefined>,
-  'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_3>,
+  'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_4>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
@@ -51,6 +50,7 @@ export interface Backend {
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
   'get_transactions' : ActorMethod<[], Array<Transaction>>,
   'isRegistered' : ActorMethod<[], boolean>,
+  'runpayroll' : ActorMethod<[Array<PayrollType>], Response_3>,
   'save_notification' : ActorMethod<
     [CreateNotificationArgs],
     CreateNotificationResult
@@ -60,6 +60,7 @@ export interface Backend {
     CreateTransactionResult
   >,
   'setCourierApiKey' : ActorMethod<[string], Response_2>,
+  'testRandom' : ActorMethod<[], [] | [boolean]>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
   'transferFromSubAccountToCanister' : ActorMethod<[bigint], Result>,
   'transferFromSubAccountToSubAccount' : ActorMethod<
@@ -106,10 +107,13 @@ export type CreateTransactionResult = { 'ok' : CreateTransactionSuccess } |
 export interface CreateTransactionSuccess { 'transaction' : Transaction__1 }
 export interface Employee {
   'id' : bigint,
+  'email_address' : string,
   'creator' : Principal,
   'modified_at' : bigint,
+  'name' : string,
   'created_at' : bigint,
   'wallet' : string,
+  'phone_number' : string,
 }
 export interface GetAccountIdentifierArgs { 'principal' : Principal }
 export interface GetAccountIdentifierErr { 'message' : [] | [string] }
@@ -145,6 +149,14 @@ export interface Notification__1 {
   'amount' : bigint,
   'receiver' : string,
 }
+export interface PayrollType {
+  'id' : bigint,
+  'creator' : string,
+  'destination' : string,
+  'created_at' : bigint,
+  'amount' : bigint,
+  'successful' : boolean,
+}
 export interface Response {
   'status' : number,
   'data' : [] | [User],
@@ -164,6 +176,12 @@ export interface Response_2 {
   'error_text' : [] | [string],
 }
 export interface Response_3 {
+  'status' : number,
+  'data' : [] | [Array<PayrollType>],
+  'status_text' : string,
+  'error_text' : [] | [string],
+}
+export interface Response_4 {
   'status' : number,
   'data' : [] | [Employee],
   'status_text' : string,

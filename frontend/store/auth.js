@@ -50,7 +50,7 @@ function formatCkBtc(amount) {
   const fractionalPartString = fractionalPart.toString().padStart(8, "0");
   const fractionalPartTrimmed = fractionalPartString.replace(/0+$/, ""); // Removes trailing zeroes
   return `${integerPart.toLocaleString()}.${fractionalPartTrimmed}`;
-};
+}
 
 export const useAuthStore = defineStore("auth", {
   id: "auth",
@@ -105,7 +105,7 @@ export const useAuthStore = defineStore("auth", {
             : null;
 
           this.isRegistered = await this.whoamiActor.isRegistered();
-          console.log("is registered" + this.isRegistered )
+          console.log("is registered" + this.isRegistered);
         },
       });
     },
@@ -169,8 +169,8 @@ export const useAuthStore = defineStore("auth", {
       console.log(response);
       if (response.status === 200) {
         console.log(" user registered");
-         console.log(response);
-         this.isRegistered = true;
+        console.log(response);
+        this.isRegistered = true;
       }
 
       console.log(response);
@@ -178,23 +178,22 @@ export const useAuthStore = defineStore("auth", {
 
     async create_employee(wallet) {
       const response = await this.whoamiActor?.create_employee({
-        wallet : wallet,
+        wallet: wallet,
       });
       if (response.status === 200) {
         console.log(" employee registered");
-         console.log(response);
+        console.log(response);
       }
-
     },
 
     async createInvoice(amount, payer) {
       const response = await this.whoamiActor?.create_invoice({
         amount: amount,
-        payer: payer
+        payer: payer,
       });
-    
+
       console.log(response);
-    }
+    },
   },
   getters: {
     registrationStatus(state) {

@@ -9,7 +9,6 @@ let contacts = ref(0);
 let isLoading = ref(false);
 let tradingbalance = ref("");
 
-
 watchEffect(async () => {
   tradingbalance.value = await authStore.tradingbalance;
 });
@@ -17,7 +16,8 @@ watchEffect(async () => {
 watchEffect(async () => {
   isLoading.value = true;
   try {
-    const transactionLength = await authStore.whoamiActor?.getMyTransactionLength();
+    const transactionLength =
+      await authStore.whoamiActor?.getMyTransactionLength();
     const contactsLength = await authStore.whoamiActor?.getMyContactsLength();
     transactions.value = transactionLength;
     contacts.value = contactsLength;
@@ -51,7 +51,6 @@ const addData = async () => {
     console.error("Error submitting data:", error);
   } finally {
     isLoading.value = false;
-   
   }
 };
 </script>
@@ -63,10 +62,8 @@ const addData = async () => {
       ></div>
     </div>
   </div>
-  <div >
-   
-
-    <div v-if="authStore.isRegistered === false" >
+  <div>
+    <div v-if="authStore.isRegistered === false">
       <div class="flex items-center justify-center h-screen">
         <div class="text-center card">
           <p class="text-lg font-semibold mb-3">Welcome to the app!</p>
@@ -129,23 +126,20 @@ const addData = async () => {
       <div class="p-5 flex flex-col gap-5">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="rounded-lg py-2 px-4 shadow-sm bg-[#EDFFFB]">
-    <div class="flex flex-col space-y-2">
-      <p class="text-base font-semibold text-[#36B293]">
-        Balance
-      </p>
+            <div class="flex flex-col space-y-2">
+              <p class="text-base font-semibold text-[#36B293]">Balance</p>
 
-      <div class="flex basis-1/2 flex-col border-r border-gray-300 shrink-0">
-        <p class="text-xs font-normal">CKBTC</p>
-        <p
-          class="font-semibold text-2xl text-[#36B293]"
-          
-        >
-          {{ tradingbalance }}
-        </p>
-      </div>
-    </div>
-  </div>
-         
+              <div
+                class="flex basis-1/2 flex-col border-r border-gray-300 shrink-0"
+              >
+                <p class="text-xs font-normal">CKBTC</p>
+                <p class="font-semibold text-2xl text-[#36B293]">
+                  {{ tradingbalance }}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <OverviewCard
             header="Outstanding Amount"
             currency1="CKBTC"
@@ -270,6 +264,5 @@ const addData = async () => {
         </div>
       </div>
     </div>
-
   </div>
 </template>

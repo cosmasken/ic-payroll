@@ -37,4 +37,3 @@ export function formatCkBtc(amount) {
   const fractionalPartTrimmed = fractionalPartString.replace(/0+$/, ""); // Removes trailing zeroes
   return `${integerPart.toLocaleString()}.${fractionalPartTrimmed}`;
 }
-

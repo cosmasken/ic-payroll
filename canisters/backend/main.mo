@@ -29,6 +29,7 @@ import Iter "mo:base/Iter";
 import SHA224 "./SHA224";
 import CRC32 "./CRC32";
 import Hash "mo:base/Hash";
+import Random "mo:base/Random";
 import Hex "./Hex";
 
 shared (actorContext) actor class Backend(_startBlock : Nat) = this {
@@ -39,13 +40,15 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   type Transaction = Types.Transaction;
   type User = Types.User;
   type Notification = Types.Notification;
+  type PayrollType = Types.PayrollType;
   type Employee = Types.Employee;
   type Invoice = Types.Invoice;
-   public type TransactionId = Nat32;
-// #endregion
+  public type TransactionId = Nat32;
+  let r = Random.Finite("username");
+  // #endregion
 
   let addressConverter_ = Utils.addressConverter;
-// The next available transaction identifier.
+  // The next available transaction identifier.
   private stable var latestTransactionIndex : Nat = 0;
   private stable var courierApiKey : Text = "";
   private var logData = Buffer.Buffer<Text>(0);
@@ -54,18 +57,16 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   stable var entries : [(Nat, Transaction)] = [];
   stable var users : [(Nat, Employee)] = [];
   stable var notifs : [(Nat, Notification)] = [];
-stable var invo : [(Nat, Invoice)] = [];
+  stable var invo : [(Nat, Invoice)] = [];
   stable var transactionCounter : Nat = 0;
-   stable var contactsCounter : Nat = 0;
-   stable var notificationsCounter : Nat = 0;
-   stable var invoiceCounter : Nat = 0;
-  let transactions: HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(entries), entries.size(), Nat.equal, Hash.hash);
-  let contacts: HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(users), users.size(), Nat.equal, Hash.hash);
-  let notifications: HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notifs), notifs.size(), Nat.equal, Hash.hash);
+  stable var contactsCounter : Nat = 0;
+  stable var notificationsCounter : Nat = 0;
+  stable var invoiceCounter : Nat = 0;
+  let transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(entries), entries.size(), Nat.equal, Hash.hash);
+  let contacts : HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(users), users.size(), Nat.equal, Hash.hash);
+  let notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notifs), notifs.size(), Nat.equal, Hash.hash);
   let MAX_TRANSACTIONS = 30_000;
-  let invoices: HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invo), invo.size(), Nat.equal, Hash.hash);
-  
-
+  let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invo), invo.size(), Nat.equal, Hash.hash);
 
   public shared ({ caller }) func getAddress() : async Text {
     let acc : Types.Account = {
@@ -76,13 +77,15 @@ stable var invo : [(Nat, Invoice)] = [];
     return address;
   };
 
-
+  public func testRandom() : async ?Bool {
+    return r.coin();
+  };
 
   /**
    * High-Level API
    */
 
-     /**
+  /**
     *  Get the merchant's information
     */
   public query (context) func getUser() : async Types.Response<User> {
@@ -108,8 +111,7 @@ stable var invo : [(Nat, Invoice)] = [];
     };
   };
 
-
-     /**
+  /**
     *  Check if user exists and return Bool
     */
   public query (context) func isRegistered() : async Bool {
@@ -124,9 +126,6 @@ stable var invo : [(Nat, Invoice)] = [];
       };
     };
   };
-
-
-
 
   /**
     * Update the merchant's information
@@ -148,9 +147,6 @@ stable var invo : [(Nat, Invoice)] = [];
     };
   };
 
-
-
-
   //no of users
   public query func userLength() : async Text {
     var size = Trie.size(userStore);
@@ -161,8 +157,6 @@ stable var invo : [(Nat, Invoice)] = [];
     let usersArray : [(Text, User)] = Iter.toArray(Trie.iter(userStore));
     return usersArray;
   };
-
-
 
   public shared ({ caller }) func whoami() : async Principal {
     return caller;
@@ -235,7 +229,7 @@ stable var invo : [(Nat, Invoice)] = [];
 
   //transfer funds from the default canister subaccount to the user subaccount
   //Works
-   public shared ({ caller }) func transferFromCanistertoSubAccount() : async Result.Result<Text, Text> {
+  public shared ({ caller }) func transferFromCanistertoSubAccount() : async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -285,7 +279,7 @@ stable var invo : [(Nat, Invoice)] = [];
   //transfer from one subaccount to another
   //works
   public shared ({ caller }) func transferFromSubAccountToSubAccount(receiver : Text, amount : Nat) : async Types.Response<Transaction> {
-   
+
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
       {
@@ -324,71 +318,68 @@ stable var invo : [(Nat, Invoice)] = [];
 
       switch (transferResult) {
         case (#Err(transferError)) {
-           return {
-        status = 405;
-        status_text = "Forbidden";
-        data = null;
-        error_text = ?"Couldn't transfer funds to account:\n";
-      };
+          return {
+            status = 405;
+            status_text = "Forbidden";
+            data = null;
+            error_text = ?"Couldn't transfer funds to account:\n";
+          };
 
-        //  return #err("Couldn't transfer funds to account:\n" # debug_show (transferError));
+          //  return #err("Couldn't transfer funds to account:\n" # debug_show (transferError));
         };
         case (_) {};
       };
     } catch (error : Error) {
-        return {
+      return {
         status = 406;
         status_text = "Rejected";
         data = null;
         error_text = ?"Reject message: ";
       };
-    //  return #err("Reject message: " # Error.message(error));
+      //  return #err("Reject message: " # Error.message(error));
     };
 
-
-
     let transaction = await save_transaction({
-      amount=amount;
-      creator= caller;
+      amount = amount;
+      creator = caller;
       destination = Principal.fromText(receiver);
-      successful  = true;
+      successful = true;
     });
 
-    
-
-      switch(transaction) {
-        case (#ok(transaction)) {  
+    switch (transaction) {
+      case (#ok(transaction)) {
         //  Debug.print("Created new transaction: " # debug_show(transaction)) ;
-          let notification = save_notification({
-            amount=amount;
-            sender= Principal.toText(caller);
-            receiver = receiver;
-            isRead  = false;} );
+        let notification = save_notification({
+          amount = amount;
+          sender = Principal.toText(caller);
+          receiver = receiver;
+          isRead = false;
+        });
 
-          return {
-              status = 200;
-              status_text = "Transfer to " # receiver # " is successful";
-              data = null;
-              error_text = ?"";
-            };
+        return {
+          status = 200;
+          status_text = "Transfer to " # receiver # " is successful";
+          data = null;
+          error_text = ?"";
         };
+      };
 
-        case (#err(message)) {
+      case (#err(message)) {
         //  Debug.print("Transaction failed: " # debug_show(transaction)) ;
 
-          return {
-              status = 403;
-              status_text = "Transfer to " # receiver # " is failed";
-              data = null;
-              error_text = ?"";
-            };
+        return {
+          status = 403;
+          status_text = "Transfer to " # receiver # " is failed";
+          data = null;
+          error_text = ?"";
+        };
 
-          // Debug.print("Failed to create user with the error: " # message) };
+        // Debug.print("Failed to create user with the error: " # message) };
       };
-    //check if transaction is ok or error
-      };
-          
-      };
+      //check if transaction is ok or error
+    };
+
+  };
 
   //transfer from account to canister subaccount
   //works
@@ -435,6 +426,11 @@ stable var invo : [(Nat, Invoice)] = [];
     return #ok("Transfer to trading account is " # "successful");
   };
 
+  //transfer to multiple users
+  // public shared ({ caller }) func runPayroll(amount : Nat, payroll: [Transaction]) :async Types.Response<[Transaction]>{
+
+  // };
+
   /**
    * Utilities
    */
@@ -450,7 +446,6 @@ stable var invo : [(Nat, Invoice)] = [];
   private func userKey(x : Text) : Trie.Key<Text> {
     return { hash = Text.hash(x); key = x };
   };
-
 
   /**
     * Set the courier API key. Only the owner can set the courier API key.
@@ -501,7 +496,7 @@ stable var invo : [(Nat, Invoice)] = [];
   system func timer(setGlobalTimer : Nat64 -> ()) : async () {
     let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
     setGlobalTimer(next);
-   // await check_something();
+
     await notify();
   };
 
@@ -511,30 +506,30 @@ stable var invo : [(Nat, Invoice)] = [];
     * Allows a caller to the accountIdentifier for a given principal
     * for a specific token.
     */
-  public query func get_account_identifier (args : Types.GetAccountIdentifierArgs) : async Types.GetAccountIdentifierResult {
+  public query func get_account_identifier(args : Types.GetAccountIdentifierArgs) : async Types.GetAccountIdentifierResult {
     let principal = args.principal;
     let canisterId = Principal.fromActor(this);
-   
-        let subaccount = Utils.getDefaultAccount({principal; canisterId;});
-        let hexEncoded = Hex.encode(
-          Blob.toArray(subaccount)
-        );
-        let result : AccountIdentifier = #text(hexEncoded);
-        #ok({accountIdentifier = result});
-   
-  };
-// #endregion
 
-// #region Utils
-  public func accountIdentifierToBlob (accountIdentifier : Types.AccountIdentifier) : async Types.AccountIdentifierToBlobResult {
+    let subaccount = Utils.getDefaultAccount({ principal; canisterId });
+    let hexEncoded = Hex.encode(
+      Blob.toArray(subaccount)
+    );
+    let result : AccountIdentifier = #text(hexEncoded);
+    #ok({ accountIdentifier = result });
+
+  };
+  // #endregion
+
+  // #region Utils
+  public func accountIdentifierToBlob(accountIdentifier : Types.AccountIdentifier) : async Types.AccountIdentifierToBlobResult {
     Utils.accountIdentifierToBlob({
       accountIdentifier;
       canisterId = ?Principal.fromActor(this);
     });
   };
-// #endregion
+  // #endregion
 
- /**
+  /**
     * Notify the merchant if a new transaction is found.
     */
   private func notify() : async () {
@@ -544,37 +539,18 @@ stable var invo : [(Nat, Invoice)] = [];
     };
 
     var response = await CkBtcLedger.get_transactions({
-      start = 0;
+      start = start;
       length = 100;
     });
 
-    if (Array.size(response.transactions) > 0) {
-      latestTransactionIndex := start;
+    let transactions = response.transactions;
+    let size = Array.size(transactions);
+    // Debug.print("transactions are " # debug_show(transactions));
 
-      if (response.transactions[0].kind == "transfer") {
-        let t = response.transactions[0];
-        switch (t.transfer) {
-          case (?transfer) {
-            let to = transfer.to.owner;
-            switch (Trie.get(userStore, userKey(Principal.toText(to)), Text.equal)) {
-              case (?user) {
-                if (user.email_notifications or user.phone_notifications) {
-                  log("Sending notification to: " # debug_show (user.email_address));
-                  Debug.print("Sending notification to:: " # debug_show(user.email_address));
-                  await sendNotification(user, t);
-                };
-              };
-              case null {
-                // No action required if merchant not found
-              };
-            };
-          };
-          case null {
-            // No action required if transfer is null
-          };
-        };
-      };
+    if (Array.size(response.transactions) > 0) {
+
     };
+
   };
 
   /**
@@ -603,7 +579,65 @@ stable var invo : [(Nat, Invoice)] = [];
     let httpRequest : HttpTypes.HttpRequestArgs = {
       // The notification service is hosted on Netlify and the URL is hardcoded
       // in this example. In a real application, the URL would be configurable.
-     // url = "https://icpos-notifications.xyz/.netlify/functions/notify";
+      // url = "https://icpos-notifications.xyz/.netlify/functions/notify";
+      //https://bitpochi-notifications.netlify.app/
+      url = "https://bitpochi-notifications.netlify/functions/notify";
+      max_response_bytes = ?Nat64.fromNat(1000);
+      headers = [
+        { name = "Content-Type"; value = "application/json" },
+      ];
+      body = ?requestBodyAsNat8;
+      method = #post;
+      transform = null;
+    };
+
+    // Cycle cost of sending a notification
+    // 49.14M + 5200 * request_size + 10400 * max_response_bytes
+    // 49.14M + (5200 * 1000) + (10400 * 1000) = 64.74M
+    Cycles.add(70_000_000);
+
+    // Send the request
+    let httpResponse : HttpTypes.HttpResponsePayload = await ic.http_request(httpRequest);
+
+    // Check the response
+    if (httpResponse.status > 299) {
+      let response_body : Blob = Blob.fromArray(httpResponse.body);
+      let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
+        case (null) { "No value returned" };
+        case (?y) { y };
+      };
+      log("Error sending notification: " # decoded_text);
+    } else {
+      log("Notification sent");
+    };
+  };
+
+  private func sendEmailorText(user : User, transaction : Transaction) : async () {
+    // Managment canister
+    let ic : HttpTypes.IC = actor ("aaaaa-aa");
+
+    // Create request body
+    var amount = "0";
+    var from = "";
+    amount := Nat.toText(transaction.amount);
+    from := Principal.toText(transaction.creator);
+    // switch (transaction.transfer) {
+    //   case (?transfer) {
+    //     amount := Nat.toText(transfer.amount);
+    //     from := Principal.toText(transfer.from.owner);
+    //   };
+    //   case null {};
+    // };
+    let idempotencyKey : Text = Text.concat(user.name, Nat.toText(transaction.id));
+    let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # user.email_address # "\", \"phone\": \"" # user.phone_number # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # from # "\"}";
+    let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
+    let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
+
+    // Setup request
+    let httpRequest : HttpTypes.HttpRequestArgs = {
+      // The notification service is hosted on Netlify and the URL is hardcoded
+      // in this example. In a real application, the URL would be configurable.
+      // url = "https://icpos-notifications.xyz/.netlify/functions/notify";
       url = "https://icpos-notifications.xyz/.netlify/functions/notify";
       max_response_bytes = ?Nat64.fromNat(1000);
       headers = [
@@ -640,47 +674,45 @@ stable var invo : [(Nat, Invoice)] = [];
     latestTransactionIndex := _startBlock;
   };
 
-// #region Upgrade Hooks
+  // #region Upgrade Hooks
   system func preupgrade() {
-      entries := Iter.toArray(transactions.entries());
+    entries := Iter.toArray(transactions.entries());
+    users := Iter.toArray(contacts.entries());
   };
-// #endregion
-
-
-
+  // #endregion
 
   // #region Create Invoice
-  public shared ({caller}) func save_transaction (args: Types.CreateTransactionArgs) : async Types.CreateTransactionResult {
+  public shared ({ caller }) func save_transaction(args : Types.CreateTransactionArgs) : async Types.CreateTransactionResult {
     let id : Nat = transactionCounter;
     // increment counter
     transactionCounter += 1;
 
-    if(id > MAX_TRANSACTIONS){
+    if (id > MAX_TRANSACTIONS) {
       return #err({
         message = ?"The maximum number of Transactions has been reached.";
         kind = #MaxTransactionsReached;
       });
     };
 
-     let transaction : Transaction = {
-          id;
-          created_at = Time.now();
-          creator = args.creator;
-          destination = args.destination;
-          amount = args.amount;
-          successful =args.successful
-        };
-    
-        transactions.put(id, transaction);
+    let transaction : Transaction = {
+      id;
+      created_at = Time.now();
+      creator = args.creator;
+      destination = args.destination;
+      amount = args.amount;
+      successful = args.successful;
+    };
 
-        return #ok({transaction});
+    transactions.put(id, transaction);
+
+    return #ok({ transaction });
   };
 
-// #region Get Transaction
-  public shared query ({caller}) func get_transaction (args: Types.GetTransactionArgs) : async Types.GetTransactionResult {
+  // #region Get Transaction
+  public shared query ({ caller }) func get_transaction(args : Types.GetTransactionArgs) : async Types.GetTransactionResult {
     let transaction = transactions.get(args.id);
-    switch(transaction){
-      case(null){
+    switch (transaction) {
+      case (null) {
         return #err({
           message = ?"Transaction not found";
           kind = #NotFound;
@@ -688,41 +720,37 @@ stable var invo : [(Nat, Invoice)] = [];
       };
       case (?i) {
         if (i.creator == caller) {
-          return #ok({transaction = i});
+          return #ok({ transaction = i });
         };
-     
-        #ok({transaction = i});
+
+        #ok({ transaction = i });
       };
     };
   };
-// #endregion
+  // #endregion
 
-// #region Get All Transactions for a given caller
-  public shared query ({caller}) func get_transactions () : async [Transaction]{
+  // #region Get All Transactions for a given caller
+  public shared query ({ caller }) func get_transactions() : async [Transaction] {
     let allEntries = Iter.toArray(transactions.entries());
-  let my_transactions = Buffer.Buffer<Transaction>(50);
-  // let outputArray : [Transaction] = [];
-    for ((_, transaction) in allEntries.vals()){
-      if(transaction.creator == caller){
+    let my_transactions = Buffer.Buffer<Transaction>(50);
+    // let outputArray : [Transaction] = [];
+    for ((_, transaction) in allEntries.vals()) {
+      if (transaction.creator == caller) {
         my_transactions.add(transaction);
-       // outputArray := Array.append(outputArray, [(transaction)]);
-        Debug.print("Sent Transaction: " # debug_show(transaction));
+        Debug.print("Sent Transaction: " # debug_show (transaction));
       };
 
-      if(transaction.destination == caller){
+      if (transaction.destination == caller) {
         my_transactions.add(transaction);
-       // outputArray := Array.append(outputArray, [(transaction)]);
-        Debug.print("Received Transaction: " # debug_show(transaction));
+        Debug.print("Received Transaction: " # debug_show (transaction));
       };
 
     };
 
     return Buffer.toArray<Transaction>(my_transactions);
-      };
+  };
 
-// #endregion
-
-
+  // #endregion
 
   // region get no of transactions
   public query func getTransactionLength() : async Text {
@@ -731,12 +759,11 @@ stable var invo : [(Nat, Invoice)] = [];
   };
 
   //get no of my transactions
-  public shared ({caller}) func getMyTransactionLength() : async Text {
-    let allEntries
-    = Iter.toArray(transactions.entries());
+  public shared ({ caller }) func getMyTransactionLength() : async Text {
+    let allEntries = Iter.toArray(transactions.entries());
     var size = 0;
-    for ((_, transaction) in allEntries.vals()){
-      if(transaction.creator == caller){
+    for ((_, transaction) in allEntries.vals()) {
+      if (transaction.creator == caller) {
         size += 1;
       };
     };
@@ -744,36 +771,52 @@ stable var invo : [(Nat, Invoice)] = [];
   };
 
   // #region Create User
-  public shared ({caller}) func create_employee (args: Types.CreateEmployeeArgs) : async Types.Response<Employee> {
+  public shared ({ caller }) func create_employee(args : Types.CreateEmployeeArgs) : async Types.Response<Employee> {
     let id : Nat = contactsCounter;
     // increment counter
     contactsCounter += 1;
 
-    let employee : Employee = {
-      id;
-      creator = caller ;
-      created_at = Time.now();
-      modified_at = Time.now();
-      wallet = args.wallet;
-    };
+    //get user via args.wallet
+    switch (Trie.get(userStore, userKey(args.wallet), Text.equal)) {
+      case (?user) {
+        let employee : Employee = {
+          id;
+          creator = caller;
+          name = user.name;
+          email_address = user.email_address;
+          phone_number = user.phone_number;
+          created_at = Time.now();
+          modified_at = Time.now();
+          wallet = args.wallet;
+        };
 
-    contacts.put(id, employee);
+        contacts.put(id, employee);
 
-     {status = 200;
-      status_text = "OK";
-      data = ?employee;
-      error_text = null;
+        {
+          status = 200;
+          status_text = "OK";
+          data = ?employee;
+          error_text = null;
+        };
+
+      };
+      case null {
+        {
+          status = 404;
+          status_text = "Not Found";
+          data = null;
+          error_text = ?"User with principal ID:  not found.";
+        };
+      };
     };
-   // return #ok({employee});
   };
 
-//get no of employees added by caller
-public shared ({caller}) func getMyContactsLength() : async Text { 
-    let allEntries
-    = Iter.toArray(contacts.entries());
+  //get no of employees added by caller
+  public shared ({ caller }) func getMyContactsLength() : async Text {
+    let allEntries = Iter.toArray(contacts.entries());
     var size = 0;
-    for ((_, contact) in allEntries.vals()){
-      if(contact.creator == caller){
+    for ((_, contact) in allEntries.vals()) {
+      if (contact.creator == caller) {
         size += 1;
       };
     };
@@ -781,219 +824,179 @@ public shared ({caller}) func getMyContactsLength() : async Text {
   };
 
   //get employees added by caller
-  public shared ({caller}) func getMyContacts() : async [Employee] {
+  public shared ({ caller }) func getMyContacts() : async [Employee] {
     let allEntries = Iter.toArray(contacts.entries());
-  let my_contacts = Buffer.Buffer<Employee>(50);
-  // let outputArray : [Transaction] = [];
-    for ((_, contact) in allEntries.vals()){
-      if(contact.creator == caller){
+    let my_contacts = Buffer.Buffer<Employee>(50);
+    for ((_, contact) in allEntries.vals()) {
+      if (contact.creator == caller) {
         my_contacts.add(contact);
-       // outputArray := Array.append(outputArray, [(transaction)]);
-       // Debug.print("Contact: " # debug_show(contact));
       };
     };
 
     return Buffer.toArray<Employee>(my_contacts);
-      };
+  };
 
-
-        public shared ({caller}) func save_notification (args: Types.CreateNotificationArgs) : async Types.CreateNotificationResult {
+  public shared ({ caller }) func save_notification(args : Types.CreateNotificationArgs) : async Types.CreateNotificationResult {
     let id : Nat = notificationsCounter;
     // increment counter
     notificationsCounter += 1;
 
+    let notification : Notification = {
+      id;
+      sender = args.sender;
+      receiver = args.receiver;
+      amount = args.amount;
+      isRead = args.isRead;
+    };
 
+    notifications.put(id, notification);
 
-     let notification : Notification = {
-          id;
-          sender = args.sender;
-          receiver = args.receiver;
-          amount = args.amount;
-          isRead =args.isRead
-        };
-    
-        notifications.put(id, notification);
-
-        return #ok({notification});
+    return #ok({ notification });
   };
 
   //get notifications added by caller
-  public shared ({caller}) func getNotifications() : async [Notification] {
+  public shared ({ caller }) func getNotifications() : async [Notification] {
     let allEntries = Iter.toArray(notifications.entries());
-  let my_notifications = Buffer.Buffer<Notification>(50);
-  // let outputArray : [Transaction] = [];
-    for ((_, notification) in allEntries.vals()){
-      if(notification.sender == Principal.toText(caller)){
+    let my_notifications = Buffer.Buffer<Notification>(50);
+    // let outputArray : [Transaction] = [];
+    for ((_, notification) in allEntries.vals()) {
+      if (notification.sender == Principal.toText(caller)) {
         my_notifications.add(notification);
-       // outputArray := Array.append(outputArray, [(transaction)]);
-       // Debug.print("Notification: " # debug_show(notification));
       };
     };
 
     return Buffer.toArray<Notification>(my_notifications);
-      };
+  };
 
-
-    //get notifications added by caller and not read
-    public shared ({caller}) func getUnreadNotifications() : async [Notification] {
+  //get notifications added by caller and not read
+  public shared ({ caller }) func getUnreadNotifications() : async [Notification] {
     let allEntries = Iter.toArray(notifications.entries());
-  let my_notifications = Buffer.Buffer<Notification>(50);
-  // let outputArray : [Transaction] = [];
-    for ((_, notification) in allEntries.vals()){
-      if(notification.receiver == Principal.toText(caller) ){
+    let my_notifications = Buffer.Buffer<Notification>(50);
+    // let outputArray : [Transaction] = [];
+    for ((_, notification) in allEntries.vals()) {
+      if (notification.receiver == Principal.toText(caller)) {
 
-        if(notification.isRead == false){
-      my_notifications.add(notification);
-      //  Debug.print("Notification: " # debug_show(notification));
-        }
-       
-       // outputArray := Array.append(outputArray, [(transaction)]);
-       
+        if (notification.isRead == false) {
+          my_notifications.add(notification);
+        };
+
+
       };
     };
 
     return Buffer.toArray<Notification>(my_notifications);
-      };
+  };
 
-      //get no of notifications added by caller and not read
-      public shared ({caller}) func getUnreadNotificationsLength() : async Text {
-    let allEntries
-    = Iter.toArray(notifications.entries());
+  //get no of notifications added by caller and not read
+  public shared ({ caller }) func getUnreadNotificationsLength() : async Text {
+    let allEntries = Iter.toArray(notifications.entries());
     var size = 0;
-    for ((_, notification) in allEntries.vals()){
-      if(notification.receiver == Principal.toText(caller) ){
-        if(notification.isRead == false){
-           size += 1;
-        }
-       
+    for ((_, notification) in allEntries.vals()) {
+      if (notification.receiver == Principal.toText(caller)) {
+        if (notification.isRead == false) {
+          size += 1;
+        };
+
       };
     };
-      return Nat.toText(size);
+    return Nat.toText(size);
+  };
+
+  public shared ({ caller }) func runpayroll(receivers : [PayrollType]) : async Types.Response<[PayrollType]> {
+    var total : Nat = 0;
+    let fee : Nat = 10;
+    let payroll = Buffer.Buffer<PayrollType>(50);
+    for (receiver in receivers.vals()) {
+      total += receiver.amount + fee;
     };
+    Debug.print("total: " # debug_show (total));
 
-    //mark notification as read
-    // public shared ({caller}) func markNotificationAsRead(id : Nat) : async Types.Response<Notification> {
-    // let notification = notifications.get(id);
-    // switch(notification){
-    //   case(null){
-    //     return {
-    //       status = 404;
-    //       status_text = "Not Found";
-    //       data = null;
-    //       error_text = ?"Notification not found";
-    //     };
-    //   };
-    //   case (?i) {
-    //     if (i.receiver == Principal.toText(caller)) {
-    //       i.isRead = true;
-    //       notifications.put(id, i);
-    //       return {
-    //         status = 200;
-    //         status_text = "OK";
-    //         data = ?i;
-    //         error_text = null;
-    //       };
-    //     };
-    //     return {
-    //       status = 403;
-    //       status_text = "Forbidden";
-    //       data = null;
-    //       error_text = ?"You are not allowed to mark this notification as read";
-    //     };
-    //   };
-    // };
-    //  };
+    //check balance
+    let balance = await CkBtcLedger.icrc1_balance_of(
+      {
+        owner = Principal.fromActor(this);
+        subaccount = ?toSubaccount(caller);
+      }
+    );
+    Debug.print("balance: " # debug_show (balance));
+   
+    if (balance < total) {
+      let data: [PayrollType] =  Buffer.toArray<PayrollType>(payroll);
+       return {
+          status = 403;
+          status_text = "Insufficient Balance";
+          data = null;
+          error_text = null;
+        };
+    }else{
 
-    //create invoice
-  //    public shared ({caller}) func create_invoice (args: Types.CreateInvoiceArgs) : async Types.CreateInvoiceResult {
-  //   let id : Nat = invoiceCounter;
 
-  //   let creator = Principal.toText(caller);
-  //   // increment counter
-  //   invoiceCounter += 1;
+    for (receiver in receivers.vals()) {
+       Debug.print("receiver: " # debug_show (receiver));
 
-  //   let invoice : Invoice = {
-  //     id;
-  //   creator : creator;
-  //   payer = args.payer;
-  //  amount = args.amount;
-  //   memo : ?args.memo;
-  //  status = false;
-  //  created_at = Time.now();
-  //  modified_at = Time.now();
-  //   };
-
-  //   invoices.put(id, invoice);
-  //   return #ok({invoice});
-
-  //    };
-
-  //region get invoices that have been according to invoice payer or invoice creator .
-  // public shared ({caller}) func get_invoices() : async [Invoice] {
-  //   let allEntries = Iter.toArray(invoices.entries());
-  // let my_invoices = Buffer.Buffer<Invoice>(50);
-  // // let outputArray : [Transaction] = [];
-  //   for ((_, invoice) in allEntries.vals()){
-  //     if(invoice.payer == Principal.toText(caller)){
-  //       my_invoices.add(invoice);
-  //      // outputArray := Array.append(outputArray, [(transaction)]);
-  //       Debug.print("Invoice: " # debug_show(invoice));
-  //     };
-  //     if(invoice.payer == Principal.toText(caller)){
-  //       my_invoices.add(invoice);
-  //      // outputArray := Array.append(outputArray, [(transaction)]);
-  //       Debug.print("Invoice: " # debug_show(invoice));
-  //     };
-  //   };
-
-  //   return Buffer.toArray<Invoice>(my_invoices);
-  //     };
-
-      //if user is creator show invoices 
-
-public func check_something() : async () {
-
-   var start : Nat = _startBlock;
-    if (latestTransactionIndex > 0) {
-      start := latestTransactionIndex + 1;
-    };
-
-    var response = await CkBtcLedger.get_transactions({
-      start = start;
-      length = 100;
-    });
-
-   //  Debug.print("result is :  successful " # debug_show(response.transactions) );
- if (response.transactions[0].kind == "transfer") {
-        let t = response.transactions[0];
-     //   Debug.print("transactions:  are successful " # debug_show(response.transactions[0]) );
-        switch (t.transfer) {
-          case (?transfer) {
-            let to = transfer.to.owner;
-            switch (Trie.get(userStore, userKey(Principal.toText(to)), Text.equal)) {
-              case (?user) {
-           //     Debug.print("user with transaction :  is  " # debug_show(user));
-                // if (user.email_notifications or user.phone_notifications) {
-                //   log("Sending notification to: " # debug_show (user.email_address));
-                //   await sendNotification(user, t);
-                // };
-              };
-              case null {
-                // No action required if merchant not found
-              };
+      try {
+        let transferResult = await CkBtcLedger.icrc1_transfer(
+          {
+            amount = receiver.amount;
+            from_subaccount = ?toSubaccount(caller);
+            created_at_time = null;
+            fee = ?10;
+            memo = null;
+            to = {
+              owner = Principal.fromActor(this);
+              subaccount = ?toSubaccount(Principal.fromText(receiver.destination));
             };
+          }
+        );
+        switch (transferResult) {
+          case (#Ok(index)) {
+          //  payroll.add(receiver);
+            // return {
+            //   status = 200;
+            //   status_text = "Accepted";
+            //   data = ?Buffer.toArray<PayrollType>(payroll);
+            //   error_text = ?"Funds Transferred:\n";
+            // };
           };
-          case null {
-            // No action required if transfer is null
+
+          case (#Err(transferError)) {
+            // return {
+            //   status = 405;
+            //   status_text = "Forbidden";
+            //   data = ?Buffer.toArray<PayrollType>(payroll);
+            //   error_text = ?"Couldn't transfer funds to account:\n";
+            // };
+
+          };
+          case (_) {
+          //    return {
+          //   status = 500;
+          //   status_text = "Internal Server Error";
+          //   data = null;
+          //   error_text = ?"Unexpected error occurred";
+          // };
           };
         };
+      } catch (error : Error) {
+        // return {
+        //   status = 406;
+        //   status_text = "Rejected";
+        //   data = ?Buffer.toArray<PayrollType>(payroll);
+        //   error_text = ?"Payroll failed";
+        // };
       };
+    };
+     
+    };
 
-}
-
+    {
+          status = 200;
+          status_text = "Transfer Successful";
+          data = null;
+          error_text = null;
+        };
 
 
 };
 
-
-
+};

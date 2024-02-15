@@ -6,8 +6,11 @@ type Employee =
   {
     created_at : Int;
     creator : Principal;
+    email_address : Text;
     id : Nat;
     modified_at : Int;
+    name : Text;
+    phone_number : Text;
     wallet : Text
   };
 type Employee__1 = Employee;
@@ -15,13 +18,15 @@ type Hash = Nat32;
 type Invoice =
   {
     amount : Text;
+    client : Text;
     created_at : Int;
     creator : Text;
     id : Nat;
+    isApproved : Bool;
+    isPaid : Bool;
     memo : ?Text;
     modified_at : Int;
-    payer : Text;
-    status : Bool
+    receiver : Text
   };
 type Invoice__1 = Invoice;
 type Key__1<K> = {hash : Hash; key : K};

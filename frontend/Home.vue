@@ -3,8 +3,8 @@ import { ref, watchEffect } from "vue";
 import { useAuthStore } from "./store/auth";
 import SkeletonLoader from "./components/SkeletonLoader.vue";
 import router from "./router/";
-import { CheckCircleIcon } from '@heroicons/vue/24/outline'
-import { XMarkIcon } from '@heroicons/vue/20/solid'
+import { CheckCircleIcon } from "@heroicons/vue/24/outline";
+import { XMarkIcon } from "@heroicons/vue/20/solid";
 
 const authStore = useAuthStore();
 const darkmode = ref(false);
@@ -24,28 +24,24 @@ const logout = () => {
   authStore.logout();
 };
 
-
 watchEffect(async () => {
   // const res = await authStore.whoamiActor?.getInvoice();
   // invoice.value = await res;
-  setInterval(
-    async function(){
-
-      try{
-        notifresponse = await authStore.whoamiActor?.getUnreadNotificationsLength();
-    unreadNotifications.value = await notifresponse;
-    console.log(notifresponse);  
-      }catch(e){
-        console.log("Error fetching data");
-      }finally{
-        if(unreadNotifications.value > 0){
-          showNotification.value = true;
-          console.log("gets here");
-        };
+  setInterval(async function () {
+    try {
+      notifresponse =
+        await authStore.whoamiActor?.getUnreadNotificationsLength();
+      unreadNotifications.value = await notifresponse;
+      console.log(notifresponse);
+    } catch (e) {
+      console.log("Error fetching data");
+    } finally {
+      if (unreadNotifications.value > 0) {
+        showNotification.value = true;
+        console.log("gets here");
       }
-       
- 
- }, 60000);
+    }
+  }, 60000);
 });
 
 // watchEffect(async () => {
@@ -60,14 +56,12 @@ watchEffect(async () => {
 //  }, 3000);
 // });
 
-
 const isLoading = ref(false);
 
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.getInvoice();
   invoice.value = await res;
 });
-
 
 watchEffect(async () => {
   const res = await authStore.refresh();
@@ -79,39 +73,33 @@ watchEffect(async () => {
   canisterbalance.value = await authStore.canisterbalance;
 });
 const refreshBalance = async () => {
-
-try{
-  isLoading.value = true;
-  const res = await authStore.refresh();
-  tradingbalance.value = await authStore.tradingbalance;
-fundingbalance.value = await authStore.fundingbalance;
-fundingaddress.value = await authStore.fundingaddress;
-canisterbalance.value = await authStore.canisterbalance;
-console.log(res);
-}catch(e){
-  console.log("Error fetching data");
-}finally{
-  isLoading.value = false;
-}
-
-};
-
-const getTestTokens = async () => {
-  try{
+  try {
     isLoading.value = true;
-    const response = authStore.whoamiActor.transferFromCanistertoSubAccount();
-  console.log(response);
-  transferresponse.value = await response;
-  } catch (error) {
-    console.error("Error Getting tokens:", error);
-
+    const res = await authStore.refresh();
+    tradingbalance.value = await authStore.tradingbalance;
+    fundingbalance.value = await authStore.fundingbalance;
+    fundingaddress.value = await authStore.fundingaddress;
+    canisterbalance.value = await authStore.canisterbalance;
+    console.log(res);
+  } catch (e) {
+    console.log("Error fetching data");
   } finally {
     isLoading.value = false;
   }
-  
 };
 
-
+const getTestTokens = async () => {
+  try {
+    isLoading.value = true;
+    const response = authStore.whoamiActor.transferFromCanistertoSubAccount();
+    console.log(response);
+    transferresponse.value = await response;
+  } catch (error) {
+    console.error("Error Getting tokens:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const walletAddress = "0x1234567890123456789012345678901234567890";
 
@@ -127,9 +115,11 @@ const toggleDarkMode = () => {
 
 <template class="font-lexend h-full w-full">
   <div
-    class="w-full p-5 h-full flex flex-row space-x-[30px] self-stretch bg-white dark:bg-[#16151C]" >
+    class="w-full p-5 h-full flex flex-row space-x-[30px] self-stretch bg-white dark:bg-[#16151C]"
+  >
     <div
-      class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-screen">
+      class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-screen"
+    >
       <div class="flex flex-col justify-between h-full">
         <div>
           <div v-if="darkmode">
@@ -151,7 +141,7 @@ const toggleDarkMode = () => {
               />
               <span>Dashboard</span>
             </router-link>
-      
+
             <router-link
               v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -164,7 +154,7 @@ const toggleDarkMode = () => {
                 alt="Vite logo"
               />
               <span>Send</span>
-            </router-link>         
+            </router-link>
             <router-link
               v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -195,14 +185,14 @@ const toggleDarkMode = () => {
               v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
               class="group flex flex-row bg-[#7152F30D cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/invoices"
+              to="/home/payroll"
             >
               <img
                 src="./assets/payroll.png"
                 class="shrink-0 h-6 w-6"
                 alt="Vite logo"
               />
-              <span>Invoices</span>
+              <span>Payroll</span>
             </router-link>
             <router-link
               v-if="authStore.isRegistered === true"
@@ -215,10 +205,11 @@ const toggleDarkMode = () => {
                 class="shrink-0 h-6 w-6"
                 alt="Vite logo"
               />
-              <span v-if="unreadNotifications.value > 0">Notifications {{ unreadNotifications.value }}</span>
+              <span v-if="unreadNotifications.value > 0"
+                >Notifications {{ unreadNotifications.value }}</span
+              >
               <span v-else>Notifications</span>
-              
-            </router-link>          
+            </router-link>
             <router-link
               v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -330,33 +321,57 @@ const toggleDarkMode = () => {
       </div>
     </div>
     <div class="w-full flex flex-col pt-4 pr-[30px] space-y-[46px]">
-        <!-- Global notification live region, render this permanently at the end of the document -->
-  <div aria-live="assertive" class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6">
-    <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
-      <!-- Notification panel, dynamically insert this into the live region when it needs to be displayed -->
-      <transition enter-active-class="transform ease-out duration-300 transition" enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
-        <div v-if="showNotification" class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-          <div class="p-4">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-                <CheckCircleIcon class="h-6 w-6 text-green-400" aria-hidden="true" />
-              </div>
-              <div class="ml-3 w-0 flex-1 pt-0.5">
-                <p class="text-sm font-medium text-gray-900">Payment Received</p>
-                <p class="mt-1 text-sm text-gray-500">Go to Transactions to view it</p>
-              </div>
-              <div class="ml-4 flex flex-shrink-0">
-                <button type="button" @click="showNotification = false" class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                  <span class="sr-only">Close</span>
-                  <XMarkIcon class="h-5 w-5" aria-hidden="true" />
-                </button>
+      <!-- Global notification live region, render this permanently at the end of the document -->
+      <div
+        aria-live="assertive"
+        class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
+      >
+        <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+          <!-- Notification panel, dynamically insert this into the live region when it needs to be displayed -->
+          <transition
+            enter-active-class="transform ease-out duration-300 transition"
+            enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+            enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
+            leave-active-class="transition ease-in duration-100"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+          >
+            <div
+              v-if="showNotification"
+              class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+            >
+              <div class="p-4">
+                <div class="flex items-start">
+                  <div class="flex-shrink-0">
+                    <CheckCircleIcon
+                      class="h-6 w-6 text-green-400"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div class="ml-3 w-0 flex-1 pt-0.5">
+                    <p class="text-sm font-medium text-gray-900">
+                      Payment Received
+                    </p>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Go to Transactions to view it
+                    </p>
+                  </div>
+                  <div class="ml-4 flex flex-shrink-0">
+                    <button
+                      type="button"
+                      @click="showNotification = false"
+                      class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      <span class="sr-only">Close</span>
+                      <XMarkIcon class="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </transition>
         </div>
-      </transition>
-    </div>
-  </div>
+      </div>
       <!-- Header-->
       <div class="w-full sticky flex flex-row justify-between">
         <div class="flex flex-col">
@@ -380,30 +395,28 @@ const toggleDarkMode = () => {
           <div
             v-if="fundingaddress.length === 0"
             class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900 dark:border-white"
-          >
-        </div>
+          ></div>
           <div
             v-else
             class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2"
           >
-          <div>
-            <div v-if="isLoading">
-              <span class="loading loading-spinner loading-xs"></span>
+            <div>
+              <div v-if="isLoading">
+                <span class="loading loading-spinner loading-xs"></span>
+              </div>
+              <div v-else>
+                <p
+                  class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
+                >
+                  TradingBalance : {{ tradingbalance }} ckSats
+                </p>
+                <p
+                  class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
+                >
+                  Canister Balance : {{ canisterbalance }} ckSats
+                </p>
+              </div>
             </div>
-            <div v-else> 
-            <p
-              class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
-            >
-              TradingBalance : {{ tradingbalance }} ckSats
-            </p>
-            <p
-              class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
-            >
-              Canister Balance : {{ canisterbalance }} ckSats 
-            </p>
-            </div>
-          </div>
-           
 
             <p
               class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
@@ -412,7 +425,6 @@ const toggleDarkMode = () => {
             </p>
 
             <button
-           
               @click="getTestTokens"
               class="bg-blue-700 p-2 text-sm rounded-[10px]"
             >
@@ -429,19 +441,19 @@ const toggleDarkMode = () => {
                 </div>
                 <div v-else>
                   <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-6 h-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                  />
-                </svg>
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>

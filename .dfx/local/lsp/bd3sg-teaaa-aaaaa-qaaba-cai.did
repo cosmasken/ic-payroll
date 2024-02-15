@@ -17,8 +17,7 @@ type Backend = service {
   accountIdentifierToBlob : (AccountIdentifier) -> (
       AccountIdentifierToBlobResult,
     );
-  check_something : () -> ();
-  create_employee : (CreateEmployeeArgs) -> (Response_3);
+  create_employee : (CreateEmployeeArgs) -> (Response_4);
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
@@ -43,9 +42,11 @@ type Backend = service {
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions : () -> (vec Transaction) query;
   isRegistered : () -> (bool) query;
+  runpayroll : (vec PayrollType) -> (Response_3);
   save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
   save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
   setCourierApiKey : (text) -> (Response_2);
+  testRandom : () -> (opt bool);
   transferFromCanistertoSubAccount : () -> (Result);
   transferFromSubAccountToCanister : (nat) -> (Result);
   transferFromSubAccountToSubAccount : (text, nat) -> (Response_1);
@@ -94,10 +95,13 @@ type CreateTransactionResult = variant {
 type CreateTransactionSuccess = record { transaction : Transaction__1 };
 type Employee = record {
   id : nat;
+  email_address : text;
   creator : principal;
   modified_at : int;
+  name : text;
   created_at : int;
   wallet : text;
+  phone_number : text;
 };
 type GetAccountIdentifierArgs = record { "principal" : principal };
 type GetAccountIdentifierErr = record { message : opt text };
@@ -132,6 +136,14 @@ type Notification__1 = record {
   amount : nat;
   receiver : text;
 };
+type PayrollType = record {
+  id : nat;
+  creator : text;
+  destination : text;
+  created_at : int;
+  amount : nat;
+  successful : bool;
+};
 type Response = record {
   status : nat16;
   data : opt User;
@@ -151,6 +163,12 @@ type Response_2 = record {
   error_text : opt text;
 };
 type Response_3 = record {
+  status : nat16;
+  data : opt vec PayrollType;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_4 = record {
   status : nat16;
   data : opt Employee;
   status_text : text;

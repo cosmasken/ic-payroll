@@ -30,9 +30,16 @@ type Result =
    err: text;
    ok: text;
  };
-type Response_3 = 
+type Response_4 = 
  record {
    data: opt Employee;
+   error_text: opt text;
+   status: nat16;
+   status_text: text;
+ };
+type Response_3 = 
+ record {
+   data: opt vec PayrollType;
    error_text: opt text;
    status: nat16;
    status_text: text;
@@ -57,6 +64,15 @@ type Response =
    error_text: opt text;
    status: nat16;
    status_text: text;
+ };
+type PayrollType = 
+ record {
+   amount: nat;
+   created_at: int;
+   creator: text;
+   destination: text;
+   id: nat;
+   successful: bool;
  };
 type Notification__1 = 
  record {
@@ -104,8 +120,11 @@ type Employee =
  record {
    created_at: int;
    creator: principal;
+   email_address: text;
    id: nat;
    modified_at: int;
+   name: text;
+   phone_number: text;
    wallet: text;
  };
 type CreateTransactionSuccess = record {transaction: Transaction__1;};
@@ -161,8 +180,7 @@ type Backend =
  service {
    accountIdentifierToBlob: (AccountIdentifier) ->
     (AccountIdentifierToBlobResult);
-   check_something: () -> ();
-   create_employee: (CreateEmployeeArgs) -> (Response_3);
+   create_employee: (CreateEmployeeArgs) -> (Response_4);
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);
@@ -193,10 +211,12 @@ type Backend =
    get_transactions: () -> (vec Transaction) query;
    /// *  Check if user exists and return Bool
    isRegistered: () -> (bool) query;
+   runpayroll: (vec PayrollType) -> (Response_3);
    save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
    save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
    /// * Set the courier API key. Only the owner can set the courier API key.
    setCourierApiKey: (text) -> (Response_2);
+   testRandom: () -> (opt bool);
    transferFromCanistertoSubAccount: () -> (Result);
    transferFromSubAccountToCanister: (nat) -> (Result);
    transferFromSubAccountToSubAccount: (text, nat) -> (Response_1);

@@ -19,12 +19,15 @@ export const idlFactory = ({ IDL }) => {
   const CreateEmployeeArgs = IDL.Record({ 'wallet' : IDL.Text });
   const Employee = IDL.Record({
     'id' : IDL.Nat,
+    'email_address' : IDL.Text,
     'creator' : IDL.Principal,
     'modified_at' : IDL.Int,
+    'name' : IDL.Text,
     'created_at' : IDL.Int,
     'wallet' : IDL.Text,
+    'phone_number' : IDL.Text,
   });
-  const Response_3 = IDL.Record({
+  const Response_4 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Employee),
     'status_text' : IDL.Text,
@@ -94,6 +97,20 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Int,
     'amount' : IDL.Nat,
     'successful' : IDL.Bool,
+  });
+  const PayrollType = IDL.Record({
+    'id' : IDL.Nat,
+    'creator' : IDL.Text,
+    'destination' : IDL.Text,
+    'created_at' : IDL.Int,
+    'amount' : IDL.Nat,
+    'successful' : IDL.Bool,
+  });
+  const Response_3 = IDL.Record({
+    'status' : IDL.Nat16,
+    'data' : IDL.Opt(IDL.Vec(PayrollType)),
+    'status_text' : IDL.Text,
+    'error_text' : IDL.Opt(IDL.Text),
   });
   const CreateNotificationArgs = IDL.Record({
     'isRead' : IDL.Bool,
@@ -166,8 +183,7 @@ export const idlFactory = ({ IDL }) => {
         [AccountIdentifierToBlobResult],
         [],
       ),
-    'check_something' : IDL.Func([], [], []),
-    'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_3], []),
+    'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_4], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
@@ -202,6 +218,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'isRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+    'runpayroll' : IDL.Func([IDL.Vec(PayrollType)], [Response_3], []),
     'save_notification' : IDL.Func(
         [CreateNotificationArgs],
         [CreateNotificationResult],
@@ -213,6 +230,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'setCourierApiKey' : IDL.Func([IDL.Text], [Response_2], []),
+    'testRandom' : IDL.Func([], [IDL.Opt(IDL.Bool)], []),
     'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),
     'transferFromSubAccountToCanister' : IDL.Func([IDL.Nat], [Result], []),
     'transferFromSubAccountToSubAccount' : IDL.Func(

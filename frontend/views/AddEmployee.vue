@@ -14,14 +14,14 @@
             <h2
               class="text-base font-semibold leading-7 text-gray-900 dark:text-white"
             >
-              Personal Information
+              Principal
             </h2>
             <p class="mt-1 text-sm leading-6 text-gray-600 dark:text-white">
-              Use a permanent address where user can receive mail.
+              Add the user principal
             </p>
 
             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div class="sm:col-span-3">
+              <!--div class="sm:col-span-3">
                 <label
                   for="first-name"
                   class="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -55,7 +55,7 @@
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-              </div>
+              </div-->
 
               <!--div class="sm:col-span-3">
             <label
@@ -75,7 +75,7 @@
             </div>
           </div-->
 
-              <div class="sm:col-span-4">
+              <!--div class="sm:col-span-4">
                 <label
                   for="email"
                   class="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -91,7 +91,7 @@
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-              </div>
+              </div-->
 
               <!--div class="sm:col-span-3">
             <label
@@ -133,7 +133,7 @@
                 </div>
               </div>
 
-              <div class="sm:col-span-3">
+              <!--div class="sm:col-span-3">
                 <label
                   for="phone-number"
                   class="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -149,7 +149,7 @@
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-              </div>
+              </div-->
             </div>
           </div>
         </div>
@@ -189,29 +189,29 @@ const getTime = () => {
 };
 
 const registrationData = {
-  first_name: "",
-  last_name: "",
-  email: "",
-  phone_number: "",
+  // first_name: "",
+  // last_name: "",
+  // email: "",
+  // phone_number: "",
   wallet_address: "",
 };
 const addData = async () => {
   isLoading.value = true;
   authStore.updateRegistrationData(registrationData);
-  const firstname = authStore.registrationData.first_name;
-  const lastname = authStore.registrationData.last_name;
-  const email = authStore.registrationData.email;
-  const phone = authStore.registrationData.phone_number;
+  // const firstname = authStore.registrationData.first_name;
+  // const lastname = authStore.registrationData.last_name;
+  // const email = authStore.registrationData.email;
+  // const phone = authStore.registrationData.phone_number;
   const address = authStore.registrationData.wallet_address;
 
-  console.log(firstname, lastname, email, phone, address);
+  console.log(address);
 
   try {
-    const response = authStore.registration(
-      firstname,
-      lastname,
-      email,
-      phone,
+    const response = authStore.create_employee(
+      // firstname,
+      // lastname,
+      // email,
+      // phone,
       address
     );
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -223,5 +223,4 @@ const addData = async () => {
     router.push("/home/employees");
   }
 };
-
 </script>

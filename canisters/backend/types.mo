@@ -25,17 +25,30 @@ module {
   };
 
   public type Invoice = {
-    id: Nat;
+    id : Nat;
     creator : Text;
-    payer : Text;
+    isApproved : Bool;
+    isPaid : Bool;
+    client : Text;
+    receiver : Text;
     amount : Text;
     memo : ?Text;
-    status : Bool;
     created_at : Int;
     modified_at : Int;
   };
 
-    public type Transaction = {
+  public type PayrollType = {
+    id : Nat;
+    created_at : Int;
+    creator : Text;
+    amount : Nat;
+    successful : Bool;
+    destination : Text;
+  };
+
+  
+
+  public type Transaction = {
     id : Nat;
     created_at : Int;
     creator : Principal;
@@ -44,7 +57,7 @@ module {
     destination : Principal;
   };
 
-    public type User = {
+  public type User = {
     name : Text;
     email_notifications : Bool;
     email_address : Text;
@@ -55,12 +68,14 @@ module {
   //type representing  a user that is an employee/freelancer
   public type Employee = {
     id : Nat;
+    name : Text;
+    email_address : Text;
+    phone_number : Text;
     wallet : Text;
     creator : Principal;
     created_at : Int;
     modified_at : Int;
   };
-
 
   public type Response<T> = {
     status : Nat16;
@@ -88,7 +103,7 @@ module {
   public type GetAccountIdentifierErr = {
     message : ?Text;
   };
-// #endregion
+  // #endregion
 
   // #region accountIdentifierToBlob
   public type AccountIdentifierToBlobArgs = {
@@ -104,9 +119,9 @@ module {
       #Other;
     };
   };
-// #endregion
+  // #endregion
 
-// #region accountIdentifierToText
+  // #region accountIdentifierToText
   public type AccountIdentifierToTextArgs = {
     accountIdentifier : AccountIdentifier;
     canisterId : ?Principal;
@@ -120,14 +135,14 @@ module {
       #Other;
     };
   };
-// #endregion
+  // #endregion
 
-// #region create_transaction
+  // #region create_transaction
 
-   public type CreateTransactionArgs = {
+  public type CreateTransactionArgs = {
     creator : Principal;
     amount : Nat;
-    destination: Principal;
+    destination : Principal;
     successful : Bool;
   };
   public type CreateTransactionResult = Result.Result<CreateTransactionSuccess, CreateTransactionErr>;
@@ -146,9 +161,9 @@ module {
       #Other;
     };
   };
-// #endregion
+  // #endregion
 
-// #region get_transaction
+  // #region get_transaction
   public type GetTransactionArgs = {
     id : Nat;
   };
@@ -165,9 +180,9 @@ module {
       #Other;
     };
   };
-// #endregion
+  // #endregion
 
-// #region create employee
+  // #region create employee
   public type CreateEmployeeArgs = {
     wallet : Text;
   };
@@ -204,11 +219,12 @@ module {
   };
 
   //region create invoice
-   public type CreateInvoiceArgs = {
-    
-    payer : Text;
+  public type CreateInvoiceArgs = {
+
+    client : Text;
+    receiver : Text;
     amount : Text;
-    memo: ?Text;
+    memo : ?Text;
 
   };
   public type CreateInvoiceResult = Result.Result<CreateInvoiceSuccess, CreateInvoiceErr>;
@@ -223,6 +239,5 @@ module {
       #Other;
     };
   };
-
 
 };
