@@ -12,6 +12,9 @@ For deeper understanding of the ICP < > BTC integration, see the IC wiki article
 
 - **CRUD Users**: Users logs in with their Internet Identity and adds users they want to make payments to.
 - **Send tokens**: Users can send ckBTC tokens to other users.
+- **Receive tokens**: Users can receive ckBTC tokens from other users.
+- **Bulk transfers**: Users can make bulk transfers to multiple users.
+- **Schedule payments**: Users can schedule payments to be made at a future date.
 - **Receive notifications**: Users can choose to receive notifications by email or SMS when a payment is received. This uses the [HTTP Outcall](https://internetcomputer.org/docs/current/developer-docs/integrations/https-outcalls/) feature of the Internet Computer.
 - **Transaction history**: Users can view a list of transactions made to the store.
 
@@ -26,6 +29,8 @@ The backend is written in Motoko and consist of one canister, `backend`. It expo
 - `updateUser` - updates the store configuration for a given principal.
 - `transferFromSubAccountToCanister` - transfers funds to the canister's account.
 - `transferFromSubAccountToSubAccount` - transfers funds to the another user's account.
+- `runpayroll` - bulk transfers to multiple users/address with various amounts.
+- `send_notifications` - sends notifications to users when a payment is received.
 - `getFundingAddress` - returns the funding address for a particular user.
 - `getFundingBalance` - returns the funding balance for a particular user.
 - `getTradingAddress` - returns the trading address for a particular user.

@@ -177,6 +177,21 @@ export const idlFactory = ({ IDL }) => {
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
   });
+  const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
+  const HttpResponsePayload = IDL.Record({
+    'status' : IDL.Nat,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(HttpHeader),
+  });
+  const TransformArgs = IDL.Record({
+    'context' : IDL.Vec(IDL.Nat8),
+    'response' : HttpResponsePayload,
+  });
+  const CanisterHttpResponsePayload = IDL.Record({
+    'status' : IDL.Nat,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(HttpHeader),
+  });
   const Backend = IDL.Service({
     'accountIdentifierToBlob' : IDL.Func(
         [AccountIdentifier],
@@ -231,6 +246,11 @@ export const idlFactory = ({ IDL }) => {
         [CreateTransactionResult],
         [],
       ),
+    'send_notifications' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
     'setCourierApiKey' : IDL.Func([IDL.Text], [Response_2], []),
     'testRandom' : IDL.Func([], [IDL.Opt(IDL.Bool)], []),
     'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),
@@ -239,6 +259,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Text, IDL.Nat],
         [Response_1],
         [],
+      ),
+    'transform' : IDL.Func(
+        [TransformArgs],
+        [CanisterHttpResponsePayload],
+        ['query'],
       ),
     'updateUser' : IDL.Func([User], [Response], []),
     'userLength' : IDL.Func([], [IDL.Text], ['query']),

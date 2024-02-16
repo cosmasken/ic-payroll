@@ -21,7 +21,6 @@ import Nat64 "mo:base/Nat64";
 import Option "mo:base/Option";
 import Trie "mo:base/Trie";
 import Nat32 "mo:base/Nat32";
-import HttpTypes "http/http.types";
 import Cycles "mo:base/ExperimentalCycles";
 import Buffer "mo:base/Buffer";
 import Nat8 "mo:base/Nat8";
@@ -382,13 +381,17 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
     switch (transaction) {
       case (#ok(transaction)) {
-        //  Debug.print("Created new transaction: " # debug_show(transaction)) ;
-        let notification = save_notification({
-          amount = amount;
-          sender = Principal.toText(caller);
-          receiver = receiver;
-          isRead = false;
-        });
+
+         switch (Trie.get(userStore, userKey(receiver), Text.equal)) {
+      case (?user) {
+ let notification = await send_notifications(user.name, user.email_address, user.phone_number, Nat.toText(amount), Principal.toText(caller));
+      Debug.print("notification sent to : " # debug_show(user.email_address));
+      };
+      case null {
+       Debug.print("User to send notification to not found");
+      };
+    };
+
 
         return {
           status = 200;
@@ -526,7 +529,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
     setGlobalTimer(next);
 
-    await notify();
+   // await notify();
   };
 
   // #region get_account_identifier
@@ -854,102 +857,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     };
     return Nat.toText(size);
   };
-
-  // public shared ({ caller }) func runpayroll(receivers : [PayrollType]) : async Types.Response<[PayrollType]> {
-  //   var total : Nat = 0;
-  //   let fee : Nat = 10;
-  //   let payroll = Buffer.Buffer<PayrollType>(50);
-  //   for (receiver in receivers.vals()) {
-  //     total += receiver.amount + fee;
-  //   };
-  //   Debug.print("total: " # debug_show (total));
-
-  //   //check balance
-  //   let balance = await CkBtcLedger.icrc1_balance_of(
-  //     {
-  //       owner = Principal.fromActor(this);
-  //       subaccount = ?toSubaccount(caller);
-  //     }
-  //   );
-  //   Debug.print("balance: " # debug_show (balance));
-
-  //   if (balance < total) {
-  //     let data : [PayrollType] = Buffer.toArray<PayrollType>(payroll);
-  //     return {
-  //       status = 403;
-  //       status_text = "Insufficient Balance";
-  //       data = null;
-  //       error_text = null;
-  //     };
-  //   } else {
-
-  //     for (receiver in receivers.vals()) {
-  //       Debug.print("receiver: " # debug_show (receiver));
-
-  //       try {
-  //         let transferResult = await CkBtcLedger.icrc1_transfer(
-  //           {
-  //             amount = receiver.amount;
-  //             from_subaccount = ?toSubaccount(caller);
-  //             created_at_time = null;
-  //             fee = ?10;
-  //             memo = null;
-  //             to = {
-  //               owner = Principal.fromActor(this);
-  //               subaccount = ?toSubaccount(Principal.fromText(receiver.destination));
-  //             };
-  //           }
-  //         );
-  //         switch (transferResult) {
-  //           case (#Ok(index)) {
-  //             //  payroll.add(receiver);
-  //             // return {
-  //             //   status = 200;
-  //             //   status_text = "Accepted";
-  //             //   data = ?Buffer.toArray<PayrollType>(payroll);
-  //             //   error_text = ?"Funds Transferred:\n";
-  //             // };
-  //           };
-
-  //           case (#Err(transferError)) {
-  //             // return {
-  //             //   status = 405;
-  //             //   status_text = "Forbidden";
-  //             //   data = ?Buffer.toArray<PayrollType>(payroll);
-  //             //   error_text = ?"Couldn't transfer funds to account:\n";
-  //             // };
-
-  //           };
-  //           case (_) {
-  //             //    return {
-  //             //   status = 500;
-  //             //   status_text = "Internal Server Error";
-  //             //   data = null;
-  //             //   error_text = ?"Unexpected error occurred";
-  //             // };
-  //           };
-  //         };
-  //       } catch (error : Error) {
-  //         // return {
-  //         //   status = 406;
-  //         //   status_text = "Rejected";
-  //         //   data = ?Buffer.toArray<PayrollType>(payroll);
-  //         //   error_text = ?"Payroll failed";
-  //         // };
-  //       };
-  //     };
-
-  //   };
-
-  //   {
-  //     status = 200;
-  //     status_text = "Transfer Successful";
-  //     data = null;
-  //     error_text = null;
-  //   };
-
-  // };
-
   public shared ({ caller }) func runpayroll(receivers : [PayrollType]) : async Types.Response<[PayrollType]> {
     var total : Nat = 0;
     let fee : Nat = 10;
@@ -1032,46 +939,18 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
 //PULIC METHOD
 //This method sends a POST request to a URL with a free API we can test.
-  public func send_notifications(name:Text,email:Text,phone:Text,amount:Text,sender:Text) : async Text {
-
-    //1. DECLARE IC MANAGEMENT CANISTER
-    //We need this so we can use it to make the HTTP request
+  public func send_notifications(name:Text,email:Text,phone:Text,amount:Text,sender:Text) : async () {
     let ic : Types.IC = actor ("aaaaa-aa");
-
-    //2. SETUP ARGUMENTS FOR HTTP GET request
-
-    // 2.1 Setup the URL and its query parameters
-    //This URL is used because it allows us to inspect the HTTP request sent from the canister
-   // let host : Text = "putsreq.com";
-   // let url = "https://putsreq.com/aL1QS5IbaQd4NTqN3a81"; //HTTP that accepts IPV6
-
-    //let host :Text ="";
     let url ="https://icpos-notifications.xyz/.netlify/functions/notify";
-
-    // 2.2 prepare headers for the system http_request call
-
-    //idempotency keys should be unique so we create a function that generates them.
     let idempotency_key: Text = generateUUID();
     let request_headers = [
         { name = "Content-Type"; value = "application/json" },
     ];
-
-    // The request body is an array of [Nat8] (see Types.mo) so we do the following:
-    // 1. Write a JSON string
-    // 2. Convert ?Text optional into a Blob, which is an intermediate reprepresentation before we cast it as an array of [Nat8]
-    // 3. Convert the Blob into an array [Nat8]
-    // let request_body_json: Text = "{ \"name\" : \"Grogu\", \"force_sensitive\" : \"true\" }";
-    // let request_body_as_Blob: Blob = Text.encodeUtf8(request_body_json); 
-    // let request_body_as_nat8: [Nat8] = Blob.toArray(request_body_as_Blob); // e.g [34, 34,12, 0]
-
      let idempotencyKey : Text = Text.concat(name, Nat.toText(5));
     let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # email # "\", \"phone\": \"" # phone # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # sender # "\"}";
     let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
     let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
-
-
-
-    // 2.2.1 Transform context
+ // 2.2.1 Transform context
     let transform_context : Types.TransformContext = {
       function = transform;
       context = Blob.fromArray([]);
@@ -1088,45 +967,10 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
         transform = ?transform_context;
         //transform = null;
     };
-
-    //3. ADD CYCLES TO PAY FOR HTTP REQUEST
-
-    //IC management canister will make the HTTP request so it needs cycles
-    //See: https://internetcomputer.org/docs/current/motoko/main/cycles
-    
-    //The way Cycles.add() works is that it adds those cycles to the next asynchronous call
-    //See: https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-http_request
     Cycles.add(70_000_000);
-    
-    //4. MAKE HTTPS REQUEST AND WAIT FOR RESPONSE
-    //Since the cycles were added above, we can just call the IC management canister with HTTPS outcalls below
     let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
-    
-    //5. DECODE THE RESPONSE
 
-    //As per the type declarations in `Types.mo`, the BODY in the HTTP response 
-    //comes back as [Nat8s] (e.g. [2, 5, 12, 11, 23]). Type signature:
-    
-    //public type HttpResponsePayload = {
-    //     status : Nat;
-    //     headers : [HttpHeader];
-    //     body : [Nat8];
-    // };
-
-    //We need to decode that [Na8] array that is the body into readable text. 
-    //To do this, we:
-    //  1. Convert the [Nat8] into a Blob
-    //  2. Use Blob.decodeUtf8() method to convert the Blob to a ?Text optional 
-    //  3. We use Motoko syntax "Let... else" to unwrap what is returned from Text.decodeUtf8()
-      // let response_body: Blob = Blob.fromArray(http_response.body);
-      // let decoded_text: Text = switch (Text.decodeUtf8(response_body)) {
-      //     case (null) { "No value returned" };
-      //     case (?y) { y };
-      // };
-
-      // //6. RETURN RESPONSE OF THE BODY
-      // let result: Text = decoded_text # ". See more info of the request sent at: " # url # "/inspect";
-      // result
+    Debug.print("http_response: " # debug_show(http_response));
 
       if (http_response.status > 299) {
       let response_body : Blob = Blob.fromArray(http_response.body);
@@ -1134,9 +978,9 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
         case (null) { "No value returned" };
         case (?y) { y };
       };
-     // log("Error sending notification: " # decoded_text);
+      log("Error sending notification: " # decoded_text);
     } else {
-    //  log("Notification sent");
+      log("Notification sent");
     };
   };
 
@@ -1145,7 +989,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   //this method is used for the Idempotency Key used in the request headers of the POST request.
   //For the purposes of this exercise, it returns a constant, but in practice it should return unique identifiers
   func generateUUID() : Text {
-    "UUID-123456789";
+    "UUID-1234567435345";
   }
 
 };

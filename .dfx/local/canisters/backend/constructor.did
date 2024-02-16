@@ -6,6 +6,11 @@ type User =
    phone_notifications: bool;
    phone_number: text;
  };
+type TransformArgs = 
+ record {
+   context: blob;
+   response: HttpResponsePayload;
+ };
 type Transaction__1 = 
  record {
    amount: nat;
@@ -89,6 +94,17 @@ type Notification =
    isRead: bool;
    receiver: text;
    sender: text;
+ };
+type HttpResponsePayload = 
+ record {
+   body: vec nat8;
+   headers: vec HttpHeader;
+   status: nat;
+ };
+type HttpHeader = 
+ record {
+   name: text;
+   value: text;
  };
 type GetTransactionSuccess = record {transaction: Transaction__1;};
 type GetTransactionResult = 
@@ -176,6 +192,12 @@ type CreateNotificationArgs =
    sender: text;
  };
 type CreateEmployeeArgs = record {wallet: text;};
+type CanisterHttpResponsePayload = 
+ record {
+   body: vec nat8;
+   headers: vec HttpHeader;
+   status: nat;
+ };
 type Backend = 
  service {
    accountIdentifierToBlob: (AccountIdentifier) ->
@@ -217,12 +239,14 @@ type Backend =
    runpayroll: (vec PayrollType) -> (Response_3);
    save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
    save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
+   send_notifications: (text, text, text, text, text) -> ();
    /// * Set the courier API key. Only the owner can set the courier API key.
    setCourierApiKey: (text) -> (Response_2);
    testRandom: () -> (opt bool);
    transferFromCanistertoSubAccount: () -> (Result);
    transferFromSubAccountToCanister: (nat) -> (Result);
    transferFromSubAccountToSubAccount: (text, nat) -> (Response_1);
+   transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;
    /// * Update the merchant's information
    updateUser: (User) -> (Response);
    userLength: () -> (text) query;

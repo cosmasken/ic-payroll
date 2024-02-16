@@ -61,6 +61,10 @@ export interface Backend {
     [CreateTransactionArgs],
     CreateTransactionResult
   >,
+  'send_notifications' : ActorMethod<
+    [string, string, string, string, string],
+    undefined
+  >,
   'setCourierApiKey' : ActorMethod<[string], Response_2>,
   'testRandom' : ActorMethod<[], [] | [boolean]>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
@@ -69,9 +73,15 @@ export interface Backend {
     [string, bigint],
     Response_1
   >,
+  'transform' : ActorMethod<[TransformArgs], CanisterHttpResponsePayload>,
   'updateUser' : ActorMethod<[User], Response>,
   'userLength' : ActorMethod<[], string>,
   'whoami' : ActorMethod<[], Principal>,
+}
+export interface CanisterHttpResponsePayload {
+  'status' : bigint,
+  'body' : Uint8Array | number[],
+  'headers' : Array<HttpHeader>,
 }
 export interface CreateEmployeeArgs { 'wallet' : string }
 export interface CreateNotificationArgs {
@@ -137,6 +147,12 @@ export interface GetTransactionErr {
 export type GetTransactionResult = { 'ok' : GetTransactionSuccess } |
   { 'err' : GetTransactionErr };
 export interface GetTransactionSuccess { 'transaction' : Transaction__1 }
+export interface HttpHeader { 'value' : string, 'name' : string }
+export interface HttpResponsePayload {
+  'status' : bigint,
+  'body' : Uint8Array | number[],
+  'headers' : Array<HttpHeader>,
+}
 export interface Notification {
   'id' : bigint,
   'isRead' : boolean,
@@ -207,6 +223,10 @@ export interface Transaction__1 {
   'created_at' : bigint,
   'amount' : bigint,
   'successful' : boolean,
+}
+export interface TransformArgs {
+  'context' : Uint8Array | number[],
+  'response' : HttpResponsePayload,
 }
 export interface User {
   'email_address' : string,
