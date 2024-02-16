@@ -220,7 +220,7 @@ const addData = async () => {
   } finally {
     isLoading.value = false;
     console.error("Successful:");
-    router.push("/home/employees");
+    router.push("/home/contacts");
   }
 };
 </script>

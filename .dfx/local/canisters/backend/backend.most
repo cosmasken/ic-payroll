@@ -57,15 +57,15 @@ type User =
 type User__1 = User;
 actor {
   stable var contactsCounter : Nat;
+  stable var contactsStable : [(Nat, Employee__1)];
   stable var courierApiKey : Text;
-  stable var entries : [(Nat, Transaction__2)];
-  stable var invo : [(Nat, Invoice__1)];
   stable var invoiceCounter : Nat;
+  stable var invoicesStable : [(Nat, Invoice__1)];
   stable var latestTransactionIndex : Nat;
   stable var notificationsCounter : Nat;
-  stable var notifs : [(Nat, Notification__1)];
+  stable var notificationsStable : [(Nat, Notification__1)];
   stable var transactionCounter : Nat;
+  stable var transactionsStable : [(Nat, Transaction__2)];
   stable var userStore :
-    {#branch : Branch<Text, User__1>; #empty; #leaf : Leaf<Text, User__1>};
-  stable var users : [(Nat, Employee__1)]
+    {#branch : Branch<Text, User__1>; #empty; #leaf : Leaf<Text, User__1>}
 };

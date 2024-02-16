@@ -58,17 +58,17 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
   stable var transactionsStable : [(Nat, Transaction)] = [];
   stable var contactsStable : [(Nat, Employee)] = [];
-  stable var notificationsSable : [(Nat, Notification)] = [];
-  stable var invo : [(Nat, Invoice)] = [];
+  stable var notificationsStable : [(Nat, Notification)] = [];
+  stable var invoicesStable : [(Nat, Invoice)] = [];
   stable var transactionCounter : Nat = 0;
   stable var contactsCounter : Nat = 0;
   stable var notificationsCounter : Nat = 0;
   stable var invoiceCounter : Nat = 0;
   var transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
   var contacts : HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
-  var notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notificationsSable), notificationsSable.size(), Nat.equal, Hash.hash);
+  var notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
   var MAX_TRANSACTIONS = 30_000;
-  let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invo), invo.size(), Nat.equal, Hash.hash);
+  let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
 
   public shared ({ caller }) func getAddress() : async Text {
     let acc : Types.Account = {
@@ -117,6 +117,33 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       };
     };
   };
+
+   /**
+    *  Get user data by principal
+    */
+  public query (context) func getUserByPrincipal(principal : Principal) : async Types.Response<User> {
+    switch (Trie.get(userStore, userKey(Principal.toText(principal)), Text.equal)) {
+      case (?user) {
+        {
+          status = 200;
+          status_text = "OK";
+          data = ?user;
+          error_text = null;
+        };
+      };
+      case null {
+        {
+          status = 404;
+          status_text = "Not Found";
+          data = null;
+          error_text = ?("User with principal ID: " # Principal.toText(principal) # " not found.");
+        };
+      };
+    };
+  };
+
+
+
 
   /**
     *  Check if user exists and return Bool
@@ -433,11 +460,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     return #ok("Transfer to trading account is " # "successful");
   };
 
-  //transfer to multiple users
-  // public shared ({ caller }) func runPayroll(amount : Nat, payroll: [Transaction]) :async Types.Response<[Transaction]>{
-
-  // };
-
   /**
    * Utilities
    */
@@ -539,148 +561,33 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   /**
     * Notify the merchant if a new transaction is found.
     */
-  private func notify() : async () {
-    var start : Nat = _startBlock;
-    if (latestTransactionIndex > 0) {
-      start := latestTransactionIndex + 1;
-    };
+  // private func notify() : async () {
+  //   var start : Nat = _startBlock;
+  //   if (latestTransactionIndex > 0) {
+  //     start := latestTransactionIndex + 1;
+  //   };
 
-    var response = await CkBtcLedger.get_transactions({
-      start = start;
-      length = 100;
-    });
+  //   var response = await CkBtcLedger.get_transactions({
+  //     start = start;
+  //     length = 100;
+  //   });
 
-    let transactions = response.transactions;
-    let size = Array.size(transactions);
-    // Debug.print("transactions are " # debug_show(transactions));
+  //   let transactions = response.transactions;
+  //   let size = Array.size(transactions);
+  //   // Debug.print("transactions are " # debug_show(transactions));
 
-    if (Array.size(response.transactions) > 0) {
+  //   if (Array.size(response.transactions) > 0) {
 
-    };
+  //   };
 
-  };
-
-  /**
-    * Send a notification to a merchant about a received payment
-    */
-  private func sendNotification(user : User, transaction : CkBtcLedger.Transaction) : async () {
-    // Managment canister
-    let ic : HttpTypes.IC = actor ("aaaaa-aa");
-
-    // Create request body
-    var amount = "0";
-    var from = "";
-    switch (transaction.transfer) {
-      case (?transfer) {
-        amount := Nat.toText(transfer.amount);
-        from := Principal.toText(transfer.from.owner);
-      };
-      case null {};
-    };
-    let idempotencyKey : Text = Text.concat(user.name, Nat64.toText(transaction.timestamp));
-    let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # user.email_address # "\", \"phone\": \"" # user.phone_number # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # from # "\"}";
-    let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
-    let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
-
-    // Setup request
-    let httpRequest : HttpTypes.HttpRequestArgs = {
-      // The notification service is hosted on Netlify and the URL is hardcoded
-      // in this example. In a real application, the URL would be configurable.
-      // url = "https://icpos-notifications.xyz/.netlify/functions/notify";
-      //https://bitpochi-notifications.netlify.app/
-      url = "https://bitpochi-notifications.netlify/functions/notify";
-      max_response_bytes = ?Nat64.fromNat(1000);
-      headers = [
-        { name = "Content-Type"; value = "application/json" },
-      ];
-      body = ?requestBodyAsNat8;
-      method = #post;
-      transform = null;
-    };
-
-    // Cycle cost of sending a notification
-    // 49.14M + 5200 * request_size + 10400 * max_response_bytes
-    // 49.14M + (5200 * 1000) + (10400 * 1000) = 64.74M
-    Cycles.add(70_000_000);
-
-    // Send the request
-    let httpResponse : HttpTypes.HttpResponsePayload = await ic.http_request(httpRequest);
-
-    // Check the response
-    if (httpResponse.status > 299) {
-      let response_body : Blob = Blob.fromArray(httpResponse.body);
-      let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
-        case (null) { "No value returned" };
-        case (?y) { y };
-      };
-      log("Error sending notification: " # decoded_text);
-    } else {
-      log("Notification sent");
-    };
-  };
-
-  private func sendEmailorText(user : User, transaction : Transaction) : async () {
-    // Managment canister
-    let ic : HttpTypes.IC = actor ("aaaaa-aa");
-
-    // Create request body
-    var amount = "0";
-    var from = "";
-    amount := Nat.toText(transaction.amount);
-    from := Principal.toText(transaction.creator);
-    // switch (transaction.transfer) {
-    //   case (?transfer) {
-    //     amount := Nat.toText(transfer.amount);
-    //     from := Principal.toText(transfer.from.owner);
-    //   };
-    //   case null {};
-    // };
-    let idempotencyKey : Text = Text.concat(user.name, Nat.toText(transaction.id));
-    let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # user.email_address # "\", \"phone\": \"" # user.phone_number # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # from # "\"}";
-    let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
-    let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
-
-    // Setup request
-    let httpRequest : HttpTypes.HttpRequestArgs = {
-      // The notification service is hosted on Netlify and the URL is hardcoded
-      // in this example. In a real application, the URL would be configurable.
-      // url = "https://icpos-notifications.xyz/.netlify/functions/notify";
-      url = "https://icpos-notifications.xyz/.netlify/functions/notify";
-      max_response_bytes = ?Nat64.fromNat(1000);
-      headers = [
-        { name = "Content-Type"; value = "application/json" },
-      ];
-      body = ?requestBodyAsNat8;
-      method = #post;
-      transform = null;
-    };
-
-    // Cycle cost of sending a notification
-    // 49.14M + 5200 * request_size + 10400 * max_response_bytes
-    // 49.14M + (5200 * 1000) + (10400 * 1000) = 64.74M
-    Cycles.add(70_000_000);
-
-    // Send the request
-    let httpResponse : HttpTypes.HttpResponsePayload = await ic.http_request(httpRequest);
-
-    // Check the response
-    if (httpResponse.status > 299) {
-      let response_body : Blob = Blob.fromArray(httpResponse.body);
-      let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
-        case (null) { "No value returned" };
-        case (?y) { y };
-      };
-      log("Error sending notification: " # decoded_text);
-    } else {
-      log("Notification sent");
-    };
-  };
+  // };
 
    // #region Upgrade Hooks
   system func preupgrade() {
     transactionsStable := Iter.toArray(transactions.entries());
     contactsStable := Iter.toArray(contacts.entries());
-    notificationsSable := Iter.toArray(notifications.entries());
+    notificationsStable := Iter.toArray(notifications.entries());
+    invoicesStable := Iter.toArray(invoices.entries());
   };
 
  
@@ -692,8 +599,10 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       transactionsStable := [];
       contacts := HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
       contactsStable := [];
-      notifications := HashMap.fromIter(Iter.fromArray(notificationsSable), notificationsSable.size(), Nat.equal, Hash.hash);
-      notificationsSable := [];
+      notifications := HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
+      notificationsStable := [];
+     // invoices := HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
+     // invoicesStable := [];
       
   };
 
@@ -855,6 +764,32 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     return Buffer.toArray<Employee>(my_contacts);
   };
 
+  //get employee data based on principal
+  public shared ({ caller }) func getEmployeeByPrincipal(principal : Principal) : async Types.Response<Employee> {
+    let allEntries = Iter.toArray(contacts.entries());
+
+//get employee by principal and then if creator is caller return employee
+    for ((_, contact) in allEntries.vals()) {
+      if (Principal.fromText(contact.wallet) == principal) {
+        if (contact.creator == caller) {
+          return {
+            status = 200;
+            status_text = "OK";
+            data = ?contact;
+            error_text = null;
+          };
+        };
+      };
+    };
+   
+    return {
+      status = 404;
+      status_text = "Not Found";
+      data = null;
+      error_text = null;
+    };
+  };
+
   public shared ({ caller }) func save_notification(args : Types.CreateNotificationArgs) : async Types.CreateNotificationResult {
     let id : Nat = notificationsCounter;
     // increment counter
@@ -920,6 +855,101 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     return Nat.toText(size);
   };
 
+  // public shared ({ caller }) func runpayroll(receivers : [PayrollType]) : async Types.Response<[PayrollType]> {
+  //   var total : Nat = 0;
+  //   let fee : Nat = 10;
+  //   let payroll = Buffer.Buffer<PayrollType>(50);
+  //   for (receiver in receivers.vals()) {
+  //     total += receiver.amount + fee;
+  //   };
+  //   Debug.print("total: " # debug_show (total));
+
+  //   //check balance
+  //   let balance = await CkBtcLedger.icrc1_balance_of(
+  //     {
+  //       owner = Principal.fromActor(this);
+  //       subaccount = ?toSubaccount(caller);
+  //     }
+  //   );
+  //   Debug.print("balance: " # debug_show (balance));
+
+  //   if (balance < total) {
+  //     let data : [PayrollType] = Buffer.toArray<PayrollType>(payroll);
+  //     return {
+  //       status = 403;
+  //       status_text = "Insufficient Balance";
+  //       data = null;
+  //       error_text = null;
+  //     };
+  //   } else {
+
+  //     for (receiver in receivers.vals()) {
+  //       Debug.print("receiver: " # debug_show (receiver));
+
+  //       try {
+  //         let transferResult = await CkBtcLedger.icrc1_transfer(
+  //           {
+  //             amount = receiver.amount;
+  //             from_subaccount = ?toSubaccount(caller);
+  //             created_at_time = null;
+  //             fee = ?10;
+  //             memo = null;
+  //             to = {
+  //               owner = Principal.fromActor(this);
+  //               subaccount = ?toSubaccount(Principal.fromText(receiver.destination));
+  //             };
+  //           }
+  //         );
+  //         switch (transferResult) {
+  //           case (#Ok(index)) {
+  //             //  payroll.add(receiver);
+  //             // return {
+  //             //   status = 200;
+  //             //   status_text = "Accepted";
+  //             //   data = ?Buffer.toArray<PayrollType>(payroll);
+  //             //   error_text = ?"Funds Transferred:\n";
+  //             // };
+  //           };
+
+  //           case (#Err(transferError)) {
+  //             // return {
+  //             //   status = 405;
+  //             //   status_text = "Forbidden";
+  //             //   data = ?Buffer.toArray<PayrollType>(payroll);
+  //             //   error_text = ?"Couldn't transfer funds to account:\n";
+  //             // };
+
+  //           };
+  //           case (_) {
+  //             //    return {
+  //             //   status = 500;
+  //             //   status_text = "Internal Server Error";
+  //             //   data = null;
+  //             //   error_text = ?"Unexpected error occurred";
+  //             // };
+  //           };
+  //         };
+  //       } catch (error : Error) {
+  //         // return {
+  //         //   status = 406;
+  //         //   status_text = "Rejected";
+  //         //   data = ?Buffer.toArray<PayrollType>(payroll);
+  //         //   error_text = ?"Payroll failed";
+  //         // };
+  //       };
+  //     };
+
+  //   };
+
+  //   {
+  //     status = 200;
+  //     status_text = "Transfer Successful";
+  //     data = null;
+  //     error_text = null;
+  //   };
+
+  // };
+
   public shared ({ caller }) func runpayroll(receivers : [PayrollType]) : async Types.Response<[PayrollType]> {
     var total : Nat = 0;
     let fee : Nat = 10;
@@ -951,57 +981,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       for (receiver in receivers.vals()) {
         Debug.print("receiver: " # debug_show (receiver));
 
-        try {
-          let transferResult = await CkBtcLedger.icrc1_transfer(
-            {
-              amount = receiver.amount;
-              from_subaccount = ?toSubaccount(caller);
-              created_at_time = null;
-              fee = ?10;
-              memo = null;
-              to = {
-                owner = Principal.fromActor(this);
-                subaccount = ?toSubaccount(Principal.fromText(receiver.destination));
-              };
-            }
-          );
-          switch (transferResult) {
-            case (#Ok(index)) {
-              //  payroll.add(receiver);
-              // return {
-              //   status = 200;
-              //   status_text = "Accepted";
-              //   data = ?Buffer.toArray<PayrollType>(payroll);
-              //   error_text = ?"Funds Transferred:\n";
-              // };
-            };
-
-            case (#Err(transferError)) {
-              // return {
-              //   status = 405;
-              //   status_text = "Forbidden";
-              //   data = ?Buffer.toArray<PayrollType>(payroll);
-              //   error_text = ?"Couldn't transfer funds to account:\n";
-              // };
-
-            };
-            case (_) {
-              //    return {
-              //   status = 500;
-              //   status_text = "Internal Server Error";
-              //   data = null;
-              //   error_text = ?"Unexpected error occurred";
-              // };
-            };
-          };
-        } catch (error : Error) {
-          // return {
-          //   status = 406;
-          //   status_text = "Rejected";
-          //   data = ?Buffer.toArray<PayrollType>(payroll);
-          //   error_text = ?"Payroll failed";
-          // };
-        };
+        let transaction =  await transferFromSubAccountToSubAccount(receiver.destination, receiver.amount);
+       Debug.print("transaction: " # debug_show (transaction));
       };
 
     };
@@ -1014,5 +995,157 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     };
 
   };
+
+  //function to transform the response
+  public query func transform(raw : Types.TransformArgs) : async Types.CanisterHttpResponsePayload {
+      let transformed : Types.CanisterHttpResponsePayload = {
+          status = raw.response.status;
+          body = raw.response.body;
+          headers = [
+              {
+                  name = "Content-Security-Policy";
+                  value = "default-src 'self'";
+              },
+              { 
+                name = "Referrer-Policy"; 
+                value = "strict-origin" 
+              },
+              { 
+                name = "Permissions-Policy"; 
+                value = "geolocation=(self)" },
+              {
+                  name = "Strict-Transport-Security";
+                  value = "max-age=63072000";
+              },
+              { 
+                name = "X-Frame-Options"; 
+                value = "DENY" 
+              },
+              { 
+                name = "X-Content-Type-Options"; 
+                value = "nosniff" 
+              },
+          ];
+      };
+      transformed;
+  };
+
+//PULIC METHOD
+//This method sends a POST request to a URL with a free API we can test.
+  public func send_notifications(name:Text,email:Text,phone:Text,amount:Text,sender:Text) : async Text {
+
+    //1. DECLARE IC MANAGEMENT CANISTER
+    //We need this so we can use it to make the HTTP request
+    let ic : Types.IC = actor ("aaaaa-aa");
+
+    //2. SETUP ARGUMENTS FOR HTTP GET request
+
+    // 2.1 Setup the URL and its query parameters
+    //This URL is used because it allows us to inspect the HTTP request sent from the canister
+   // let host : Text = "putsreq.com";
+   // let url = "https://putsreq.com/aL1QS5IbaQd4NTqN3a81"; //HTTP that accepts IPV6
+
+    //let host :Text ="";
+    let url ="https://icpos-notifications.xyz/.netlify/functions/notify";
+
+    // 2.2 prepare headers for the system http_request call
+
+    //idempotency keys should be unique so we create a function that generates them.
+    let idempotency_key: Text = generateUUID();
+    let request_headers = [
+        { name = "Content-Type"; value = "application/json" },
+    ];
+
+    // The request body is an array of [Nat8] (see Types.mo) so we do the following:
+    // 1. Write a JSON string
+    // 2. Convert ?Text optional into a Blob, which is an intermediate reprepresentation before we cast it as an array of [Nat8]
+    // 3. Convert the Blob into an array [Nat8]
+    // let request_body_json: Text = "{ \"name\" : \"Grogu\", \"force_sensitive\" : \"true\" }";
+    // let request_body_as_Blob: Blob = Text.encodeUtf8(request_body_json); 
+    // let request_body_as_nat8: [Nat8] = Blob.toArray(request_body_as_Blob); // e.g [34, 34,12, 0]
+
+     let idempotencyKey : Text = Text.concat(name, Nat.toText(5));
+    let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # email # "\", \"phone\": \"" # phone # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # sender # "\"}";
+    let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
+    let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
+
+
+
+    // 2.2.1 Transform context
+    let transform_context : Types.TransformContext = {
+      function = transform;
+      context = Blob.fromArray([]);
+    };
+
+    // 2.3 The HTTP request
+    let http_request : Types.HttpRequestArgs = {
+        url = url;
+        max_response_bytes = ?Nat64.fromNat(1000); //optional for request
+        headers = request_headers;
+        //note: type of `body` is ?[Nat8] so we pass it here as "?request_body_as_nat8" instead of "request_body_as_nat8"
+        body = ?requestBodyAsNat8; 
+        method = #post;
+        transform = ?transform_context;
+        //transform = null;
+    };
+
+    //3. ADD CYCLES TO PAY FOR HTTP REQUEST
+
+    //IC management canister will make the HTTP request so it needs cycles
+    //See: https://internetcomputer.org/docs/current/motoko/main/cycles
+    
+    //The way Cycles.add() works is that it adds those cycles to the next asynchronous call
+    //See: https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-http_request
+    Cycles.add(70_000_000);
+    
+    //4. MAKE HTTPS REQUEST AND WAIT FOR RESPONSE
+    //Since the cycles were added above, we can just call the IC management canister with HTTPS outcalls below
+    let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
+    
+    //5. DECODE THE RESPONSE
+
+    //As per the type declarations in `Types.mo`, the BODY in the HTTP response 
+    //comes back as [Nat8s] (e.g. [2, 5, 12, 11, 23]). Type signature:
+    
+    //public type HttpResponsePayload = {
+    //     status : Nat;
+    //     headers : [HttpHeader];
+    //     body : [Nat8];
+    // };
+
+    //We need to decode that [Na8] array that is the body into readable text. 
+    //To do this, we:
+    //  1. Convert the [Nat8] into a Blob
+    //  2. Use Blob.decodeUtf8() method to convert the Blob to a ?Text optional 
+    //  3. We use Motoko syntax "Let... else" to unwrap what is returned from Text.decodeUtf8()
+      // let response_body: Blob = Blob.fromArray(http_response.body);
+      // let decoded_text: Text = switch (Text.decodeUtf8(response_body)) {
+      //     case (null) { "No value returned" };
+      //     case (?y) { y };
+      // };
+
+      // //6. RETURN RESPONSE OF THE BODY
+      // let result: Text = decoded_text # ". See more info of the request sent at: " # url # "/inspect";
+      // result
+
+      if (http_response.status > 299) {
+      let response_body : Blob = Blob.fromArray(http_response.body);
+      let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
+        case (null) { "No value returned" };
+        case (?y) { y };
+      };
+     // log("Error sending notification: " # decoded_text);
+    } else {
+    //  log("Notification sent");
+    };
+  };
+
+  //PRIVATE HELPER FUNCTION
+  //Helper method that generates a Universally Unique Identifier
+  //this method is used for the Idempotency Key used in the request headers of the POST request.
+  //For the purposes of this exercise, it returns a constant, but in practice it should return unique identifiers
+  func generateUUID() : Text {
+    "UUID-123456789";
+  }
 
 };

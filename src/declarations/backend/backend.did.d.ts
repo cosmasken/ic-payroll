@@ -28,6 +28,7 @@ export interface Backend {
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
+  'getEmployeeByPrincipal' : ActorMethod<[Principal], Response_4>,
   'getFundingAddress' : ActorMethod<[], string>,
   'getFundingBalance' : ActorMethod<[], string>,
   'getInvoice' : ActorMethod<[], Account>,
@@ -42,6 +43,7 @@ export interface Backend {
   'getUnreadNotifications' : ActorMethod<[], Array<Notification__1>>,
   'getUnreadNotificationsLength' : ActorMethod<[], string>,
   'getUser' : ActorMethod<[], Response>,
+  'getUserByPrincipal' : ActorMethod<[Principal], Response>,
   'getUsersList' : ActorMethod<[], Array<[string, User]>>,
   'get_account_identifier' : ActorMethod<
     [GetAccountIdentifierArgs],

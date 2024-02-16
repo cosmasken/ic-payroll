@@ -187,6 +187,7 @@ export const idlFactory = ({ IDL }) => {
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
+    'getEmployeeByPrincipal' : IDL.Func([IDL.Principal], [Response_4], []),
     'getFundingAddress' : IDL.Func([], [IDL.Text], []),
     'getFundingBalance' : IDL.Func([], [IDL.Text], []),
     'getInvoice' : IDL.Func([], [Account], []),
@@ -201,6 +202,7 @@ export const idlFactory = ({ IDL }) => {
     'getUnreadNotifications' : IDL.Func([], [IDL.Vec(Notification__1)], []),
     'getUnreadNotificationsLength' : IDL.Func([], [IDL.Text], []),
     'getUser' : IDL.Func([], [Response], ['query']),
+    'getUserByPrincipal' : IDL.Func([IDL.Principal], [Response], ['query']),
     'getUsersList' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, User))],

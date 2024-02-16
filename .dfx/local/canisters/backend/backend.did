@@ -184,6 +184,7 @@ type Backend =
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);
+   getEmployeeByPrincipal: (principal) -> (Response_4);
    getFundingAddress: () -> (text);
    getFundingBalance: () -> (text);
    getInvoice: () -> (Account);
@@ -201,6 +202,8 @@ type Backend =
    /// * High-Level API
    /// *  Get the merchant's information
    getUser: () -> (Response) query;
+   /// *  Get user data by principal
+   getUserByPrincipal: (principal) -> (Response) query;
    getUsersList: () -> (vec record {
                               text;
                               User;

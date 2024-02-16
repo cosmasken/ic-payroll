@@ -21,6 +21,7 @@ type Backend = service {
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
+  getEmployeeByPrincipal : (principal) -> (Response_4);
   getFundingAddress : () -> (text);
   getFundingBalance : () -> (text);
   getInvoice : () -> (Account);
@@ -35,6 +36,7 @@ type Backend = service {
   getUnreadNotifications : () -> (vec Notification__1);
   getUnreadNotificationsLength : () -> (text);
   getUser : () -> (Response) query;
+  getUserByPrincipal : (principal) -> (Response) query;
   getUsersList : () -> (vec record { text; User }) query;
   get_account_identifier : (GetAccountIdentifierArgs) -> (
       GetAccountIdentifierResult,
