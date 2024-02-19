@@ -3,6 +3,8 @@ import router from "../router";
 import { ref, watchEffect } from "vue";
 import OverviewCard from "../components/OverviewCard.vue";
 import { useAuthStore } from "../store/auth";
+import { Field, Form, ErrorMessage } from "vee-validate";
+import * as yup from 'yup';
 const authStore = useAuthStore();
 let transactions = ref(0);
 let contacts = ref(0);
@@ -34,6 +36,12 @@ const registrationData = {
   email: "",
   phone_number: "",
 };
+const schema = yup.object({
+  email: yup.string().required().email(),
+  firstname: yup.string().required(),
+  lastname: yup.string().required(),
+  phone: yup.string().required(),
+});
 const addData = async () => {
   isLoading.value = true;
   authStore.updateRegistrationData(registrationData);
@@ -65,60 +73,61 @@ const addData = async () => {
   <div>
     <div v-if="authStore.isRegistered === false">
       <div class="flex items-center justify-center h-screen">
-        <div class="text-center card">
+        <Form class="text-center card" @submit="addData" :validation-schema="schema">
           <p class="text-lg font-semibold mb-3">Welcome to the app!</p>
+          <p class="text-sm mb-3">You havent created your profile yet.</p>
           <p class="text-sm mb-3">
             Please add your data and save it to continue using the app.
           </p>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your first name?</span>
-            </div>
-            <input
-              v-model="registrationData.first_name"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your last name?</span>
-            </div>
-            <input
-              v-model="registrationData.last_name"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your email?</span>
-            </div>
-            <input
-              v-model="registrationData.email"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">What is your phone number?</span>
-            </div>
-            <input
-              v-model="registrationData.phone_number"
-              type="text"
-              placeholder="Type here"
-              class="input input-bordered w-full max-w-xs"
-            />
-          </label>
+          <label for="firstname" class="label-text text-left">What is your first name</label>
+          <Field
+            name="firstname"
+            as="input"
+            type="text"
+            v-model="registrationData.first_name"
+            placeholder="First Name"
+            class="input input-bordered w-full max-w-xs"
+            rules="required|firstname"
+          />
+          <ErrorMessage class="label-text text-left" name="firstname" />
+          <label for="lastname" class="label-text text-left">What is your last name</label>
+          <Field
+            name="lastname"
+            as="input"
+            type="text"
+            v-model="registrationData.last_name"
+            placeholder="Last Name"
+            class="input input-bordered w-full max-w-xs"
+            rules="required|lastname"
+          />
+          <ErrorMessage class="label-text text-left" name="lastname" />
+          <label for="email" class="label-text text-left">What is your email?</label>
+          <Field
+            name="email"
+            as="input"
+            type="text"
+            v-model="registrationData.email"
+            placeholder="Email address"
+            class="input input-bordered w-full max-w-xs"
+            rules="required|email"
+          />
+          <ErrorMessage class="label-text text-left" name="email" />
+          <label for="phone" class="label-text text-left">What is your phone number</label>
+          <Field
+            name="phone"
+            as="input"
+            type="text"
+            v-model="registrationData.phone_number"
+            placeholder="Phone Number"
+            class="input input-bordered w-full max-w-xs"
+            rules="required|phone"
+          />
+          <ErrorMessage class="label-text text-left" name="phone" />
 
           <div class="card-actions justify-end">
-            <button @click="addData" class="btn btn-primary">Save</button>
+            <button class="btn btn-primary">Save</button>
           </div>
-        </div>
+        </Form>
       </div>
     </div>
 

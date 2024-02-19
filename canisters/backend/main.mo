@@ -31,6 +31,9 @@ import Hash "mo:base/Hash";
 import Random "mo:base/Random";
 import Hex "./Hex";
 import Timer "mo:base/Timer";
+import { abs } = "mo:base/Int";
+import { now } = "mo:base/Time";
+import { setTimer; recurringTimer } = "mo:base/Timer";
 
 shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
@@ -45,7 +48,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   type Invoice = Types.Invoice;
   public type TransactionId = Nat32;
   let r = Random.Finite("username");
-  
+
   // #endregion
 
   let addressConverter_ = Utils.addressConverter;
@@ -59,13 +62,17 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   stable var contactsStable : [(Nat, Employee)] = [];
   stable var notificationsStable : [(Nat, Notification)] = [];
   stable var invoicesStable : [(Nat, Invoice)] = [];
+  stable var stablePayroll : [(Nat, [PayrollType])] = [];
   stable var transactionCounter : Nat = 0;
   stable var contactsCounter : Nat = 0;
+  let oneMinute = 60;
   stable var notificationsCounter : Nat = 0;
   stable var invoiceCounter : Nat = 0;
+  stable var payrollCounter : Nat = 0;
   var transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
   var contacts : HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
   var notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
+  var payrolls : HashMap.HashMap<Nat, [PayrollType]> = HashMap.fromIter(Iter.fromArray(stablePayroll), stablePayroll.size(), Nat.equal, Hash.hash); 
   var MAX_TRANSACTIONS = 30_000;
   let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
 
@@ -76,15 +83,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     };
     let address = addressConverter_.toText(acc);
     return address;
-  };
-
-  func checkAndWaterPlants() : async () {
-    Debug.print("chceking flowers");
-  };
-  let daily = Timer.recurringTimer(#seconds(1 * 60 * 1), checkAndWaterPlants);
-
-  public func testRandom() : async ?Bool {
-    return r.coin();
   };
 
   /**
@@ -117,7 +115,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     };
   };
 
-   /**
+  /**
     *  Get user data by principal
     */
   public query (context) func getUserByPrincipal(principal : Principal) : async Types.Response<User> {
@@ -140,9 +138,6 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       };
     };
   };
-
-
-
 
   /**
     *  Check if user exists and return Bool
@@ -382,16 +377,15 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     switch (transaction) {
       case (#ok(transaction)) {
 
-         switch (Trie.get(userStore, userKey(receiver), Text.equal)) {
-      case (?user) {
- let notification = await send_notifications(user.name, user.email_address, user.phone_number, Nat.toText(amount), Principal.toText(caller));
-      Debug.print("notification sent to : " # debug_show(user.email_address));
-      };
-      case null {
-       Debug.print("User to send notification to not found");
-      };
-    };
-
+        switch (Trie.get(userStore, userKey(receiver), Text.equal)) {
+          case (?user) {
+            let notification = await send_notifications(user.name, user.email_address, user.phone_number, Nat.toText(amount), Principal.toText(caller));
+            Debug.print("notification sent to : " # debug_show (user.email_address));
+          };
+          case null {
+            Debug.print("User to send notification to not found");
+          };
+        };
 
         return {
           status = 200;
@@ -418,9 +412,9 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
   };
 
-  //transfer from account to canister subaccount
+  //transfer from your account to other
   //works
-  public shared ({ caller }) func transferFromSubAccountToCanister(amount : Nat) : async Result.Result<Text, Text> {
+  public shared ({ caller }) func sendToOwner(amount : Nat,receiver :Text) : async Result.Result<Text, Text> {
 
     // check ckBTC balance of the callers dedicated account
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -430,6 +424,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       }
     );
 
+    Debug.print("balance of main account is  " # debug_show (balance));
+
     if (balance < 100) {
       return #err("Not enough funds available in Personal  Account. Make sure you send at least 100 ckSats.");
     };
@@ -438,22 +434,25 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       // if enough funds were sent, move them to the canisters default account
       let transferResult = await CkBtcLedger.icrc1_transfer(
         {
-          amount = balance -10;
-          from_subaccount = ?toSubaccount(caller);
+          amount = amount;
+          from_subaccount = null;
           created_at_time = null;
           fee = ?10;
           memo = null;
           to = {
-            owner = Principal.fromActor(this);
-            subaccount = ?toSubaccount(caller);
+            owner = Principal.fromText(receiver);
+            subaccount = null;
           };
         }
       );
 
+       Debug.print("transffer result  " # debug_show (transferResult));
+
       switch (transferResult) {
         case (#Err(transferError)) {
-          return #err("Couldn't transfer funds to trading account:\n" # debug_show (transferError));
+          return #err("Couldn't transfer funds to Principal account:\n" # debug_show (transferError));
         };
+       
         case (_) {};
       };
     } catch (error : Error) {
@@ -520,17 +519,41 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     };
     return;
   };
+ private func ring() : async () {
+    Debug.print("Motoko Timer Ring!");
+  };
 
   /**
     * Check for new transactions and notify the merchant if a new transaction is found.
     * This function is called by the global timer.
     */
   system func timer(setGlobalTimer : Nat64 -> ()) : async () {
-    let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
+     let now = Time.now();
+    let thirtyMinutes = 1_000_000_000 * 60 * 1;
+   // let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
+   let next = Nat64.fromIntWrap(Time.now()) + 1_000_000_000 * 60 * 1; // One minute
     setGlobalTimer(next);
-
-   // await notify();
+  //  Debug.print("Timer is up now");  
+  // ignore recurringTimer(#seconds thirtyMinutes, ring);
+    // await notify();
   };
+
+ 
+
+  // public shared func schedulePayment() : async () {
+  //   let now = Time.now();
+  //   let thirtyMinutes = 1_000_000_000 * 60 * 1;
+  //   let next = Nat64.fromIntWrap(Time.now()) + 1_000_000_000 * 60 * 1; // One minute
+    
+  // };
+
+
+  ignore setTimer(#seconds (oneMinute),
+    func () : async () {
+      ignore recurringTimer(#seconds oneMinute, ring);
+      await ring();
+  }
+  );
 
   // #region get_account_identifier
   /*
@@ -561,31 +584,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   };
   // #endregion
 
-  /**
-    * Notify the merchant if a new transaction is found.
-    */
-  // private func notify() : async () {
-  //   var start : Nat = _startBlock;
-  //   if (latestTransactionIndex > 0) {
-  //     start := latestTransactionIndex + 1;
-  //   };
-
-  //   var response = await CkBtcLedger.get_transactions({
-  //     start = start;
-  //     length = 100;
-  //   });
-
-  //   let transactions = response.transactions;
-  //   let size = Array.size(transactions);
-  //   // Debug.print("transactions are " # debug_show(transactions));
-
-  //   if (Array.size(response.transactions) > 0) {
-
-  //   };
-
-  // };
-
-   // #region Upgrade Hooks
+  // #region Upgrade Hooks
   system func preupgrade() {
     transactionsStable := Iter.toArray(transactions.entries());
     contactsStable := Iter.toArray(contacts.entries());
@@ -593,23 +592,21 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     invoicesStable := Iter.toArray(invoices.entries());
   };
 
- 
   system func postupgrade() {
-     // Make sure we start to montitor transactions from the block set on deployment
-      latestTransactionIndex := _startBlock;
-      transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
-     // transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), contactsStable.size(), Nat.equal, Hash.hash);
-      transactionsStable := [];
-      contacts := HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
-      contactsStable := [];
-      notifications := HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
-      notificationsStable := [];
-     // invoices := HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
-     // invoicesStable := [];
-      
+    // Make sure we start to montitor transactions from the block set on deployment
+    latestTransactionIndex := _startBlock;
+    transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
+    // transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), contactsStable.size(), Nat.equal, Hash.hash);
+    transactionsStable := [];
+    contacts := HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
+    contactsStable := [];
+    notifications := HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
+    notificationsStable := [];
+    // invoices := HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
+    // invoicesStable := [];
+
   };
 
- 
   // #endregion
 
   // #region Create Invoice
@@ -771,7 +768,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   public shared ({ caller }) func getEmployeeByPrincipal(principal : Principal) : async Types.Response<Employee> {
     let allEntries = Iter.toArray(contacts.entries());
 
-//get employee by principal and then if creator is caller return employee
+    //get employee by principal and then if creator is caller return employee
     for ((_, contact) in allEntries.vals()) {
       if (Principal.fromText(contact.wallet) == principal) {
         if (contact.creator == caller) {
@@ -784,7 +781,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
         };
       };
     };
-   
+
     return {
       status = 404;
       status_text = "Not Found";
@@ -792,6 +789,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       error_text = null;
     };
   };
+
+  //transfer funds from owner  caller to oter owner caller
 
   public shared ({ caller }) func save_notification(args : Types.CreateNotificationArgs) : async Types.CreateNotificationResult {
     let id : Nat = notificationsCounter;
@@ -888,8 +887,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       for (receiver in receivers.vals()) {
         Debug.print("receiver: " # debug_show (receiver));
 
-        let transaction =  await transferFromSubAccountToSubAccount(receiver.destination, receiver.amount);
-       Debug.print("transaction: " # debug_show (transaction));
+        let transaction = await transferFromSubAccountToSubAccount(receiver.destination, receiver.amount);
+        Debug.print("transaction: " # debug_show (transaction));
       };
 
     };
@@ -905,52 +904,53 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
   //function to transform the response
   public query func transform(raw : Types.TransformArgs) : async Types.CanisterHttpResponsePayload {
-      let transformed : Types.CanisterHttpResponsePayload = {
-          status = raw.response.status;
-          body = raw.response.body;
-          headers = [
-              {
-                  name = "Content-Security-Policy";
-                  value = "default-src 'self'";
-              },
-              { 
-                name = "Referrer-Policy"; 
-                value = "strict-origin" 
-              },
-              { 
-                name = "Permissions-Policy"; 
-                value = "geolocation=(self)" },
-              {
-                  name = "Strict-Transport-Security";
-                  value = "max-age=63072000";
-              },
-              { 
-                name = "X-Frame-Options"; 
-                value = "DENY" 
-              },
-              { 
-                name = "X-Content-Type-Options"; 
-                value = "nosniff" 
-              },
-          ];
-      };
-      transformed;
+    let transformed : Types.CanisterHttpResponsePayload = {
+      status = raw.response.status;
+      body = raw.response.body;
+      headers = [
+        {
+          name = "Content-Security-Policy";
+          value = "default-src 'self'";
+        },
+        {
+          name = "Referrer-Policy";
+          value = "strict-origin";
+        },
+        {
+          name = "Permissions-Policy";
+          value = "geolocation=(self)";
+        },
+        {
+          name = "Strict-Transport-Security";
+          value = "max-age=63072000";
+        },
+        {
+          name = "X-Frame-Options";
+          value = "DENY";
+        },
+        {
+          name = "X-Content-Type-Options";
+          value = "nosniff";
+        },
+      ];
+    };
+    transformed;
   };
 
-//PULIC METHOD
-//This method sends a POST request to a URL with a free API we can test.
-  public func send_notifications(name:Text,email:Text,phone:Text,amount:Text,sender:Text) : async () {
+  //PULIC METHOD
+  //This method sends a POST request to a URL with a free API we can test.
+  public func send_notifications(name : Text, email : Text, phone : Text, amount : Text, sender : Text) : async () {
     let ic : Types.IC = actor ("aaaaa-aa");
-    let url ="https://icpos-notifications.xyz/.netlify/functions/notify";
-    let idempotency_key: Text = generateUUID();
+    let url = "https://icpos-notifications.xyz/.netlify/functions/notify";
+    let idempotency_key : Text = generateUUID();
     let request_headers = [
-        { name = "Content-Type"; value = "application/json" },
+      { name = "Content-Type"; value = "application/json" },
     ];
-     let idempotencyKey : Text = Text.concat(name, Nat.toText(5));
+    let idempotencyKey : Text = Text.concat(name, Nat.toText(10));
     let requestBodyJson : Text = "{ \"idempotencyKey\": \"" # idempotencyKey # "\", \"email\": \"" # email # "\", \"phone\": \"" # phone # "\", \"amount\": \"" # amount # "\", \"payer\": \"" # sender # "\"}";
     let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
     let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
- // 2.2.1 Transform context
+    // 2.2.1 Transform context
     let transform_context : Types.TransformContext = {
       function = transform;
       context = Blob.fromArray([]);
@@ -958,21 +958,21 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
     // 2.3 The HTTP request
     let http_request : Types.HttpRequestArgs = {
-        url = url;
-        max_response_bytes = ?Nat64.fromNat(1000); //optional for request
-        headers = request_headers;
-        //note: type of `body` is ?[Nat8] so we pass it here as "?request_body_as_nat8" instead of "request_body_as_nat8"
-        body = ?requestBodyAsNat8; 
-        method = #post;
-        transform = ?transform_context;
-        //transform = null;
+      url = url;
+      max_response_bytes = ?Nat64.fromNat(1000); //optional for request
+      headers = request_headers;
+      //note: type of `body` is ?[Nat8] so we pass it here as "?request_body_as_nat8" instead of "request_body_as_nat8"
+      body = ?requestBodyAsNat8;
+      method = #post;
+      transform = ?transform_context;
+      //transform = null;
     };
     Cycles.add(70_000_000);
     let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
 
-    Debug.print("http_response: " # debug_show(http_response));
+    Debug.print("http_response: " # debug_show (http_response));
 
-      if (http_response.status > 299) {
+    if (http_response.status > 299) {
       let response_body : Blob = Blob.fromArray(http_response.body);
       let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
         case (null) { "No value returned" };
@@ -990,6 +990,18 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   //For the purposes of this exercise, it returns a constant, but in practice it should return unique identifiers
   func generateUUID() : Text {
     "UUID-1234567435345";
-  }
+  };
+
+  //check if email exists
+  public query func emailExists(email : Text) : async Bool {
+    let usersArray : [(Text, User)] = Iter.toArray(Trie.iter(userStore));
+  //  let allEntries = Iter.toArray(userStore.entries());
+    for ((_, user) in usersArray.vals()) {
+      if (user.email_address == email) {
+        return true;
+      };
+    };
+    return false;
+  };
 
 };

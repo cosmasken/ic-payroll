@@ -69,10 +69,12 @@ export const useAuthStore = defineStore("auth", {
       fundingbalance: null,
       fundingaddress: null,
       canisteraddress: null,
+      tradingaddress: null,
       canisterbalance: null,
       notifications: [],
       isRegistered: null,
       userInfo: null,
+      transactions: [],
     };
   },
   actions: {
@@ -121,6 +123,7 @@ export const useAuthStore = defineStore("auth", {
       const fundingbalance = await this.whoamiActor.getFundingBalance();
       const tradingbalance = await this.whoamiActor.getTradingBalance();
       const fundingaddress = await this.whoamiActor.getFundingAddress();
+      const tradingaddress = await this.whoamiActor.getTradingAddress();
       const canisteraddress = await this.whoamiActor.getCanisterAddress();
       const canisterbalance = await this.whoamiActor.getCanisterBalance();
       const notifications = await this.whoamiActor.getNotifications();
@@ -130,6 +133,7 @@ export const useAuthStore = defineStore("auth", {
       this.fundingaddress = await fundingaddress;
       this.canisteraddress = await canisteraddress;
       this.canisterbalance = await canisterbalance;
+      this.tradingaddress = await tradingaddress;
       this.isRegistered = await registered;
     },
     async logout() {

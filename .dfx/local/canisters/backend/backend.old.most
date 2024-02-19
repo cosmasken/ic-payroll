@@ -35,6 +35,16 @@ type List<T> = ?(T, List<T>);
 type Notification =
   {amount : Nat; id : Nat; isRead : Bool; receiver : Text; sender : Text};
 type Notification__1 = Notification;
+type PayrollType =
+  {
+    amount : Nat;
+    created_at : Int;
+    creator : Text;
+    destination : Text;
+    id : Nat;
+    successful : Bool
+  };
+type PayrollType__1 = PayrollType;
 type Transaction =
   {
     amount : Nat;
@@ -64,6 +74,8 @@ actor {
   stable var latestTransactionIndex : Nat;
   stable var notificationsCounter : Nat;
   stable var notificationsStable : [(Nat, Notification__1)];
+  stable var payrollCounter : Nat;
+  stable var stablePayroll : [(Nat, [PayrollType__1])];
   stable var transactionCounter : Nat;
   stable var transactionsStable : [(Nat, Transaction__2)];
   stable var userStore :

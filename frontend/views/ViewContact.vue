@@ -56,10 +56,8 @@ watchEffect(async () => {
     name.value = await user.data[0].name;
     phoneNotifications.value = await user.data[0].phone_notifications;
     emailNotifications.value = await user.data[0].email_notifications;
-
   }
 });
-
 </script>
 <template>
   <div class="card bg-base-100 shadow-xl self-center">

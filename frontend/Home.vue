@@ -10,11 +10,13 @@ const authStore = useAuthStore();
 const darkmode = ref(false);
 let unreadNotifications = ref("");
 let fundingaddress = ref("");
+let tradingaddress = ref("");
 let canisteraddress = ref("");
 let tradingbalance = ref("");
 let fundingbalance = ref("");
 let canisterbalance = ref("");
 let transferresponse = ref("");
+let sendtocanisterresponse = ref("");
 let invoice = ref("");
 let notifresponse = ref("");
 let showNotification = ref(false);
@@ -69,6 +71,7 @@ watchEffect(async () => {
   tradingbalance.value = await authStore.tradingbalance;
   fundingbalance.value = await authStore.fundingbalance;
   fundingaddress.value = await authStore.fundingaddress;
+  tradingaddress.value = await authStore.tradingaddress;
   canisteraddress.value = await authStore.canisteraddress;
   canisterbalance.value = await authStore.canisterbalance;
 });
@@ -79,6 +82,7 @@ const refreshBalance = async () => {
     tradingbalance.value = await authStore.tradingbalance;
     fundingbalance.value = await authStore.fundingbalance;
     fundingaddress.value = await authStore.fundingaddress;
+    tradingaddress.value = await authStore.tradingaddress;
     canisterbalance.value = await authStore.canisterbalance;
     console.log(res);
   } catch (e) {
@@ -100,6 +104,24 @@ const getTestTokens = async () => {
     isLoading.value = false;
   }
 };
+
+// const sendToOwner =async () => {
+//   try {
+//     isLoading.value = true;
+//     const response = authStore.whoamiActor.sendToOwner(
+
+//        40000,"5lnja-ztbzy-c4kyn-telka-nwtuk-5h2jn-fcesl-tovut-2ytto-5stlw-pae"
+
+//     );
+//     console.log(response);
+//     sendtocanisterresponse.value = await response;
+//   } catch (error) {
+//     console.error("Error Getting tokens:", error);
+//   } finally {
+//     isLoading.value = false;
+//   }
+
+// };
 
 const walletAddress = "0x1234567890123456789012345678901234567890";
 
@@ -429,6 +451,13 @@ const toggleDarkMode = () => {
               class="bg-blue-700 p-2 text-sm rounded-[10px]"
             >
               Get Test Tokens
+            </button>
+
+            <button
+              @click="sendToOwner"
+              class="bg-blue-700 p-2 text-sm rounded-[10px]"
+            >
+              Send to Owner Test
             </button>
 
             <div class="flex flex-row justify-between">

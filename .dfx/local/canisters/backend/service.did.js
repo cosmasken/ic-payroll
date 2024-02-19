@@ -164,13 +164,13 @@ export const idlFactory = ({ IDL }) => {
     'ok' : CreateTransactionSuccess,
     'err' : CreateTransactionErr,
   });
+  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const Response_2 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(IDL.Text),
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
   });
-  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const Response_1 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Transaction),
@@ -199,6 +199,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_4], []),
+    'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
@@ -246,15 +247,14 @@ export const idlFactory = ({ IDL }) => {
         [CreateTransactionResult],
         [],
       ),
+    'sendToOwner' : IDL.Func([IDL.Nat, IDL.Text], [Result], []),
     'send_notifications' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
         [],
       ),
     'setCourierApiKey' : IDL.Func([IDL.Text], [Response_2], []),
-    'testRandom' : IDL.Func([], [IDL.Opt(IDL.Bool)], []),
     'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),
-    'transferFromSubAccountToCanister' : IDL.Func([IDL.Nat], [Result], []),
     'transferFromSubAccountToSubAccount' : IDL.Func(
         [IDL.Text, IDL.Nat],
         [Response_1],

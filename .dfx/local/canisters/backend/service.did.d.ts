@@ -25,6 +25,7 @@ export interface Backend {
     AccountIdentifierToBlobResult
   >,
   'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_4>,
+  'emailExists' : ActorMethod<[string], boolean>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
@@ -61,14 +62,13 @@ export interface Backend {
     [CreateTransactionArgs],
     CreateTransactionResult
   >,
+  'sendToOwner' : ActorMethod<[bigint, string], Result>,
   'send_notifications' : ActorMethod<
     [string, string, string, string, string],
     undefined
   >,
   'setCourierApiKey' : ActorMethod<[string], Response_2>,
-  'testRandom' : ActorMethod<[], [] | [boolean]>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
-  'transferFromSubAccountToCanister' : ActorMethod<[bigint], Result>,
   'transferFromSubAccountToSubAccount' : ActorMethod<
     [string, bigint],
     Response_1
