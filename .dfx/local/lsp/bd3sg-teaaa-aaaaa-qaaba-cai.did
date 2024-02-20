@@ -18,7 +18,7 @@ type Backend = service {
       AccountIdentifierToBlobResult,
     );
   create_employee : (CreateEmployeeArgs) -> (Response_4);
-  emailExists : (text) -> (bool);
+  emailExists : (text) -> (bool) query;
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);

@@ -20,6 +20,7 @@ let sendtocanisterresponse = ref("");
 let invoice = ref("");
 let notifresponse = ref("");
 let showNotification = ref(false);
+const selectedAccountType = ref("main");
 
 const logout = () => {
   router.push("/auth");
@@ -90,6 +91,13 @@ const refreshBalance = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const getTodaysDate = () => {
+  const today = new Date();
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  return date;
 };
 
 const getTestTokens = async () => {
@@ -214,7 +222,7 @@ const toggleDarkMode = () => {
                 class="shrink-0 h-6 w-6"
                 alt="Vite logo"
               />
-              <span>Payroll</span>
+              <span>Bulk Payments</span>
             </router-link>
             <router-link
               v-if="authStore.isRegistered === true"
@@ -343,57 +351,6 @@ const toggleDarkMode = () => {
       </div>
     </div>
     <div class="w-full flex flex-col pt-4 pr-[30px] space-y-[46px]">
-      <!-- Global notification live region, render this permanently at the end of the document -->
-      <div
-        aria-live="assertive"
-        class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
-      >
-        <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
-          <!-- Notification panel, dynamically insert this into the live region when it needs to be displayed -->
-          <transition
-            enter-active-class="transform ease-out duration-300 transition"
-            enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-            enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
-            leave-active-class="transition ease-in duration-100"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-          >
-            <div
-              v-if="showNotification"
-              class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5"
-            >
-              <div class="p-4">
-                <div class="flex items-start">
-                  <div class="flex-shrink-0">
-                    <CheckCircleIcon
-                      class="h-6 w-6 text-green-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div class="ml-3 w-0 flex-1 pt-0.5">
-                    <p class="text-sm font-medium text-gray-900">
-                      Payment Received
-                    </p>
-                    <p class="mt-1 text-sm text-gray-500">
-                      Go to Transactions to view it
-                    </p>
-                  </div>
-                  <div class="ml-4 flex flex-shrink-0">
-                    <button
-                      type="button"
-                      @click="showNotification = false"
-                      class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                      <span class="sr-only">Close</span>
-                      <XMarkIcon class="h-5 w-5" aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
-      </div>
       <!-- Header-->
       <div class="w-full sticky flex flex-row justify-between">
         <div class="flex flex-col">
@@ -406,6 +363,10 @@ const toggleDarkMode = () => {
             >
               Hello {{ fundingaddress }} 👋🏻
             </p>
+            <p class="text-gray-400 text-sm">
+              Todays Date {{ getTodaysDate() }} 👋🏻
+            </p>
+
             <p
               class="text-[#16151C] dark:text-[#ffffff] font-semibold leading-[30px]"
             >
@@ -427,7 +388,43 @@ const toggleDarkMode = () => {
                 <span class="loading loading-spinner loading-xs"></span>
               </div>
               <div v-else>
-                <p
+                <div class="flex flex-col items-center justify-center lg:block">
+                  <div
+                    class="relative rounded px-5 py-8 shadow-md lg:w-3/5 lg:p-4 lg:shadow-sm"
+                  >
+                    <div
+                      class="flex items-center space-x-8 lg:space-x-20 lg:space-y-0"
+                    >
+                      <h3 class="text-base font-medium text-green-700">
+                        Balance
+                      </h3>
+                      <select
+                        name="currencies"
+                        id="currencies"
+                        class="rounded bg-gray-100 px-2 py-1"
+                        v-model="selectedAccountType"
+                      >
+                        <option class="" value="main">Main Account</option>
+                        <option value="sub">SubAccount</option>
+                      </select>
+                    </div>
+                    <br />
+                    <div>
+                      <p
+                        class="uppercase text-base font-extrabold text-black dark:text-white whitespace-nowrap"
+                      >
+                        {{
+                          selectedAccountType === "main"
+                            ? BigInt(Math.round(fundingbalance))
+                            : tradingbalance
+                        }}
+                        ckSats
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!--p
                   class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
                 >
                   TradingBalance : {{ tradingbalance }} ckSats
@@ -436,28 +433,15 @@ const toggleDarkMode = () => {
                   class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
                 >
                   Canister Balance : {{ canisterbalance }} ckSats
-                </p>
+                </p-->
               </div>
             </div>
-
-            <p
-              class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
-            >
-              FundingBalance : {{ BigInt(Math.round(fundingbalance)) }} ckSats
-            </p>
 
             <button
               @click="getTestTokens"
               class="bg-blue-700 p-2 text-sm rounded-[10px]"
             >
               Get Test Tokens
-            </button>
-
-            <button
-              @click="sendToOwner"
-              class="bg-blue-700 p-2 text-sm rounded-[10px]"
-            >
-              Send to Owner Test
             </button>
 
             <div class="flex flex-row justify-between">

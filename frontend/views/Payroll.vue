@@ -39,6 +39,10 @@ const addPayment = () => {
   console.log("Adding payment:", address.value, amount.value);
   closeModal();
 };
+
+const deletePayment = (index) => {
+  payrollItems.value.splice(index, 1);
+};
 const runPayroll = async () => {
   try {
     isRunning.value = true;
@@ -97,97 +101,164 @@ const runPayroll = async () => {
       </div>
 
       <!-- table section -->
-      <!--TableComponent /-->
+      <!-- Conditional rendering for payroll items -->
+      <div v-if="payrollItems.length > 0">
+        <table class="divide-y divide-gray-500 w-full">
+          <thead class="bg-white dark:bg-transparent">
+            <tr>
+              <th
+                scope="col"
+                class="py-[10px] pr-[10px] text-left text-base font-light text-[#A2A1A8]"
+              >
+                ID
+              </th>
+              <th
+                scope="col"
+                class="py-[10px] pr-[10px] text-left text-base font-light text-[#A2A1A8]"
+              >
+                Address
+              </th>
+              <th
+                scope="col"
+                class="py-[10px] pr-[10px] text-left text-base font-light text-[#A2A1A8]"
+              >
+                Amount
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in payrollItems" :key="item.id">
+              <td class="whitespace-nowrap py-[10px] pr-[10px] text-base">
+                <p class="font-light dark:text-white text-[#16151C]">
+                  {{ item.id }}
+                </p>
+              </td>
+              <td class="whitespace-nowrap py-[10px] pr-[10px] text-base">
+                <p class="font-light dark:text-white text-[#16151C]">
+                  {{ item.address }}
+                </p>
+              </td>
+              <td class="whitespace-nowrap py-[10px] pr-[10px] text-base">
+                <p class="font-light dark:text-white text-[#16151C]">
+                  {{ item.amount }}
+                </p>
+              </td>
+
+              <td
+                class="pr-[10px] py-[10px] text-left text-base text-[#16151C] dark:text-white font-light"
+              >
+                <div class="flex flex-row space-x-[10px]">
+                  <div @click="deletePayment(index)" class="cursor-pointer">
+                    <img src="../assets/trash.png" alt="" class="w-6 h-6" />
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button
+          v-if="payrollItems.length > 0"
+          @click=""
+          class="text-right rounded-[10px] cursor-pointer flex flex-row p-5 bg-[#7152F3] h-[50px] items-center space-x-[10px]"
+        >
+          <p class="text-base font-light text-white">Save</p>
+        </button>
+      </div>
+      <div v-else>
+        <p>No payroll items available.</p>
+      </div>
       <!-- table section -->
       <!-- loop through payroll items -->
-    </div>
-    <TransitionRoot as="template" :show="isOpen">
-      <Dialog
-        as="div"
-        class="fixed inset-0 z-10 overflow-y-auto"
-        @close="closeModal"
-      >
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
+      <TransitionRoot as="template" :show="isOpen">
+        <Dialog
+          as="div"
+          class="fixed inset-0 z-10 overflow-y-auto"
+          @close="closeModal"
         >
-          <div
-            class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+          <TransitionChild
+            as="template"
+            enter="ease-out duration-300"
+            enter-from="opacity-0"
+            enter-to="opacity-100"
+            leave="ease-in duration-200"
+            leave-from="opacity-100"
+            leave-to="opacity-0"
           >
-            <TransitionChild
-              as="template"
-              enter="ease-out duration-300"
-              enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enter-to="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
-              leave-from="opacity-100 translate-y-0 sm:scale-100"
-              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            <div
+              class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
             >
-              <DialogPanel
-                as="div"
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              <TransitionChild
+                as="template"
+                enter="ease-out duration-300"
+                enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enter-to="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leave-from="opacity-100 translate-y-0 sm:scale-100"
+                leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <DialogTitle
-                        as="h3"
-                        class="text-lg leading-6 font-medium text-gray-900"
-                        >Add Payment</DialogTitle
+                <DialogPanel
+                  as="div"
+                  class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                >
+                  <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                      <div
+                        class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left"
                       >
-                      <div class="mt-2">
-                        <form @submit.prevent="addPayment">
-                          <div>
-                            <label
-                              for="address"
-                              class="block text-sm font-medium text-gray-700"
-                              >Address:</label
-                            >
-                            <input
-                              type="text"
-                              id="address"
-                              v-model="address"
-                              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              required
-                            />
-                          </div>
-                          <div class="mt-3">
-                            <label
-                              for="amount"
-                              class="block text-sm font-medium text-gray-700"
-                              >Amount:</label
-                            >
-                            <input
-                              type="number"
-                              id="amount"
-                              v-model="amount"
-                              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              required
-                            />
-                          </div>
-                          <div class="mt-4">
-                            <button
-                              type="submit"
-                              class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-                            >
-                              Add
-                            </button>
-                          </div>
-                        </form>
+                        <DialogTitle
+                          as="h3"
+                          class="text-lg leading-6 font-medium text-gray-900"
+                          >Add Payment</DialogTitle
+                        >
+                        <div class="mt-2">
+                          <form @submit.prevent="addPayment">
+                            <div>
+                              <label
+                                for="address"
+                                class="block text-sm font-medium text-gray-700"
+                                >Address:</label
+                              >
+                              <input
+                                type="text"
+                                id="address"
+                                v-model="address"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                              />
+                            </div>
+                            <div class="mt-3">
+                              <label
+                                for="amount"
+                                class="block text-sm font-medium text-gray-700"
+                                >Amount:</label
+                              >
+                              <input
+                                type="number"
+                                id="amount"
+                                v-model="amount"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                              />
+                            </div>
+                            <div class="mt-4">
+                              <button
+                                type="submit"
+                                class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
-        </TransitionChild>
-      </Dialog>
-    </TransitionRoot>
+                </DialogPanel>
+              </TransitionChild>
+            </div>
+          </TransitionChild>
+        </Dialog>
+      </TransitionRoot>
+    </div>
   </div>
 </template>

@@ -199,7 +199,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_4], []),
-    'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], []),
+    'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),

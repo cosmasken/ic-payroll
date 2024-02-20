@@ -203,7 +203,7 @@ type Backend =
    accountIdentifierToBlob: (AccountIdentifier) ->
     (AccountIdentifierToBlobResult);
    create_employee: (CreateEmployeeArgs) -> (Response_4);
-   emailExists: (text) -> (bool);
+   emailExists: (text) -> (bool) query;
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);

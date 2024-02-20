@@ -4,12 +4,16 @@ import { ref, watchEffect } from "vue";
 import OverviewCard from "../components/OverviewCard.vue";
 import { useAuthStore } from "../store/auth";
 import { Field, Form, ErrorMessage } from "vee-validate";
-import * as yup from 'yup';
+import { CheckCircleIcon, XMarkIcon } from "@heroicons/vue/20/solid";
+import * as yup from "yup";
 const authStore = useAuthStore();
 let transactions = ref(0);
 let contacts = ref(0);
 let isLoading = ref(false);
+let emailExists = ref(false);
 let tradingbalance = ref("");
+const phoneRegExp =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 watchEffect(async () => {
   tradingbalance.value = await authStore.tradingbalance;
@@ -41,10 +45,21 @@ const schema = yup.object({
   firstname: yup.string().required(),
   lastname: yup.string().required(),
   phone: yup.string().required(),
+  phone: yup.string().matches(phoneRegExp, "Phone number is not valid"),
 });
 const addData = async () => {
   isLoading.value = true;
   authStore.updateRegistrationData(registrationData);
+  const exists = await authStore.whoamiActor.emailExists(
+    registrationData.email
+  );
+
+  if (exists) {
+    emailExists.value = true;
+    isLoading.value = false;
+    return;
+  }
+
   const firstname = authStore.registrationData.first_name;
   const lastname = authStore.registrationData.last_name;
   const email = authStore.registrationData.email;
@@ -72,14 +87,45 @@ const addData = async () => {
   </div>
   <div>
     <div v-if="authStore.isRegistered === false">
-      <div class="flex items-center justify-center h-screen">
-        <Form class="text-center card" @submit="addData" :validation-schema="schema">
+      <div class="flex flex-col items-center justify-center h-screen relative">
+        <Form
+          class="text-center card"
+          @submit="addData"
+          :validation-schema="schema"
+        >
+          <div v-show="emailExists" class="rounded-md bg-red-50 p-4 w-full">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <CheckCircleIcon
+                  class="h-5 w-5 text-red-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-red-800">Email Exist</p>
+              </div>
+              <div class="ml-auto pl-3">
+                <div class="-mx-1.5 -my-1.5">
+                  <button
+                    @click="emailExists = false"
+                    type="button"
+                    class="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
+                  >
+                    <span class="sr-only">Dismiss</span>
+                    <XMarkIcon class="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <p class="text-lg font-semibold mb-3">Welcome to the app!</p>
           <p class="text-sm mb-3">You havent created your profile yet.</p>
           <p class="text-sm mb-3">
             Please add your data and save it to continue using the app.
           </p>
-          <label for="firstname" class="label-text text-left">What is your first name</label>
+          <label for="firstname" class="label-text text-left"
+            >What is your first name</label
+          >
           <Field
             name="firstname"
             as="input"
@@ -90,7 +136,9 @@ const addData = async () => {
             rules="required|firstname"
           />
           <ErrorMessage class="label-text text-left" name="firstname" />
-          <label for="lastname" class="label-text text-left">What is your last name</label>
+          <label for="lastname" class="label-text text-left"
+            >What is your last name</label
+          >
           <Field
             name="lastname"
             as="input"
@@ -101,7 +149,9 @@ const addData = async () => {
             rules="required|lastname"
           />
           <ErrorMessage class="label-text text-left" name="lastname" />
-          <label for="email" class="label-text text-left">What is your email?</label>
+          <label for="email" class="label-text text-left"
+            >What is your email?</label
+          >
           <Field
             name="email"
             as="input"
@@ -112,7 +162,9 @@ const addData = async () => {
             rules="required|email"
           />
           <ErrorMessage class="label-text text-left" name="email" />
-          <label for="phone" class="label-text text-left">What is your phone number</label>
+          <label for="phone" class="label-text text-left"
+            >What is your phone number</label
+          >
           <Field
             name="phone"
             as="input"
@@ -134,7 +186,7 @@ const addData = async () => {
     <div v-else>
       <div class="p-5 flex flex-col gap-5">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="rounded-lg py-2 px-4 shadow-sm bg-[#EDFFFB]">
+          <!--div class="rounded-lg py-2 px-4 shadow-sm bg-[#EDFFFB]">
             <div class="flex flex-col space-y-2">
               <p class="text-base font-semibold text-[#36B293]">Balance</p>
 
@@ -147,16 +199,30 @@ const addData = async () => {
                 </p>
               </div>
             </div>
+          </div-->
+          <div
+            class="rounded border border-gray-50 bg-gray-100 py-6 shadow-lg lg:shadow-none"
+          >
+            <h3 class="font-medium text-center">SubAccount</h3>
+
+            <div>
+              <p class="p-2 text-center text-3xl font-extrabold text-black">
+                {{ authStore.tradingbalance }}
+              </p>
+            </div>
           </div>
 
-          <OverviewCard
-            header="Outstanding Amount"
-            currency1="CKBTC"
-            headercolor="#4C98FF"
-            bgcolor="#E0ECFE"
-            currency1color="#4C98FF"
-            currency2color="#4C98FF"
-          />
+          <div
+            class="rounded border border-gray-50 bg-gray-100 py-6 lg:shadow-none"
+          >
+            <h3 class="font-medium text-center">Main Account</h3>
+
+            <div>
+              <p class="p-2 text-center text-3xl font-extrabold text-black">
+                {{ authStore.fundingbalance }}
+              </p>
+            </div>
+          </div>
           <OverviewCard
             header="Upcoming Payments"
             currency1="CKBTC"
