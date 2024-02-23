@@ -78,7 +78,7 @@ dfx start --clean --background
 Integration with the [Internet Identity](https://internetcomputer.org/internet-identity/) allows store owners to securely setup and manage their store. The Internet Identity canister is already deployed on the IC mainnet. For local development, you need to deploy it to your local instance of the IC.
 
 ```bash
-dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy
+dfx deploy --network local internet_identity
 ```
 
 ### Step 3: Save current principal as a variable
