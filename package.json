@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "deploy:identity": "dfx deps pull && dfx deps init internet-identity --argument '(null)' && dfx deps deploy",
+    "deploy:identity": "dfx deploy --network local internet_identity",
     "start": "npm install --force && npm run replica && npm run private-dids && npm run deploy && npm run deploy:identity",
     "replica": "dfx stop && rm -rf .dfx && dfx start --clean --background && dfx canister create ckbtc_ledger && dfx canister create backend",
-    "deploy": "npm run deploy:ledger && npm run deploy:index &&   npm run deploy:backend && npm run deploy:assets && dfx generate backend",
+    "deploy": "npm run deploy:ledger && npm run deploy:index &&   npm run deploy:backend && dfx generate backend && npm run deploy:assets ",
     "public-dids": "perl -i -pe 's|icrc1\\.did|icrc1\\.public\\.did|g' dfx.json",
     "private-dids": "perl -i -pe 's|icrc1\\.public\\.did|icrc1\\.did|g' dfx.json",
     "deploy:ledger": "PRINCIPAL=$(dfx identity get-principal) && dfx deploy ckbtc_ledger --argument \"(variant {Init = record {minting_account = record { owner = principal \\\"$PRINCIPAL\\\" };transfer_fee = 10;token_symbol = \\\"ckBTC\\\";token_name = \\\"Test ckBTC\\\";metadata = vec {};feature_flags = opt record{icrc2 = true };initial_balances = vec {record { record {owner = principal \\\"$PRINCIPAL\\\"}; 100_000_000_000 } };archive_options = record {num_blocks_to_archive = 10_000;trigger_threshold = 20_000;cycles_for_archive_creation = opt 4_000_000_000_000;controller_id = principal \\\"$PRINCIPAL\\\";};}})\"  --mode=reinstall -y",
