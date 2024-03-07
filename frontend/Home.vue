@@ -383,11 +383,9 @@ const toggleDarkMode = () => {
             v-else
             class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2"
           >
-            <div>
-              <div v-if="isLoading">
-                <span class="loading loading-spinner loading-xs"></span>
-              </div>
-              <div v-else>
+           
+            
+              <div >
                 <div class="flex flex-col items-center justify-center lg:block">
                   <div
                     class="relative rounded px-5 py-8 shadow-md lg:w-3/5 lg:p-4 lg:shadow-sm"
@@ -435,7 +433,7 @@ const toggleDarkMode = () => {
                   Canister Balance : {{ canisterbalance }} ckSats
                 </p-->
               </div>
-            </div>
+          
 
             <button
               @click="getTestTokens"
