@@ -30,6 +30,38 @@ type Transaction =
    successful: bool;
  };
 type Subaccount = blob;
+type SchedulePaymentsSuccess = record {receivers: vec PayrollType;};
+type SchedulePaymentsResult = 
+ variant {
+   err: SchedulePaymentsErr;
+   ok: SchedulePaymentsSuccess;
+ };
+type SchedulePaymentsErr = 
+ record {
+   kind:
+    variant {
+      InsufficientBalance;
+      InvalidAmount;
+      InvalidDestination;
+      InvalidDetails;
+      InvalidSender;
+      MaxTransactionsReached;
+      Other;
+    };
+   message: opt text;
+ };
+type SchedulePaymentsArgs = 
+ record {
+   created_at: int;
+   payment_at: int;
+   receivers: vec PayrollType;
+   status: variant {
+             Accepted;
+             Paid;
+             Rejected;
+             Unpaid;
+           };
+ };
 type Result = 
  variant {
    err: text;
@@ -44,7 +76,7 @@ type Response_4 =
  };
 type Response_3 = 
  record {
-   data: opt vec PayrollType;
+   data: opt vec PayrollType__1;
    error_text: opt text;
    status: nat16;
    status_text: text;
@@ -69,6 +101,15 @@ type Response =
    error_text: opt text;
    status: nat16;
    status_text: text;
+ };
+type PayrollType__1 = 
+ record {
+   amount: nat;
+   created_at: int;
+   creator: text;
+   destination: text;
+   id: nat;
+   successful: bool;
  };
 type PayrollType = 
  record {
@@ -226,6 +267,8 @@ type Account =
 service : {
   accountIdentifierToBlob: (AccountIdentifier) ->
    (AccountIdentifierToBlobResult);
+  cancelRecurringTimer: () -> ();
+  checkPayroll: () -> ();
   create_employee: (CreateEmployeeArgs) -> (Response_4);
   emailExists: (text) -> (bool) query;
   getAddress: () -> (text);
@@ -256,12 +299,14 @@ service : {
   get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions: () -> (vec Transaction) query;
   isRegistered: () -> (bool) query;
-  runpayroll: (vec PayrollType) -> (Response_3);
+  runpayroll: (vec PayrollType__1) -> (Response_3);
   save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
+  save_payroll: (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
   save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
   sendToOwner: (nat, text) -> (Result);
   send_notifications: (text, text, text, text, text) -> ();
   setCourierApiKey: (text) -> (Response_2);
+  setRecurringTimer: (nat) -> ();
   transferFromCanistertoSubAccount: () -> (Result);
   transferFromSubAccountToSubAccount: (text, nat) -> (Response_1);
   transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;

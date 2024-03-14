@@ -10,6 +10,10 @@
         "node_compatibility": true
       }
     },
+    "imgTank": {
+      "main": "canisters/imgTank/main.mo",
+      "type": "motoko"
+    },
     "assets": {
       "dependencies": [
         "backend"

@@ -98,7 +98,7 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Nat,
     'successful' : IDL.Bool,
   });
-  const PayrollType = IDL.Record({
+  const PayrollType__1 = IDL.Record({
     'id' : IDL.Nat,
     'creator' : IDL.Text,
     'destination' : IDL.Text,
@@ -108,7 +108,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const Response_3 = IDL.Record({
     'status' : IDL.Nat16,
-    'data' : IDL.Opt(IDL.Vec(PayrollType)),
+    'data' : IDL.Opt(IDL.Vec(PayrollType__1)),
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
   });
@@ -138,6 +138,44 @@ export const idlFactory = ({ IDL }) => {
   const CreateNotificationResult = IDL.Variant({
     'ok' : CreateNotificationSuccess,
     'err' : CreateNotificationErr,
+  });
+  const PayrollType = IDL.Record({
+    'id' : IDL.Nat,
+    'creator' : IDL.Text,
+    'destination' : IDL.Text,
+    'created_at' : IDL.Int,
+    'amount' : IDL.Nat,
+    'successful' : IDL.Bool,
+  });
+  const SchedulePaymentsArgs = IDL.Record({
+    'status' : IDL.Variant({
+      'Paid' : IDL.Null,
+      'Rejected' : IDL.Null,
+      'Unpaid' : IDL.Null,
+      'Accepted' : IDL.Null,
+    }),
+    'created_at' : IDL.Int,
+    'receivers' : IDL.Vec(PayrollType),
+    'payment_at' : IDL.Int,
+  });
+  const SchedulePaymentsSuccess = IDL.Record({
+    'receivers' : IDL.Vec(PayrollType),
+  });
+  const SchedulePaymentsErr = IDL.Record({
+    'kind' : IDL.Variant({
+      'InvalidDetails' : IDL.Null,
+      'InvalidAmount' : IDL.Null,
+      'InvalidDestination' : IDL.Null,
+      'MaxTransactionsReached' : IDL.Null,
+      'InsufficientBalance' : IDL.Null,
+      'InvalidSender' : IDL.Null,
+      'Other' : IDL.Null,
+    }),
+    'message' : IDL.Opt(IDL.Text),
+  });
+  const SchedulePaymentsResult = IDL.Variant({
+    'ok' : SchedulePaymentsSuccess,
+    'err' : SchedulePaymentsErr,
   });
   const CreateTransactionArgs = IDL.Record({
     'creator' : IDL.Principal,
@@ -198,6 +236,8 @@ export const idlFactory = ({ IDL }) => {
         [AccountIdentifierToBlobResult],
         [],
       ),
+    'cancelRecurringTimer' : IDL.Func([IDL.Nat], [], []),
+    'checkPayroll' : IDL.Func([], [], []),
     'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_4], []),
     'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'getAddress' : IDL.Func([], [IDL.Text], []),
@@ -236,10 +276,15 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'isRegistered' : IDL.Func([], [IDL.Bool], ['query']),
-    'runpayroll' : IDL.Func([IDL.Vec(PayrollType)], [Response_3], []),
+    'runpayroll' : IDL.Func([IDL.Vec(PayrollType__1)], [Response_3], []),
     'save_notification' : IDL.Func(
         [CreateNotificationArgs],
         [CreateNotificationResult],
+        [],
+      ),
+    'save_payroll' : IDL.Func(
+        [SchedulePaymentsArgs],
+        [SchedulePaymentsResult],
         [],
       ),
     'save_transaction' : IDL.Func(
@@ -254,6 +299,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'setCourierApiKey' : IDL.Func([IDL.Text], [Response_2], []),
+    'setRecurringTimer' : IDL.Func([IDL.Nat], [IDL.Nat], []),
     'transferFromCanistertoSubAccount' : IDL.Func([], [Result], []),
     'transferFromSubAccountToSubAccount' : IDL.Func(
         [IDL.Text, IDL.Nat],

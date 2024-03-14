@@ -15,17 +15,23 @@
 </template>
 
 <script setup>
+
 import LoggedIn from "./components/LoggedIn.vue";
 import router from "./router";
 import Home from "./Home.vue";
 import SignIn from "./components/auth/SignIn.vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "./store/auth";
+  import { createClient } from "@connect2ic/core"
+  import { defaultProviders } from "@connect2ic/core/providers"
+  import { Connect2ICProvider } from "@connect2ic/vue"
+  import "@connect2ic/core/style.css"
 
 const authStore = useAuthStore();
 
 const { isReady, isAuthenticated, isConfigured } = storeToRefs(authStore);
 if (isReady.value === false) {
+
   authStore.init();
 } else {
   router.push("/home/dashboard");

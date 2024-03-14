@@ -27,6 +27,8 @@ const defaultOptions = {
   },
 };
 
+
+
 function actorFromIdentity(identity) {
   return createActor(canisterId, {
     agentOptions: {
@@ -110,6 +112,10 @@ export const useAuthStore = defineStore("auth", {
           console.log("is registered" + this.isRegistered);
         },
       });
+    },
+
+    async connect2ic(){
+
     },
 
     async getBalance() {

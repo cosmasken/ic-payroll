@@ -33,7 +33,7 @@ import Hex "./Hex";
 import Timer "mo:base/Timer";
 import { abs } = "mo:base/Int";
 import { now } = "mo:base/Time";
-import { setTimer; recurringTimer } = "mo:base/Timer";
+import { setTimer; recurringTimer; cancelTimer ; } = "mo:base/Timer";
 
 shared (actorContext) actor class Backend(_startBlock : Nat) = this {
 
@@ -88,6 +88,84 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   /**
    * High-Level API
    */
+
+  var count          =                      0;
+  let n              =                    120;
+  let nMonth         =                2629800;
+  let oneMin: Int    =         60_000_000_000;
+  let twoMins: Int   =             oneMin * 2;
+  let fourMins: Int  =             oneMin * 4;
+  let fiveMins: Int  =             oneMin * 5;
+  let oneHour:Int    =            oneMin * 60;
+  let oneDay: Int    =     86_400_000_000_000;
+  let oneMonth: Int  =  2_629_800_000_000_000;
+  let oneYear: Int   =          oneMonth * 12;
+  
+
+  // system func timer(set : Nat64 -> ()) : async () {
+  //   set(Nat64.fromIntWrap(Time.now()) + Nat64.fromIntWrap(oneDay)); 
+
+  //   count += 1;
+  //   Debug.print("check for any transactions " # debug_show count);
+
+  //   await checkPayroll();
+  // };
+
+  public shared ({ caller }) func checkPayroll() : async()  {
+
+  let allEntries = Iter.toArray(payrolls.entries());
+    var size = 0;
+    // for ((_, [PayrollType]) in allEntries.vals()) {
+    //   // if (contact.creator == caller) {
+    //   //   size += 1;
+    //   // };
+    // };
+    Debug.print(debug_show(allEntries));
+
+   
+  };
+
+
+  public func setRecurringTimer(N : Nat) : async Nat {  
+  let timerId = recurringTimer(#seconds N, func() : async () {  
+      Debug.print("Here are the items that are pending");
+      await checkPayroll();  
+    }); 
+    return  timerId;
+  };
+
+  public func cancelRecurringTimer(id:Nat) : async () {
+    // switch (timerId) {
+    //   case (?id) { ignore cancelTimer(id); };
+    //   case null {};
+    // };
+    ignore cancelTimer(id);
+  };
+
+  // public shared ({ caller }) func savePayroll(receivers : [PayrollType]) : async Types.Response<[PayrollType]> {
+
+  // };
+  public shared ({ caller }) func save_payroll(args : Types.SchedulePaymentsArgs) : async Types.SchedulePaymentsResult {
+    let id : Nat = payrollCounter;
+    let receivers = args.receivers;
+    // increment counter
+    payrollCounter += 1;
+
+    if (id > MAX_TRANSACTIONS) {
+      return #err({
+        message = ?"The maximum number of Transactions has been reached.";
+        kind = #MaxTransactionsReached;
+      });
+    };
+
+
+    payrolls.put(id, args.receivers);
+
+    return #ok({ receivers });
+  };
+
+
+
 
   /**
     *  Get the merchant's information
@@ -527,16 +605,16 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     * Check for new transactions and notify the merchant if a new transaction is found.
     * This function is called by the global timer.
     */
-  system func timer(setGlobalTimer : Nat64 -> ()) : async () {
-     let now = Time.now();
-    let thirtyMinutes = 1_000_000_000 * 60 * 1;
-   // let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
-   let next = Nat64.fromIntWrap(Time.now()) + 1_000_000_000 * 60 * 1; // One minute
-    setGlobalTimer(next);
-  //  Debug.print("Timer is up now");  
-  // ignore recurringTimer(#seconds thirtyMinutes, ring);
-    // await notify();
-  };
+  // system func timer(setGlobalTimer : Nat64 -> ()) : async () {
+  //    let now = Time.now();
+  //   let thirtyMinutes = 1_000_000_000 * 60 * 1;
+  //  // let next = Nat64.fromIntWrap(Time.now()) + 20_000_000_000; // 20 seconds
+  //  let next = Nat64.fromIntWrap(Time.now()) + 1_000_000_000 * 60 * 1; // One minute
+  //   setGlobalTimer(next);
+  // //  Debug.print("Timer is up now");  
+  // // ignore recurringTimer(#seconds thirtyMinutes, ring);
+  //   // await notify();
+  // };
 
  
 

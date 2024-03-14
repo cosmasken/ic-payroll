@@ -78,8 +78,8 @@ const runPayroll = async () => {
 };
 </script>
 <template>
-  <div class="p-5">
-    <div class="bg-white dark:bg-transparent">
+  <div class="p-5 ">
+    <div class="bg-white dark:bg-transparent ">
       <div class="flex flex-row justify-between">
         <Searchbar />
         <div class="flex flex-row space-x-5">
@@ -169,10 +169,12 @@ const runPayroll = async () => {
       </div>
       <!-- table section -->
       <!-- loop through payroll items -->
-      <TransitionRoot as="template" :show="isOpen">
+      
+    </div>
+    <TransitionRoot as="template" :show="isOpen">
         <Dialog
           as="div"
-          class="fixed inset-0 z-10 overflow-y-auto"
+          class="fixed inset-0 z-10 overflow-y-auto mx-auto my-auto"
           @close="closeModal"
         >
           <TransitionChild
@@ -198,9 +200,9 @@ const runPayroll = async () => {
               >
                 <DialogPanel
                   as="div"
-                  class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                  class="inline-block  align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
                 >
-                  <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div class="bg-white mx-auto my-auto px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                       <div
                         class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left"
@@ -259,6 +261,5 @@ const runPayroll = async () => {
           </TransitionChild>
         </Dialog>
       </TransitionRoot>
-    </div>
   </div>
 </template>

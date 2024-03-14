@@ -102,6 +102,57 @@ module {
     modified_at : Int;
   };
 
+   public type Percentage        = Float;
+  public type Ticker                    = Text;
+  public type Timestamp                 = Int;
+  public type SubPrice                  = Float;
+  public type TransactionID     = Text;
+
+  public type AccessType = ?{ 
+    #edit;
+    #add;
+    #view;
+  };
+
+  public type EmployeeType = ?{ 
+    #permanent;
+    #intern;
+    #contract;
+    #freelancer;
+  };
+
+   public type TaxType = ?{ 
+    #paye : Percentage ;
+    #contract : Percentage;
+    #withholding : Percentage;
+  };
+
+  public type PaymentSchedule = {
+    #daily; 
+    #weekly;
+    #monthly;
+    #yearly;
+  };
+
+  public type Departments = {
+    #hr;
+    #finance;
+    #legal;
+    #engineering;
+    #marketing;
+    #admin;
+  };
+
+  // public type PayrollType = {
+  //   id : Nat;
+  //   created_at : Int;
+  //   creator : Text;
+  //   amount : Nat;
+  //   approved : Bool;
+  //   successful : Bool;
+  //   destination : Text;
+  // };
+
   public type PayrollType = {
     id : Nat;
     created_at : Int;
@@ -302,5 +353,37 @@ module {
       #Other;
     };
   };
+
+
+    // #region create_tpayroll instance
+
+  public type SchedulePaymentsArgs = {
+    receivers : [PayrollType];
+    created_at : Int;
+    payment_at : Int;
+    status : {
+      #Accepted;
+      #Rejected;
+      #Unpaid;
+      #Paid;
+    };
+  };
+  public type SchedulePaymentsResult = Result.Result<SchedulePaymentsSuccess, SchedulePaymentsErr>;
+  public type SchedulePaymentsSuccess = {
+    receivers : [PayrollType];
+  };
+  public type SchedulePaymentsErr = {
+    message : ?Text;
+    kind : {
+      #InsufficientBalance;
+      #InvalidAmount;
+      #InvalidDestination;
+      #InvalidDetails;
+      #InvalidSender;
+      #MaxTransactionsReached;
+      #Other;
+    };
+  };
+  // #endregion
 
 };

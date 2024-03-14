@@ -192,3 +192,19 @@ Enter the amount of ckBTC you want to mint and the principal you want to mint to
 You can now start transacting with the app. You can send funds to other users and receive funds from other users.
 
 Note that you need to refresh manually to see the updated balance after a transaction.
+dfx deploy ic_siwe_provider --argument $'(
+    record {
+        domain = "127.0.0.1";
+        uri = "http://127.0.0.1:5173";
+        salt = "my secret salt is this";
+        chain_id = opt 1;
+        scheme = opt "http";
+        statement = opt "Login to the app";
+        sign_in_expires_in = opt 300000000000;      
+        session_expires_in = opt 604800000000000;    
+        targets = opt vec {
+            "'$(dfx canister id ic_siwe_provider)'"; 
+            "'$(dfx canister id backend)'";  
+        };
+    }
+)'

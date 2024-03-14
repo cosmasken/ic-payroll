@@ -14,14 +14,13 @@ import {
 } from "@headlessui/vue";
 import { CheckIcon } from "@heroicons/vue/24/outline";
 
-const open = ref(true);
+const open = ref(false);
 const authStore = useAuthStore();
 let response = ref(0);
 let userlength = ref(0);
 let users = ref([]);
 
 watchEffect(async () => {
-  try {
     const res = await authStore.whoamiActor?.getMyContacts();
     let usersArray = [];
     console.log("backend array:", usersArray);
@@ -39,9 +38,7 @@ watchEffect(async () => {
     userlength.value = usersArray.length;
 
     console.log("Users array:", usersArray);
-  } catch (error) {
-    console.error("Error fetching users list:", error);
-  }
+ 
 });
 
 const isEmpty = ref(true);

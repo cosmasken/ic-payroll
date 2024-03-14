@@ -24,6 +24,8 @@ export interface Backend {
     [AccountIdentifier],
     AccountIdentifierToBlobResult
   >,
+  'cancelRecurringTimer' : ActorMethod<[bigint], undefined>,
+  'checkPayroll' : ActorMethod<[], undefined>,
   'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_4>,
   'emailExists' : ActorMethod<[string], boolean>,
   'getAddress' : ActorMethod<[], string>,
@@ -53,11 +55,12 @@ export interface Backend {
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
   'get_transactions' : ActorMethod<[], Array<Transaction>>,
   'isRegistered' : ActorMethod<[], boolean>,
-  'runpayroll' : ActorMethod<[Array<PayrollType>], Response_3>,
+  'runpayroll' : ActorMethod<[Array<PayrollType__1>], Response_3>,
   'save_notification' : ActorMethod<
     [CreateNotificationArgs],
     CreateNotificationResult
   >,
+  'save_payroll' : ActorMethod<[SchedulePaymentsArgs], SchedulePaymentsResult>,
   'save_transaction' : ActorMethod<
     [CreateTransactionArgs],
     CreateTransactionResult
@@ -68,6 +71,7 @@ export interface Backend {
     undefined
   >,
   'setCourierApiKey' : ActorMethod<[string], Response_2>,
+  'setRecurringTimer' : ActorMethod<[bigint], bigint>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
   'transferFromSubAccountToSubAccount' : ActorMethod<
     [string, bigint],
@@ -175,6 +179,14 @@ export interface PayrollType {
   'amount' : bigint,
   'successful' : boolean,
 }
+export interface PayrollType__1 {
+  'id' : bigint,
+  'creator' : string,
+  'destination' : string,
+  'created_at' : bigint,
+  'amount' : bigint,
+  'successful' : boolean,
+}
 export interface Response {
   'status' : number,
   'data' : [] | [User],
@@ -195,7 +207,7 @@ export interface Response_2 {
 }
 export interface Response_3 {
   'status' : number,
-  'data' : [] | [Array<PayrollType>],
+  'data' : [] | [Array<PayrollType__1>],
   'status_text' : string,
   'error_text' : [] | [string],
 }
@@ -207,6 +219,28 @@ export interface Response_4 {
 }
 export type Result = { 'ok' : string } |
   { 'err' : string };
+export interface SchedulePaymentsArgs {
+  'status' : { 'Paid' : null } |
+    { 'Rejected' : null } |
+    { 'Unpaid' : null } |
+    { 'Accepted' : null },
+  'created_at' : bigint,
+  'receivers' : Array<PayrollType>,
+  'payment_at' : bigint,
+}
+export interface SchedulePaymentsErr {
+  'kind' : { 'InvalidDetails' : null } |
+    { 'InvalidAmount' : null } |
+    { 'InvalidDestination' : null } |
+    { 'MaxTransactionsReached' : null } |
+    { 'InsufficientBalance' : null } |
+    { 'InvalidSender' : null } |
+    { 'Other' : null },
+  'message' : [] | [string],
+}
+export type SchedulePaymentsResult = { 'ok' : SchedulePaymentsSuccess } |
+  { 'err' : SchedulePaymentsErr };
+export interface SchedulePaymentsSuccess { 'receivers' : Array<PayrollType> }
 export type Subaccount = Uint8Array | number[];
 export interface Transaction {
   'id' : bigint,

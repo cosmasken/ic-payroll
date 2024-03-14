@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import { createPinia } from "pinia";
 import "./index.css";
-import Notifications from "vt-notifications";
 //import Vue from "vue";
 
 //Vue.use(Notifications);

@@ -3,6 +3,7 @@ import { ref, watchEffect } from "vue";
 import { useAuthStore } from "./store/auth";
 import SkeletonLoader from "./components/SkeletonLoader.vue";
 import router from "./router/";
+
 import { CheckCircleIcon } from "@heroicons/vue/24/outline";
 import { XMarkIcon } from "@heroicons/vue/20/solid";
 
@@ -25,6 +26,10 @@ const selectedAccountType = ref("main");
 const logout = () => {
   router.push("/auth");
   authStore.logout();
+};
+
+const gotoNotifications = () => {
+  router.push("/home/notifications");
 };
 
 watchEffect(async () => {
@@ -60,6 +65,7 @@ watchEffect(async () => {
 // });
 
 const isLoading = ref(false);
+const dropdownOpen = ref(false);
 
 watchEffect(async () => {
   const res = await authStore.whoamiActor?.getInvoice();
@@ -145,7 +151,7 @@ const toggleDarkMode = () => {
 
 <template class="font-lexend h-full w-full">
   <div
-    class="w-full p-5 h-full flex flex-row space-x-[30px] self-stretch bg-white dark:bg-[#16151C]"
+    class="w-full h-full flex flex-row space-x-[30px] self-stretch bg-white dark:bg-[#16151C]"
   >
     <div
       class="w-[280px] hidden sm:flex flex-col shrink-0 items-stretch rounded-[20px] bg-[#A2A1A80D] p-[30px] h-screen"
@@ -374,21 +380,31 @@ const toggleDarkMode = () => {
             </p>
           </div>
         </div>
-        <div class="flex flex-row justify-evenly items-center space-x-5">
+        <div class="self-start relative">
+          <button @click="gotoNotifications" class="relative z-10 block rounded-md bg-white p-2 focus:outline-none">
+            <svg class="h-5 w-5 text-gray-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+            </svg>
+        </button>
+        
+        </div>
+        
+
+        <!--div class="absolute z-50 right-0 flex flex-row justify-evenly items-center space-x-5">
           <div
             v-if="fundingaddress.length === 0"
             class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900 dark:border-white"
           ></div>
           <div
             v-else
-            class="rounded-xl border norder-[#F2F7FF] flex flex-col p-2"
+            class="rounded-xl border border-[#F2F7FF] flex flex-col p-2"
           >
            
             
               <div >
                 <div class="flex flex-col items-center justify-center lg:block">
                   <div
-                    class="relative rounded px-5 py-8 shadow-md lg:w-3/5 lg:p-4 lg:shadow-sm"
+                    class="relative rounded px-5 py-1 shadow-md lg:w-3/5 lg:p-4 lg:shadow-sm"
                   >
                     <div
                       class="flex items-center space-x-8 lg:space-x-20 lg:space-y-0"
@@ -422,16 +438,7 @@ const toggleDarkMode = () => {
                   </div>
                 </div>
 
-                <!--p
-                  class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
-                >
-                  TradingBalance : {{ tradingbalance }} ckSats
-                </p>
-                <p
-                  class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
-                >
-                  Canister Balance : {{ canisterbalance }} ckSats
-                </p-->
+             
               </div>
           
 
@@ -469,7 +476,7 @@ const toggleDarkMode = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div-->
       </div>
 
       <div class="border border-[#A2A1A833] h-full rounded-[10px]">

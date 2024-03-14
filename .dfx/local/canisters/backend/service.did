@@ -17,6 +17,8 @@ type Backend = service {
   accountIdentifierToBlob : (AccountIdentifier) -> (
       AccountIdentifierToBlobResult,
     );
+  cancelRecurringTimer : (nat) -> ();
+  checkPayroll : () -> ();
   create_employee : (CreateEmployeeArgs) -> (Response_4);
   emailExists : (text) -> (bool) query;
   getAddress : () -> (text);
@@ -45,12 +47,14 @@ type Backend = service {
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions : () -> (vec Transaction) query;
   isRegistered : () -> (bool) query;
-  runpayroll : (vec PayrollType) -> (Response_3);
+  runpayroll : (vec PayrollType__1) -> (Response_3);
   save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
+  save_payroll : (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
   save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
   sendToOwner : (nat, text) -> (Result);
   send_notifications : (text, text, text, text, text) -> ();
   setCourierApiKey : (text) -> (Response_2);
+  setRecurringTimer : (nat) -> (nat);
   transferFromCanistertoSubAccount : () -> (Result);
   transferFromSubAccountToSubAccount : (text, nat) -> (Response_1);
   transform : (TransformArgs) -> (CanisterHttpResponsePayload) query;
@@ -159,6 +163,14 @@ type PayrollType = record {
   amount : nat;
   successful : bool;
 };
+type PayrollType__1 = record {
+  id : nat;
+  creator : text;
+  destination : text;
+  created_at : int;
+  amount : nat;
+  successful : bool;
+};
 type Response = record {
   status : nat16;
   data : opt User;
@@ -179,7 +191,7 @@ type Response_2 = record {
 };
 type Response_3 = record {
   status : nat16;
-  data : opt vec PayrollType;
+  data : opt vec PayrollType__1;
   status_text : text;
   error_text : opt text;
 };
@@ -190,6 +202,29 @@ type Response_4 = record {
   error_text : opt text;
 };
 type Result = variant { ok : text; err : text };
+type SchedulePaymentsArgs = record {
+  status : variant { Paid; Rejected; Unpaid; Accepted };
+  created_at : int;
+  receivers : vec PayrollType;
+  payment_at : int;
+};
+type SchedulePaymentsErr = record {
+  kind : variant {
+    InvalidDetails;
+    InvalidAmount;
+    InvalidDestination;
+    MaxTransactionsReached;
+    InsufficientBalance;
+    InvalidSender;
+    Other;
+  };
+  message : opt text;
+};
+type SchedulePaymentsResult = variant {
+  ok : SchedulePaymentsSuccess;
+  err : SchedulePaymentsErr;
+};
+type SchedulePaymentsSuccess = record { receivers : vec PayrollType };
 type Subaccount = vec nat8;
 type Transaction = record {
   id : nat;
