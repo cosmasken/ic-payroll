@@ -333,6 +333,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     return address;
   };
 
+
   //transfer funds from the default canister subaccount to the user subaccount
   //Works
   public shared ({ caller }) func transferFromCanistertoSubAccount() : async Result.Result<Text, Text> {
@@ -626,12 +627,12 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   // };
 
 
-  ignore setTimer(#seconds (oneMinute),
-    func () : async () {
-      ignore recurringTimer(#seconds oneMinute, ring);
-      await ring();
-  }
-  );
+  // ignore setTimer(#seconds (oneMinute),
+  //   func () : async () {
+  //     ignore recurringTimer(#seconds oneMinute, ring);
+  //     await ring();
+  // }
+  // );
 
   // #region get_account_identifier
   /*
@@ -794,6 +795,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
           created_at = Time.now();
           modified_at = Time.now();
           wallet = args.wallet;
+          emp_type = args.emp_type;
+          accessType = args.accessType;
         };
 
         contacts.put(id, employee);

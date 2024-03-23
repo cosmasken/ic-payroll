@@ -173,11 +173,20 @@ type GetAccountIdentifierResult =
  };
 type GetAccountIdentifierErr = record {message: opt text;};
 type GetAccountIdentifierArgs = record {"principal": principal;};
+type EmployeeType = 
+ opt variant {
+       contract;
+       freelancer;
+       intern;
+       permanent;
+     };
 type Employee = 
  record {
+   accessType: AccessType;
    created_at: int;
    creator: principal;
    email_address: text;
+   emp_type: EmployeeType;
    id: nat;
    modified_at: int;
    name: text;
@@ -232,7 +241,12 @@ type CreateNotificationArgs =
    receiver: text;
    sender: text;
  };
-type CreateEmployeeArgs = record {wallet: text;};
+type CreateEmployeeArgs = 
+ record {
+   accessType: AccessType;
+   emp_type: EmployeeType;
+   wallet: text;
+ };
 type CanisterHttpResponsePayload = 
  record {
    body: vec nat8;
@@ -273,6 +287,8 @@ type Backend =
                               text;
                               User;
                             }) query;
+   /// * Check for new transactions and notify the merchant if a new transaction is found.
+   ///     * This function is called by the global timer.
    get_account_identifier: (GetAccountIdentifierArgs) ->
     (GetAccountIdentifierResult) query;
    get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
@@ -321,4 +337,11 @@ type Account =
    owner: principal;
    subaccount: opt Subaccount;
  };
+type AccessType = 
+ opt variant {
+       add;
+       delete;
+       edit;
+       view;
+     };
 service : (nat) -> Backend

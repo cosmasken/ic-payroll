@@ -2,6 +2,12 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
+export type AccessType = [] | [
+  { 'add' : null } |
+    { 'edit' : null } |
+    { 'view' : null } |
+    { 'delete' : null }
+];
 export interface Account {
   'owner' : Principal,
   'subaccount' : [] | [Subaccount],
@@ -24,7 +30,8 @@ export interface Backend {
     [AccountIdentifier],
     AccountIdentifierToBlobResult
   >,
-  'checkPayroll' : ActorMethod<[], boolean>,
+  'cancelRecurringTimer' : ActorMethod<[bigint], undefined>,
+  'checkPayroll' : ActorMethod<[], undefined>,
   'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_4>,
   'emailExists' : ActorMethod<[string], boolean>,
   'getAddress' : ActorMethod<[], string>,
@@ -70,6 +77,7 @@ export interface Backend {
     undefined
   >,
   'setCourierApiKey' : ActorMethod<[string], Response_2>,
+  'setRecurringTimer' : ActorMethod<[bigint], bigint>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
   'transferFromSubAccountToSubAccount' : ActorMethod<
     [string, bigint],
@@ -85,7 +93,11 @@ export interface CanisterHttpResponsePayload {
   'body' : Uint8Array | number[],
   'headers' : Array<HttpHeader>,
 }
-export interface CreateEmployeeArgs { 'wallet' : string }
+export interface CreateEmployeeArgs {
+  'emp_type' : EmployeeType,
+  'accessType' : AccessType,
+  'wallet' : string,
+}
 export interface CreateNotificationArgs {
   'isRead' : boolean,
   'sender' : string,
@@ -122,13 +134,21 @@ export interface CreateTransactionSuccess { 'transaction' : Transaction__1 }
 export interface Employee {
   'id' : bigint,
   'email_address' : string,
+  'emp_type' : EmployeeType,
   'creator' : Principal,
   'modified_at' : bigint,
   'name' : string,
+  'accessType' : AccessType,
   'created_at' : bigint,
   'wallet' : string,
   'phone_number' : string,
 }
+export type EmployeeType = [] | [
+  { 'permanent' : null } |
+    { 'contract' : null } |
+    { 'intern' : null } |
+    { 'freelancer' : null }
+];
 export interface GetAccountIdentifierArgs { 'principal' : Principal }
 export interface GetAccountIdentifierErr { 'message' : [] | [string] }
 export type GetAccountIdentifierResult = {

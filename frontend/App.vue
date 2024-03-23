@@ -1,5 +1,6 @@
 <template class="font-lexend">
   <main>
+
     <div v-if="isReady">
       <router-view v-if="isAuthenticated" />
       <SignIn v-else />
@@ -15,25 +16,18 @@
 </template>
 
 <script setup>
+import router from "./router"
+import SignIn from "./components/auth/SignIn.vue"
+import { storeToRefs } from "pinia"
+import { useAuthStore } from "./store/auth"
+import "@connect2ic/core/style.css"
 
-import LoggedIn from "./components/LoggedIn.vue";
-import router from "./router";
-import Home from "./Home.vue";
-import SignIn from "./components/auth/SignIn.vue";
-import { storeToRefs } from "pinia";
-import { useAuthStore } from "./store/auth";
-  import { createClient } from "@connect2ic/core"
-  import { defaultProviders } from "@connect2ic/core/providers"
-  import { Connect2ICProvider } from "@connect2ic/vue"
-  import "@connect2ic/core/style.css"
+const authStore = useAuthStore()
 
-const authStore = useAuthStore();
-
-const { isReady, isAuthenticated, isConfigured } = storeToRefs(authStore);
+const { isReady, isAuthenticated, isConfigured } = storeToRefs(authStore)
 if (isReady.value === false) {
-
-  authStore.init();
+  authStore.init()
 } else {
-  router.push("/home/dashboard");
+  router.push("/home/dashboard")
 }
 </script>

@@ -112,6 +112,7 @@ module {
     #edit;
     #add;
     #view;
+    #delete;
   };
 
   public type EmployeeType = ?{ 
@@ -119,6 +120,13 @@ module {
     #intern;
     #contract;
     #freelancer;
+  };
+
+  public type AccessLevel =?{
+    #administrator;
+    #user;
+    #owner;
+    #finance;
   };
 
    public type TaxType = ?{ 
@@ -179,6 +187,8 @@ module {
     phone_number : Text;
   };
 
+  
+
   //type representing  a user that is an employee/freelancer
   public type Employee = {
     id : Nat;
@@ -189,7 +199,13 @@ module {
     creator : Principal;
     created_at : Int;
     modified_at : Int;
+    emp_type : EmployeeType;
+    accessType : AccessType;
   };
+
+
+  
+
 
   public type Response<T> = {
     status : Nat16;
@@ -299,6 +315,8 @@ module {
   // #region create employee
   public type CreateEmployeeArgs = {
     wallet : Text;
+   emp_type : EmployeeType;
+    accessType : AccessType;
   };
   public type CreateEmployeeResult = Result.Result<CreateEmployeeSuccess, CreateEmployeeErr>;
   public type CreateEmployeeSuccess = {

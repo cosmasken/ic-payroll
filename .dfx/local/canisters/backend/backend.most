@@ -1,18 +1,22 @@
 // Version: 1.0.0
+type AccessType = ?{#add; #delete; #edit; #view};
 type AssocList<K, V> = List<(K, V)>;
 type AssocList__1<K, V> = AssocList<K, V>;
 type Branch<K, V> = {left : Trie<K, V>; right : Trie<K, V>; size : Nat};
 type Employee =
   {
+    accessType : AccessType;
     created_at : Int;
     creator : Principal;
     email_address : Text;
+    emp_type : EmployeeType;
     id : Nat;
     modified_at : Int;
     name : Text;
     phone_number : Text;
     wallet : Text
   };
+type EmployeeType = ?{#contract; #freelancer; #intern; #permanent};
 type Employee__1 = Employee;
 type Hash = Nat32;
 type Invoice =

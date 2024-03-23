@@ -27,8 +27,6 @@ const defaultOptions = {
   },
 };
 
-
-
 function actorFromIdentity(identity) {
   return createActor(canisterId, {
     agentOptions: {
@@ -98,7 +96,7 @@ export const useAuthStore = defineStore("auth", {
 
       authClient.login({
         ...defaultOptions.loginOptions,
-        maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
+        maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000000),
         onSuccess: async () => {
           this.isAuthenticated = await authClient.isAuthenticated();
           this.identity = this.isAuthenticated
@@ -114,9 +112,7 @@ export const useAuthStore = defineStore("auth", {
       });
     },
 
-    async connect2ic(){
-
-    },
+    async connect2ic() {},
 
     async getBalance() {
       // const whoamiActor = toRaw(this.whoamiActor);

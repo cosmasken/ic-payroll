@@ -16,13 +16,35 @@ export const idlFactory = ({ IDL }) => {
     'ok' : AccountIdentifierToBlobSuccess,
     'err' : AccountIdentifierToBlobErr,
   });
-  const CreateEmployeeArgs = IDL.Record({ 'wallet' : IDL.Text });
+  const EmployeeType = IDL.Opt(
+    IDL.Variant({
+      'permanent' : IDL.Null,
+      'contract' : IDL.Null,
+      'intern' : IDL.Null,
+      'freelancer' : IDL.Null,
+    })
+  );
+  const AccessType = IDL.Opt(
+    IDL.Variant({
+      'add' : IDL.Null,
+      'edit' : IDL.Null,
+      'view' : IDL.Null,
+      'delete' : IDL.Null,
+    })
+  );
+  const CreateEmployeeArgs = IDL.Record({
+    'emp_type' : EmployeeType,
+    'accessType' : AccessType,
+    'wallet' : IDL.Text,
+  });
   const Employee = IDL.Record({
     'id' : IDL.Nat,
     'email_address' : IDL.Text,
+    'emp_type' : EmployeeType,
     'creator' : IDL.Principal,
     'modified_at' : IDL.Int,
     'name' : IDL.Text,
+    'accessType' : AccessType,
     'created_at' : IDL.Int,
     'wallet' : IDL.Text,
     'phone_number' : IDL.Text,

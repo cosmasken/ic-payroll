@@ -21,24 +21,23 @@ let userlength = ref(0);
 let users = ref([]);
 
 watchEffect(async () => {
-    const res = await authStore.whoamiActor?.getMyContacts();
-    let usersArray = [];
-    console.log("backend array:", usersArray);
+  const res = await authStore.whoamiActor?.getMyContacts();
+  let usersArray = [];
+  console.log("backend array:", usersArray);
 
-    // Loop through the result and create an array of objects
-    for (let i = 0; i < res.length; i++) {
-      const data = res[i];
-      usersArray.push(data);
-    }
+  // Loop through the result and create an array of objects
+  for (let i = 0; i < res.length; i++) {
+    const data = res[i];
+    usersArray.push(data);
+  }
 
-    // Assign the array of objects to the users ref
-    users.value = usersArray;
+  // Assign the array of objects to the users ref
+  users.value = usersArray;
 
-    //get length
-    userlength.value = usersArray.length;
+  //get length
+  userlength.value = usersArray.length;
 
-    console.log("Users array:", usersArray);
- 
+  console.log("Users array:", usersArray);
 });
 
 const isEmpty = ref(true);

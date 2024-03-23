@@ -1,8 +1,0 @@
-// Version: 1.0.0
-type ImgId = Text;
-actor {
-  stable var _currentMemoryOffset : Nat64;
-  stable var _imgOffset : [(ImgId, Nat64)];
-  stable var _imgSize : [(ImgId, Nat)];
-  stable var _thumbs : [(ImgId, Blob)]
-};

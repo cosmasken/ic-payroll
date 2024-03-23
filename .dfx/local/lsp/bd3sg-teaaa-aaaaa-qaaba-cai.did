@@ -1,3 +1,4 @@
+type AccessType = opt variant { add; edit; view; delete };
 type Account = record { owner : principal; subaccount : opt Subaccount };
 type AccountIdentifier = variant {
   "principal" : principal;
@@ -67,7 +68,11 @@ type CanisterHttpResponsePayload = record {
   body : vec nat8;
   headers : vec HttpHeader;
 };
-type CreateEmployeeArgs = record { wallet : text };
+type CreateEmployeeArgs = record {
+  emp_type : EmployeeType;
+  accessType : AccessType;
+  wallet : text;
+};
 type CreateNotificationArgs = record {
   isRead : bool;
   sender : text;
@@ -109,13 +114,16 @@ type CreateTransactionSuccess = record { transaction : Transaction__1 };
 type Employee = record {
   id : nat;
   email_address : text;
+  emp_type : EmployeeType;
   creator : principal;
   modified_at : int;
   name : text;
+  accessType : AccessType;
   created_at : int;
   wallet : text;
   phone_number : text;
 };
+type EmployeeType = opt variant { permanent; contract; intern; freelancer };
 type GetAccountIdentifierArgs = record { "principal" : principal };
 type GetAccountIdentifierErr = record { message : opt text };
 type GetAccountIdentifierResult = variant {
