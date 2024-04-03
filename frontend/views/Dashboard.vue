@@ -5,6 +5,7 @@ import OverviewCard from "../components/OverviewCard.vue";
 import { useAuthStore } from "../store/auth";
 import { Field, Form, ErrorMessage } from "vee-validate";
 import { CheckCircleIcon, XMarkIcon } from "@heroicons/vue/20/solid";
+import Header from "../components/MainHeader.vue"
 import * as yup from "yup";
 const authStore = useAuthStore();
 let transactions = ref(0);
@@ -69,7 +70,7 @@ const addData = async () => {
 
   try {
     const response = authStore.update_user(firstname, lastname, email, phone);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   } catch (error) {
     console.error("Error submitting data:", error);
   } finally {
@@ -77,17 +78,16 @@ const addData = async () => {
   }
 };
 </script>
-<template>
-  <div v-if="isLoading">
-    <div class="flex justify-center items-center h-screen">
-      <div
-        class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"
-      ></div>
-    </div>
-  </div>
-  <div>
+<template >
+  <div v-if="isLoading" class="h-full flex justify-center items-center">
+  <div
+    class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900 self-center"
+  >
+</div>
+</div>
+  <div v-else>
     <div v-if="authStore.isRegistered === false">
-      <div class="flex flex-col items-center justify-center h-screen relative">
+      <div class="flex flex-col items-center justify-center h-full relative">
         <Form
           class="text-center card"
           @submit="addData"
@@ -351,6 +351,15 @@ const addData = async () => {
             </div>
           </div>
         </div>
+        <p>
+          Funding Address : {{ authStore.fundingaddress}}
+        </p>
+        <p>
+          Trading Address : {{ authStore.tradingaddress}}
+        </p>
+        <p>
+          Canister Address : {{ authStore.canisteraddress}}
+        </p>
       </div>
     </div>
   </div>

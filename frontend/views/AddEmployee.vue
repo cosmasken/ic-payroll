@@ -30,29 +30,17 @@ const getTime = () => {
 };
 
 const registrationData = {
-  // first_name: "",
-  // last_name: "",
-  // email: "",
-  // phone_number: "",
   wallet_address: "",
 };
 const addData = async () => {
   isLoading.value = true;
   authStore.updateRegistrationData(registrationData);
-  // const firstname = authStore.registrationData.first_name;
-  // const lastname = authStore.registrationData.last_name;
-  // const email = authStore.registrationData.email;
-  // const phone = authStore.registrationData.phone_number;
   const address = authStore.registrationData.wallet_address;
 
   console.log(address);
 
   try {
     const response = authStore.create_employee(
-      // firstname,
-      // lastname,
-      // email,
-      // phone,
       address
     );
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -61,7 +49,7 @@ const addData = async () => {
   } finally {
     isLoading.value = false;
     console.error("Successful:");
-    router.push("/home/contacts");
+    router.push("/home/dashboard");
   }
 };
 </script>

@@ -173,7 +173,7 @@ const runPayroll = async () => {
     <TransitionRoot as="template" :show="isOpen">
       <Dialog
         as="div"
-        class="fixed inset-0 z-10 overflow-y-auto mx-auto my-auto"
+        class="fixed inset-0 z-10 overflow-y-auto flex items-center justify-center"
         @close="closeModal"
       >
         <TransitionChild
@@ -186,7 +186,7 @@ const runPayroll = async () => {
           leave-to="opacity-0"
         >
           <div
-            class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+            class="flex items-center justify-center min-h-screen text-center sm:flex sm:p-0"
           >
             <TransitionChild
               as="template"

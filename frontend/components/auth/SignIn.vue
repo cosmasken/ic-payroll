@@ -13,7 +13,7 @@ const authStore = useAuthStore();
         <img
           class="h-10 w-auto"
           src="../../assets/dfinity.svg"
-          alt="Your Company"
+          alt="Dfinity"
         />
         <div>
           <h2
@@ -51,11 +51,11 @@ const authStore = useAuthStore();
                   alt="Google"
                   class="h-5 w-5"
                 />
-                <!--span class="text-sm font-semibold leading-6"
+                <span class="text-sm font-semibold leading-6"
                 >Connect2IC</span
-          -->
-                <!--ConnectButton/>
-          <ConnectDialog dark={false} /-->
+          >
+                <ConnectButton/>
+          <ConnectDialog dark={false} />
               </a>
             </div>
           </div>
@@ -70,7 +70,7 @@ const authStore = useAuthStore();
                   alt="Google"
                   class="h-5 w-5"
                 />
-                <span class="text-sm font-semibold leading-6">SIWE</span>
+                <span class="text-sm font-semibold leading-6">Ethereum</span>
               </a>
             </div>
           </div>

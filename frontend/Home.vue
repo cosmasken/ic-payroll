@@ -19,11 +19,34 @@ let invoice = ref("")
 let notifresponse = ref("")
 let showNotification = ref(false)
 const selectedAccountType = ref("main")
+let editing = ref(false);
+let originalUser = ref(null);
+let email = ref("");
+let phone = ref("");
+let name = ref("");
+let phoneNotifications = ref(false);
+let emailNotifications = ref(false);
 
 const logout = () => {
   router.push("/auth")
   authStore.logout()
 }
+
+watchEffect(async () => {
+  const user = await authStore.whoamiActor?.getUser();
+  if (user.status === 200) {
+    console.log("User:", user.data);
+    email.value = await user.data[0].email_address;
+    phone.value = await user.data[0].phone_number;
+    name.value = await user.data[0].name;
+    phoneNotifications.value = await user.data[0].phone_notifications;
+    emailNotifications.value = await user.data[0].email_notifications;
+
+    // console.log("Email:", email);
+    // console.log("Phone:", phone);
+    // console.log("Name:", name);
+  }
+});
 
 const gotoNotifications = () => {
   router.push("/home/notifications")
@@ -186,7 +209,7 @@ const toggleDarkMode = () => {
                 class="shrink-0 h-6 w-6"
                 src="./assets/payroll.png"
               />
-              <span>Send</span>
+              <span>Single Transfer</span>
             </router-link>
             <router-link
               v-if="authStore.isRegistered === true"
@@ -199,21 +222,9 @@ const toggleDarkMode = () => {
                 class="shrink-0 h-6 w-6"
                 src="./assets/payroll.png"
               />
-              <span>All Employees</span>
+              <span>Staff</span>
             </router-link>
-            <router-link
-              v-if="authStore.isRegistered === true"
-              active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
-              class="group flex flex-row bg-[#7152F30D] cursor-pointer rounded-r-[10px] text-base text-[#16151C] dark:text-gray-400 font-light hover:bg-[#7152F30D] py-[13px] pr-[10px] pl-[13px] space-x-4"
-              to="/home/contacts"
-            >
-              <img
-                alt="Vite logo"
-                class="shrink-0 h-6 w-6"
-                src="./assets/payroll.png"
-              />
-              <span>Contacts</span>
-            </router-link>
+            
             <router-link
               v-if="authStore.isRegistered === true"
               active-class="group router-link-exact-active cursor-pointer flex flex-row bg-[#7152F30D] rounded-r-[10px] text-base text-[#7152F3] font-semibold py-[13px] pr-[10px] pl-[13px] space-x-4"
@@ -225,7 +236,7 @@ const toggleDarkMode = () => {
                 class="shrink-0 h-6 w-6"
                 src="./assets/payroll.png"
               />
-              <span>Transactions</span>
+              <span>History</span>
             </router-link>
             <router-link
               v-if="authStore.isRegistered === true"
@@ -366,10 +377,10 @@ const toggleDarkMode = () => {
         </nav>
       </div>
     </div>
-    <div class="w-full h-full flex flex-col pr-[30px] space-y-2">
+    <div class="w-full h-screen flex flex-col pr-[30px] space-y-2">
       <!-- Header-->
       
-<Header/>
+<Header :text="fundingaddress" :name="name"/>
 
       <div class="border border-[#A2A1A833] h-full rounded-[10px]">
         <router-view></router-view>

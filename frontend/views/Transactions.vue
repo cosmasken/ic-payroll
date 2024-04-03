@@ -1,15 +1,9 @@
 <template>
-  <div class="space-y-2">
-    <h1
-      class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
-    >
-      Transactions
-    </h1>
-    <p
-      class="uppercase tracking-widest text-gray-800 dark:text-white font-semibold"
-    >
-      This is a list of all your transactions
-    </p>
+  <div class="space-y-2 p-5">
+    <h1 class="text-3xl text-[#16151C] dark:text-white font-semibold ">
+        Transaction History 
+      </h1>
+    
     <div class="p-2" v-for="transaction in transactions" :key="transaction.id">
       <TransactionCard
         :sender="transaction.creator"

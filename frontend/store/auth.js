@@ -3,8 +3,6 @@ import { AuthClient } from "@dfinity/auth-client";
 //import { createActor, canisterId } from "../../src/declarations/backend"
 import { createActor, canisterId } from "../../src/declarations/backend";
 import { toRaw } from "vue";
-import router from "../router";
-import { Principal } from "@dfinity/principal";
 
 const defaultOptions = {
   /**
@@ -75,21 +73,32 @@ export const useAuthStore = defineStore("auth", {
       isRegistered: null,
       userInfo: null,
       transactions: [],
+      authType: "internet-identity",
     };
   },
   actions: {
     async init() {
-      const authClient = await AuthClient.create(defaultOptions.createOptions);
-      this.authClient = authClient;
-      const isAuthenticated = await authClient.isAuthenticated();
-      const identity = isAuthenticated ? authClient.getIdentity() : null;
-      const whoamiActor = identity ? actorFromIdentity(identity) : null;
 
-      this.isAuthenticated = isAuthenticated;
-      this.identity = identity;
-      this.whoamiActor = whoamiActor;
-      this.isReady = true;
-      this.isRegistered = false;
+      if (this.authType === "internet-identity"){
+        const authClient = await AuthClient.create(defaultOptions.createOptions);
+        this.authClient = authClient;
+        const isAuthenticated = await authClient.isAuthenticated();
+        const identity = isAuthenticated ? authClient.getIdentity() : null;
+        const whoamiActor = identity ? actorFromIdentity(identity) : null;
+
+        this.isAuthenticated = isAuthenticated;
+        this.identity = identity;
+        this.whoamiActor = whoamiActor;
+        this.isReady = true;
+        this.isRegistered = false;
+      }else if(this.authType === "connect2ic"){
+        this.isReady = true;
+        this.isRegistered = false;
+      }else if(this.authType === "siwe"){
+        this.isReady = true;
+        this.isRegistered = false;
+      }
+
     },
     async login() {
       const authClient = toRaw(this.authClient);
@@ -113,6 +122,9 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async connect2ic() {},
+    async siwe() {
+     // const { login, clear, identity } = useSiweIdentity();
+    },
 
     async getBalance() {
       // const whoamiActor = toRaw(this.whoamiActor);
