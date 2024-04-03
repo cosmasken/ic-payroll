@@ -126,9 +126,9 @@ const runPayroll = async () => {
               </th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="(item, index) in payrollItems" :key="item.id">
-              <td class="whitespace-nowrap py-[10px] pr-[10px] text-base">
+          <tbody class="space-y-2">
+            <tr v-for="(item, index) in payrollItems" :key="item.id" class="border border-black rounded-[10px]">
+              <td class="whitespace-nowrap py-[10px] pr-[10px] text-base  ">
                 <p class="font-light dark:text-white text-[#16151C]">
                   {{ item.id }}
                 </p>
@@ -202,7 +202,7 @@ const runPayroll = async () => {
                 class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
               >
                 <div
-                  class="bg-white mx-auto my-auto px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
+                  class="bg-gray-500 mx-auto my-auto px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
                 >
                   <div class="sm:flex sm:items-start">
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">

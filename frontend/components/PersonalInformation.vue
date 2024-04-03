@@ -84,21 +84,8 @@
               </div>
 
               <div class="sm:col-span-3">
-                <label
-                  for="first-name"
-                  class="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
-                  >Date of Birth</label
-                >
-                <div >
-                  <input
-                    v-model="registrationData.first_name"
-                    type="text"
-                    name="first-name"
-                    id="first-name"
-                    autocomplete="first-name"
-                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-transparent p-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 dark:placeholder:text-white focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
+               
+                <DatePicker/>
               </div>
               <div class="sm:col-span-3">
                 <label
@@ -269,6 +256,7 @@
 import { ref, watchEffect } from "vue";
 import { useAuthStore } from "../store/auth";
 import Navbar from "../components/Navbar.vue";
+import DatePicker from "../components/Employees/DatePicker.vue";
 const isLoading = ref(false);
 const authStore = useAuthStore();
 const registrationData = {
