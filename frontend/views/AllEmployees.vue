@@ -15,12 +15,14 @@ import {
 import { CheckIcon } from "@heroicons/vue/24/outline";
 
 const open = ref(false);
+const isLoading = ref(false);
 const authStore = useAuthStore();
 let response = ref(0);
 let userlength = ref(0);
 let users = ref([]);
 
 watchEffect(async () => {
+  isLoading.value = true;
   const res = await authStore.whoamiActor?.getMyContacts();
   let usersArray = [];
   console.log("backend array:", usersArray);
@@ -38,12 +40,13 @@ watchEffect(async () => {
   userlength.value = usersArray.length;
 
   console.log("Users array:", usersArray);
+  isLoading.value = false;
 });
 
 const isEmpty = ref(true);
 
 const gotoaddemployee = () => {
-  router.push("/home/add-employee/personal-information");
+  router.push("/home/add-employee");
 };
 
 const userData = ref({
@@ -57,7 +60,7 @@ const userData = ref({
 
 async function deleteUser(wallet) {
   try {
-    const res = await authStore.whoamiActor?.deleteUser(wallet);
+    const res = await authStore.whoamiActor?.remove_employee(wallet);
     console.log("User deleted:", res);
   } catch (error) {
     console.error("Error deleting user:", error);
@@ -115,7 +118,7 @@ async function viewUser(name, email, phone, wallet) {
           class="rounded-[10px] cursor-pointer flex flex-row bg-[#7152F3] p-3 items-center space-x-[10px]"
         >
           <img src="../assets/add-circle.png" alt="" class="w-6 h-6" />
-          <p class="text-base font-light text-white">Refresh Data</p>
+          <p class="text-base font-light text-white">Download Contacts</p>
         </div>
       </div>
     </div>
@@ -124,7 +127,15 @@ async function viewUser(name, email, phone, wallet) {
 
 
 </div-->
-    <div v-if="users.length === 0" class="mx-auto mt-10">
+
+<div v-if="isLoading" class="flex justify-center items-center">
+  <div
+    class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900 self-center"
+  >
+</div>
+</div>
+<div v-else>
+  <div v-if="users.length === 0" class="mx-auto mt-10">
       <div class="flex flex-col items-center">
         <div class="w-1/4 h-1/4">
           <svg
@@ -424,5 +435,7 @@ async function viewUser(name, email, phone, wallet) {
         </Dialog>
       </TransitionRoot>
     </div>
+</div>
+    
   </div>
 </template>

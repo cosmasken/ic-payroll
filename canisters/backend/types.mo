@@ -109,17 +109,17 @@ module {
   public type TransactionID     = Text;
 
   public type AccessType = ?{ 
-    #edit;
-    #add;
-    #view;
+    #edit ;
+    #add ;
+    #view ;
     #delete;
   };
 
   public type EmployeeType = ?{ 
-    #permanent;
-    #intern;
-    #contract;
-    #freelancer;
+    #permanent ;
+    #intern ;
+    #contract ;
+    #freelancer ;
   };
 
   public type AccessLevel =?{
@@ -199,8 +199,8 @@ module {
     creator : Principal;
     created_at : Int;
     modified_at : Int;
-    emp_type : EmployeeType;
-    accessType : AccessType;
+    emp_type : Text;
+    access_type : Text;
   };
 
 
@@ -315,8 +315,8 @@ module {
   // #region create employee
   public type CreateEmployeeArgs = {
     wallet : Text;
-   emp_type : EmployeeType;
-    accessType : AccessType;
+   emp_type : Text;
+    access_type : Text;
   };
   public type CreateEmployeeResult = Result.Result<CreateEmployeeSuccess, CreateEmployeeErr>;
   public type CreateEmployeeSuccess = {

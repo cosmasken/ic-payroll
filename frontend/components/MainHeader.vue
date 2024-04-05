@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from "vue";
-import Search from "./Searchbar.vue";
 
 defineProps({
   text: String,
   name: String,
+  designation: String,
+  department: String,
+
 });
 
 const count = ref(0);
@@ -20,7 +22,7 @@ const count = ref(0);
         All Departments
       </p-->
       <p class="text-gray-500 text-sm leading-[22px]">
-        All Departments Information
+        {{department}}
       </p>
     </div>
 
@@ -33,7 +35,7 @@ const count = ref(0);
   <div class="flex space-x-2 flex-row items-center justify-between rounded px-3">
     <div>
       <p class="-mb-1 text-left text-sm font-medium text-gray-600 group-hover:text-white">{{ name }}</p>
-      <p class="text-left text-sm font-semibold text-gray-900 group-hover:text-gray-400">HR manager</p>
+      <p class="text-left text-sm font-semibold text-gray-900 group-hover:text-gray-400">{{ designation}}</p>
     </div>
     <div class=" rounded-md border p-1.5 hover:bg-gray-100">
       <svg class="h-3 w-3  rotate-180 transform  text-gray-500"

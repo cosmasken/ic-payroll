@@ -1,11 +1,9 @@
 <script setup>
-import router from "../router";
 import { ref, watchEffect } from "vue";
 import OverviewCard from "../components/OverviewCard.vue";
 import { useAuthStore } from "../store/auth";
 import { Field, Form, ErrorMessage } from "vee-validate";
 import { CheckCircleIcon, XMarkIcon } from "@heroicons/vue/20/solid";
-import Header from "../components/MainHeader.vue"
 import * as yup from "yup";
 const authStore = useAuthStore();
 let transactions = ref(0);

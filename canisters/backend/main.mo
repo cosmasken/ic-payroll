@@ -786,6 +786,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
     //get user via args.wallet
     switch (Trie.get(userStore, userKey(args.wallet), Text.equal)) {
       case (?user) {
+
+        
         let employee : Employee = {
           id;
           creator = caller;
@@ -795,8 +797,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
           created_at = Time.now();
           modified_at = Time.now();
           wallet = args.wallet;
-          emp_type = args.emp_type;
-          accessType = args.accessType;
+          emp_type =  args.emp_type;
+          access_type = args.access_type;
         };
 
         contacts.put(id, employee);
@@ -819,6 +821,32 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
       };
     };
   };
+
+  // #region delete employee
+ public shared ({ caller }) func remove_employee(wallet : Text) : async Types.Response<Employee> {
+
+  let employee = await getEmployeeByPrincipal(Principal.fromText(wallet));
+  //let allEntries = Iter.toArray(contacts.entries());
+
+    // //get employee by principal and then if creator is caller return employee
+    // for ((_, contact) in allEntries.vals()) {
+    //   if (Principal.fromText(contact.wallet) == wallet) {
+
+    //     // if (contact.creator == caller) {
+    //     //   return {
+    //     //     status = 200;
+    //     //     status_text = "OK";
+    //     //     data = ?contact;
+    //     //     error_text = null;
+    //     //   };
+    //     // };
+    //   };
+    // };
+    Debug.print("Employee to remove: " # debug_show (employee));
+
+     return employee;
+
+};
 
   //get no of employees added by caller
   public shared ({ caller }) func getMyContactsLength() : async Text {

@@ -192,3 +192,7 @@ Enter the amount of ckBTC you want to mint and the principal you want to mint to
 You can now start transacting with the app. You can send funds to other users and receive funds from other users.
 
 Note that you need to refresh manually to see the updated balance after a transaction.
+
+
+
+# Deploying to the IC mainnet

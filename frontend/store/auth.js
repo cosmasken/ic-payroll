@@ -194,14 +194,32 @@ export const useAuthStore = defineStore("auth", {
       console.log(response);
     },
 
-    async create_employee(wallet) {
+    async create_employee(wallet,emp_type,access_type) {
+      const dataToSend = {
+        emp_type: {emp_type},
+        access_type: {access_type}
+      };
+      console.log("dataToSend"+dataToSend);
+      
       const response = await this.whoamiActor?.create_employee({
         wallet: wallet,
+        emp_type: emp_type,
+        access_type: access_type
       });
+
+      console.log("auth"+response);
       if (response.status === 200) {
         console.log(" employee registered");
         console.log(response);
       }
+    },
+
+    async remove_employee(wallet) {
+      const response = await this.whoamiActor?.remove_employee({
+        wallet: wallet,
+      });
+
+      console.log(response);
     },
 
     async createInvoice(amount, payer) {

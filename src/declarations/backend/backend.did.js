@@ -16,38 +16,22 @@ export const idlFactory = ({ IDL }) => {
     'ok' : AccountIdentifierToBlobSuccess,
     'err' : AccountIdentifierToBlobErr,
   });
-  const EmployeeType = IDL.Opt(
-    IDL.Variant({
-      'permanent' : IDL.Null,
-      'contract' : IDL.Null,
-      'intern' : IDL.Null,
-      'freelancer' : IDL.Null,
-    })
-  );
-  const AccessType = IDL.Opt(
-    IDL.Variant({
-      'add' : IDL.Null,
-      'edit' : IDL.Null,
-      'view' : IDL.Null,
-      'delete' : IDL.Null,
-    })
-  );
   const CreateEmployeeArgs = IDL.Record({
-    'emp_type' : EmployeeType,
-    'accessType' : AccessType,
+    'emp_type' : IDL.Text,
     'wallet' : IDL.Text,
+    'access_type' : IDL.Text,
   });
   const Employee = IDL.Record({
     'id' : IDL.Nat,
     'email_address' : IDL.Text,
-    'emp_type' : EmployeeType,
+    'emp_type' : IDL.Text,
     'creator' : IDL.Principal,
     'modified_at' : IDL.Int,
     'name' : IDL.Text,
-    'accessType' : AccessType,
     'created_at' : IDL.Int,
     'wallet' : IDL.Text,
     'phone_number' : IDL.Text,
+    'access_type' : IDL.Text,
   });
   const Response_4 = IDL.Record({
     'status' : IDL.Nat16,
@@ -298,6 +282,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'isRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+    'remove_employee' : IDL.Func([IDL.Text], [Response_4], []),
     'runpayroll' : IDL.Func([IDL.Vec(PayrollType__1)], [Response_3], []),
     'save_notification' : IDL.Func(
         [CreateNotificationArgs],

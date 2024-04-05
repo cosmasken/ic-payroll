@@ -88,25 +88,13 @@ const router = createRouter({
         },
         {
           path: "/home/add-employee",
-          component: () => import("../views/AddEmployee.vue"),
-          children: [
-            {
-              path: "/home/add-employee/personal-information",
-              component: () => import("../components/PersonalInformation.vue"),
-            },
-            {
-              path: "/home/add-employee/professional-information",
-              component: () => import("../components/ProfessionalInformation.vue"),
-            },
-            {
-              path: "/home/add-employee/documents",
-              component: () => import("../components/Documents.vue"),
-            },
-            {
-              path: "/home/add-employee/account-access",
-              component: () => import("../components/AccountAccess.vue"),
-            },
-          ]
+          component: () => import("../views/AddEmployee.vue")
+          
+        },
+        {
+          path: "/home/loans",
+          component: () => import("../views/Loans.vue")
+          
         },
         {
           path: "/home/view-employee",
