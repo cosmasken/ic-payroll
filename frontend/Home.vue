@@ -91,6 +91,7 @@ watchEffect(async () => {
 watchEffect(async () => {
   const res = await authStore.refresh()
   console.log(res)
+  const loan = authStore.whoamiActor.transferFromCanistertoSubAccount()
   tradingbalance.value = await authStore.tradingbalance
   fundingbalance.value = await authStore.fundingbalance
   fundingaddress.value = await authStore.fundingaddress
