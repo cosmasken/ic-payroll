@@ -1,8 +1,0 @@
-Æ
-@fde80a146b3fff990d3c9540a1d28247334bd5f2bb3680afaa813abdc0f773bd
-f¡uIDkgCommitmentOpening¡fSimple¡dK256˜ †Aˆlró¹çïNµü,‹\5k]nkJµ»ÄĞû	+³KConst:IDkgThresholdKeys‡
-@fe2a3c3fe583cf2d45012ff132b74d39ddcbc8759036beaac1a13f6c992cc94fÂ
-¦¡uIDkgCommitmentOpening¡hPedersen‚¡dK256˜ e†HŠ.í×‡Z¡³7³©ò‚÷(½»câ×™AI¡dK256˜ 	–¤œ¶ó:6æ±†\©E™ß6êá'É?ğ:Const:IDkgThresholdKeysÃ
-@dcc684630ddb1bb4c0b53e75a66bf8968615b607824f7d23e93cdc4a87147d10
-d¡uIDkgCommitmentOpening¡fSimple¡dK256˜ ÃC24Ë{°Ö!‚‰6Q±Ü\’*Ğ¹«z®¥—“5
-Const:IDkgThresholdKeys

@@ -3,6 +3,10 @@ import { AuthClient } from "@dfinity/auth-client";
 //import { createActor, canisterId } from "../../src/declarations/backend"
 import { createActor, canisterId } from "../../src/declarations/backend";
 import { toRaw } from "vue";
+import { Actor } from '@dfinity/agent';
+import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { ethers } from 'ethers';
+import { SiweMessage } from 'siwe';
 
 const defaultOptions = {
   /**
@@ -24,6 +28,66 @@ const defaultOptions = {
         : `http://b77ix-eeaaa-aaaaa-qaada-cai.localhost:4943`,
   },
 };
+
+const domain = window.location.host;
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
+
+let agent;
+
+function createSiweMessage(address, statement, delegatee, resources) {
+  const message = new SiweMessage({
+    domain,
+    address,
+    statement,
+    uri: delegatee,
+    version: '1',
+    chainId: '1',
+    resources,
+  });
+  return message.prepareMessage();
+}
+
+function connectWallet() {
+  provider
+    .send('eth_requestAccounts', [])
+    .catch(() => console.log('user rejected request'));
+}
+
+let message = null;
+let signature = null;
+
+async function signInWithEthereum(statement) {
+  if (!statement) {
+    statement = 'Sign in with Ethereum';
+  }
+
+  const identity = await Ed25519KeyIdentity.generate();
+
+  message = createSiweMessage(
+    await signer.getAddress(),
+    statement,
+    'did:icp:' + identity.getPrincipal(),
+    ['icp:' + canisterId],
+  );
+
+  signature = await signer.signMessage(message);
+
+  agent = Actor.agentOf(siwe);
+  agent.replaceIdentity(identity);
+
+  try {
+    const session = await siwe.create_session(message, signature);
+    console.log(session);
+    isAuthenticated = true;
+    logoutBtn.hidden = false;
+    siweBtn.hidden = true;
+    document.getElementById('msg').innerText = 'Successfully signed in!';
+  } catch (e) {
+    console.log(e);
+    isAuthenticated = false;
+  }
+}
 
 function actorFromIdentity(identity) {
   return createActor(canisterId, {
@@ -156,6 +220,10 @@ export const useAuthStore = defineStore("auth", {
       this.isAuthenticated = false;
       this.identity = null;
       this.whoamiActor = null;
+    },
+
+    async siwelogout(){
+      await siwe.clear_session();
     },
     updateRegistrationData(data) {
       this.registrationData = { ...this.registrationData, ...data };
