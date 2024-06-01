@@ -4,6 +4,7 @@ import Nat32 "mo:base/Nat32";
 import Blob "mo:base/Blob";
 import Text "mo:base/Text";
 import Result "mo:base/Result";
+import Bool "mo:base/Bool";
 
 module {
 
@@ -89,6 +90,11 @@ module {
     #Unpaid : Text;
   };
 
+  public type AccountType = {
+    #Individual : Text;
+    #Company : Text;
+  };
+
   public type Invoice = {
     id : Nat;
     creator : Text;
@@ -102,64 +108,103 @@ module {
     modified_at : Int;
   };
 
-   public type Percentage        = Float;
-  public type Ticker                    = Text;
-  public type Timestamp                 = Int;
-  public type SubPrice                  = Float;
-  public type TransactionID     = Text;
+  // #region department type
+  public type Department = {
+    code : Text;
+    name : Text;
+    creator : Principal;
+  };
 
-  public type AccessType = ?{ 
-    #edit ;
-    #add ;
-    #view ;
+  //region payslip information
+  public type Payslip = {
+    gross_salary : Nat;
+    taxable_income : Nat;
+    net_salary : Nat;
+    housing : Nat;
+    nhif_deductions : Nat;
+    nssf_deductions : Nat;
+    personal_relief : Nat;
+    paye : Nat;
+    other_deductions : Nat;
+    total_tax : Nat;
+  };
+
+  public type PayslipData = {
+    name : Text;
+    organization : Text;
+    department : Text;
+    designation : Text;
+    gross_salary : Nat;
+    taxable_income : Nat;
+    net_salary : Nat;
+    housing : Nat;
+    nhif_deductions : Nat;
+    nssf_deductions : Nat;
+    personal_relief : Nat;
+    paye : Nat;
+    other_deductions : Nat;
+    total_tax : Nat;
+  };
+
+  public type Jobgroup = {
+    id : Nat;
+    name : Text;
+
+  };
+
+  // #endregion
+
+  public type Organization = {
+    code : Text;
+    name : Text;
+    creator : Principal;
+  };
+
+  public type Designation = {
+    code : Text;
+    name : Text;
+    creator : Principal;
+  };
+
+  public type Percentage = Float;
+  public type Ticker = Text;
+  public type Timestamp = Int;
+  public type SubPrice = Float;
+  public type TransactionID = Text;
+
+  public type AccessType = ?{
+    #edit;
+    #add;
+    #view;
     #delete;
   };
 
-  public type EmployeeType = ?{ 
-    #permanent ;
-    #intern ;
-    #contract ;
-    #freelancer ;
+  public type EmployeeType = ?{
+    #permanent;
+    #intern;
+    #contract;
+    #freelancer;
   };
 
-  public type AccessLevel =?{
+  public type AccessLevel = ?{
     #administrator;
     #user;
     #owner;
     #finance;
   };
 
-   public type TaxType = ?{ 
-    #paye : Percentage ;
+  public type TaxType = ?{
+    #paye : Percentage;
     #contract : Percentage;
     #withholding : Percentage;
   };
 
   public type PaymentSchedule = {
-    #daily; 
+    #daily;
     #weekly;
     #monthly;
     #yearly;
   };
-
-  public type Departments = {
-    #hr;
-    #finance;
-    #legal;
-    #engineering;
-    #marketing;
-    #admin;
-  };
-
-  // public type PayrollType = {
-  //   id : Nat;
-  //   created_at : Int;
-  //   creator : Text;
-  //   amount : Nat;
-  //   approved : Bool;
-  //   successful : Bool;
-  //   destination : Text;
-  // };
 
   public type PayrollType = {
     id : Nat;
@@ -180,14 +225,13 @@ module {
   };
 
   public type User = {
-    name : Text;
+    first_name : Text;
+    last_name : Text ;
     email_notifications : Bool;
     email_address : Text;
     phone_notifications : Bool;
     phone_number : Text;
   };
-
-  
 
   //type representing  a user that is an employee/freelancer
   public type Employee = {
@@ -203,9 +247,35 @@ module {
     access_type : Text;
   };
 
+  public type Emp = {
+    creator : Principal;
+    first_name : Text;
+    last_name : Text;
+    identity : Text;
+    email_address : Text;
+    phone_number : Text;
+    joining_date : Text;
+    gender : Text;
+    disability : Bool;
+    organization : Text;
+    department : Text;
+    designation : Text;
+    employee_type : Text;
+    job_group : Text;
+    gross_salary : Text;
+    role : Text;
+    permissions : ?Permissions;
+  };
 
-  
-
+  //user permissions
+  public type Permissions = {
+    canAdd : Bool;
+    canView : Bool;
+    canEdit : Bool;
+    canDelete : Bool;
+    canUpdate : Bool;
+    canPay : Bool;
+  };
 
   public type Response<T> = {
     status : Nat16;
@@ -312,10 +382,43 @@ module {
   };
   // #endregion
 
+  //region create Emp
+  public type CreateEmpArgs = {
+    first_name : Text;
+    last_name : Text;
+    email_address : Text;
+    identity : Text;
+    phone_number : Text;
+    joining_date : Text;
+    gender : Text;
+    disability : Bool;
+    organization : Text;
+    department : Text;
+    designation : Text;
+    employee_type : Text;
+    job_group : Text;
+    gross_salary : Text;
+    role : Text;
+    // permissions : ?Permissions;
+  };
+
+  public type CreateEmpResult = Result.Result<CreateEmpSuccess, CreateEmpErr>;
+  public type CreateEmpSuccess = {
+    employee : Emp;
+  };
+  public type CreateEmpErr = {
+    message : ?Text;
+    kind : {
+      #InvalidUser;
+      #InvalidPrincipal;
+      #Other;
+    };
+  };
+
   // #region create employee
   public type CreateEmployeeArgs = {
     wallet : Text;
-   emp_type : Text;
+    emp_type : Text;
     access_type : Text;
   };
   public type CreateEmployeeResult = Result.Result<CreateEmployeeSuccess, CreateEmployeeErr>;
@@ -326,6 +429,60 @@ module {
     message : ?Text;
     kind : {
       #InvalidUser;
+      #InvalidPrincipal;
+      #Other;
+    };
+  };
+
+  // #region create Department
+  public type CreateDepartmentArgs = {
+    code : Text;
+    name : Text;
+  };
+  public type CreateDepartmentResult = Result.Result<CreateDepartmentSuccess, CreateDepartmentErr>;
+  public type CreateDepartmentSuccess = {
+    department : Department;
+  };
+  public type CreateDepartmentErr = {
+    message : ?Text;
+    kind : {
+      #InvalidDepartment;
+      #InvalidPrincipal;
+      #Other;
+    };
+  };
+
+  // #region create Organization
+  public type CreateOrganizationArgs = {
+    code : Text;
+    name : Text;
+  };
+  public type CreateOrganizationResult = Result.Result<CreateOrganizationSuccess, CreateOrganizationErr>;
+  public type CreateOrganizationSuccess = {
+    organization : Organization;
+  };
+  public type CreateOrganizationErr = {
+    message : ?Text;
+    kind : {
+      #InvalidOrganization;
+      #InvalidPrincipal;
+      #Other;
+    };
+  };
+
+  // #region create Designation
+  public type CreateDesignationArgs = {
+    code : Text;
+    name : Text;
+  };
+  public type CreateDesignationResult = Result.Result<CreateDesignationSuccess, CreateDesignationErr>;
+  public type CreateDesignationSuccess = {
+    designation : Designation;
+  };
+  public type CreateDesignationErr = {
+    message : ?Text;
+    kind : {
+      #InvalidDesignation;
       #InvalidPrincipal;
       #Other;
     };
@@ -372,8 +529,7 @@ module {
     };
   };
 
-
-    // #region create_tpayroll instance
+  // #region create_tpayroll instance
 
   public type SchedulePaymentsArgs = {
     receivers : [PayrollType];

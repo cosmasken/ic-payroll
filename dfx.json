@@ -1,19 +1,17 @@
 {
   "canisters": {
+    
     "backend": {
       "main": "canisters/backend/main.mo",
       "type": "motoko",
       "dependencies": [
         "ckbtc_ledger"
         
+        
       ],
       "declarations": {
         "node_compatibility": true
       }
-    },
-    "imgTank": {
-      "main": "canisters/imgTank/main.mo",
-      "type": "motoko"
     },
     "assets": {
       "dependencies": [
@@ -29,9 +27,9 @@
     },
     "internet_identity": {
       "type": "custom",
-      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
-      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz",
-      "remote": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2024-05-13/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/download/release-2024-05-13/internet_identity_dev.wasm.gz",
+     "remote": {
         "id": {
           "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
         }
@@ -57,13 +55,7 @@
           "ic": "n5wcd-faaaa-aaaar-qaaea-cai"
         }
       }
-    },
-    "ic_siwe_provider": {
-      "type": "custom",
-      "candid": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.6/ic_siwe_provider.did",
-      "wasm": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.6/ic_siwe_provider.wasm.gz"
     }
-    
   },
   "defaults": {
     "build": {

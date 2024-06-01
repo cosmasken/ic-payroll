@@ -1,4 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router";
+import AllEmployees from "../components/Employee/AllEmployees.vue";
+import Departments from "../components/Organogram/Departments.vue";
+import Designations from "../components/Organogram/Designations.vue";
+import Organizations from "../components/Organogram/Organizations.vue";
+import AddEmployee from "../components/Employee/AddEmployee.vue";
+import Consultants from "../components/Employee/Consultants.vue";
+import EditEmployee from "../components/Employee/EditEmployee.vue";
+import ViewEmployee from "../components/Employee/EmployeeProfile.vue";
+import AllLeaves from "../components/Leave/AllLeaves.vue";
+import LeaveApplication from "../components/Leave/LeaveApplication.vue";
+import LeaveSettings from "../components/Leave/LeaveSettings.vue";
+import AssignAssets from "../components/Assets/AssignAssets.vue";
+import AssignedAssets from "../components/Assets/AssignedAssets.vue";
+import AllSalary from "../components/Payments/AllSalary.vue";
+import Deductions from "../components/Payments/Deductions.vue";
+import Payslips from "../components/Payments/Payslips.vue";
+import Dashboard from "../components/Dashboard.vue";
+import OwnerProfile from "../components/Owner/OwnerProfile.vue";
+import SignIn from "../components/auth/SignIn.vue";
+import AuthGuard from "../AuthGuard.vue";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -8,115 +29,86 @@ const router = createRouter({
     },
     {
       path: "/auth",
-      name: "Auth",
-      component: () => import("../App.vue"),
+      component: () => import("../AuthGuard.vue"),
     },
-
+  
     {
       path: "/home",
-      component: () => import("../Home.vue"),
+      component: () => import("../App.vue"),
       children: [
         {
           path: "/home/dashboard",
-          component: () => import("../views/Dashboard.vue"),
-          meta: { transition: 'slide-left' },
+          component: Dashboard,
         },
-        {
-          path: "/home/attendance",
-          component: () => import("../views/Attendance.vue"),
-        },
-        {
-          path: "/home/all-employees",
-          component: () => import("../views/AllEmployees.vue"),
-        },
-        {
-          path: "/home/contacts",
-          component: () => import("../views/Contacts.vue"),
-        },
-        {
-          path: "/home/transfer",
-          component: () => import("../views/Transfer.vue"),
-        },
-        {
-          path: "/home/candidates",
-          component: () => import("../views/Candidates.vue"),
-        },
-        {
-          path: "/home/departments",
-          component: () => import("../views/Departments.vue"),
-        },
-        {
-          path: "/home/holidays",
-          component: () => import("../views/Holidays.vue"),
-        },
-        {
-          path: "/home/transactions",
-          component: () => import("../views/Transactions.vue"),
-        },
-        {
-          path: "/home/invoices",
-          component: () => import("../views/Invoices.vue"),
-        },
-        {
-          path: "/home/jobs",
-          component: () => import("../views/Jobs.vue"),
-        },
-        {
-          path: "/home/notifications",
-          component: () => import("../views/Notifications.vue"),
-        },
-        {
-          path: "/home/payroll",
-          component: () => import("../views/Payroll.vue"),
-        },
-        {
-          path: "/home/leaves",
-          component: () => import("../views/Leaves.vue"),
-        },
-        {
-          path: "/home/profile",
-          component: () => import("../views/Profile.vue"),
-        },
-        {
-          path: "/home/settings",
-          component: () => import("../views/Settings.vue"),
-        },
-        {
-          path: "/home/view-department",
-          name: "ViewDepartment",
-          component: () => import("../views/ViewDepartments.vue"),
-        },
+
         {
           path: "/home/add-employee",
-          component: () => import("../views/AddEmployee.vue")
-          
+          component: AddEmployee,
+        },
+
+        {
+          path: "/home/all-employees",
+          component: AllEmployees,
         },
         {
-          path: "/home/loans",
-          component: () => import("../views/Loans.vue")
-          
+          path: "/home/consultants",
+          component: Consultants,
+        },
+        {
+          path: "/home/edit-employee",
+          component: EditEmployee,
         },
         {
           path: "/home/view-employee",
-          component: () => import("../views/ViewEmployee.vue"),
-          children: [
-            {
-              path: "/home/view-employee/personal-information",
-              component: () => import("../components/ViewPersonalInformation.vue"),
-            },
-            {
-              path: "/home/view-employee/professional-information",
-              component: () => import("../components/ViewProfessionalInformation.vue"),
-            },
-            {
-              path: "/home/view-employee/documents",
-              component: () => import("../components/ViewDocuments.vue"),
-            },
-            {
-              path: "/home/view-employee/account-access",
-              component: () => import("../components/ViewAccountAccess.vue"),
-            },
-          ]
+          component: ViewEmployee,
+        },
+        {
+          path: "/home/all-leaves",
+          component: AllLeaves,
+        },
+        {
+          path: "/home/leave-application",
+          component: LeaveApplication,
+        },
+        {
+          path: "/home/leave-settings",
+          component: LeaveSettings,
+        },
+        {
+          path: "/home/departments",
+          component: Departments,
+        },
+        {
+          path: "/home/designations",
+          component: Designations,
+        },
+        {
+          path: "/home/organizations",
+          component: Organizations,
+        },
+        {
+          path: "/home/assign-assets",
+          component: AssignAssets,
+        },
+        {
+          path: "/home/assigned-assets",
+          component: AssignedAssets,
+        },
+        {
+          path: "/home/all-salary",
+          component: AllSalary,
+        },
+        {
+          path: "/home/deductions",
+          component: Deductions,
+        },
+        {
+          path: "/home/payslips",
+          component: Payslips,
+        },
+        {
+          path: "/home/owner-profile",
+          component: OwnerProfile,
         },
       ],
     },
