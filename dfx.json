@@ -7,7 +7,6 @@
       "dependencies": [
         "ckbtc_ledger"
         
-        
       ],
       "declarations": {
         "node_compatibility": true
@@ -56,6 +55,8 @@
         }
       }
     }
+   
+    
   },
   "defaults": {
     "build": {
