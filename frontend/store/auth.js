@@ -1,9 +1,39 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
+<<<<<<< HEAD
+import { createActor, canisterId } from "../../src/declarations/backend";
+import { toRaw } from "vue";
+import { ethers } from 'ethers';
+import { ref } from "vue";
+import { Actor } from '@dfinity/agent';
+import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { useMetaMaskWallet } from "vue-connect-wallet";
+import { SiweMessage } from 'siwe';
+import { siwe_ic, canisterId as canID  } from "../../src/declarations/siwe_ic";
+import { Principal } from "@dfinity/principal";
+
+const address = ref("");
+const principal = ref("");
+const wallet = useMetaMaskWallet();
+
+
+
+
+
+
+const isConnected = async () => {
+  const accounts = await wallet.getAccounts();
+  if (typeof accounts === "string") return false;
+  return accounts.length > 0;
+};
+
+
+=======
 import {HttpAgent} from '@dfinity/agent';
 import { createActor, canisterId } from "../../src/declarations/backend";
 import { toRaw } from "vue";
 import Swal from "sweetalert2";
+>>>>>>> workingpoint
 
 const defaultOptions = {
   /**
@@ -33,9 +63,21 @@ function actorFromIdentity(identity) {
       identity,
     },
   });
+<<<<<<< HEAD
+}
+
+function actorFromEthIdentity(identity) {
+  return createActor(canId, {
+    agentOptions: {
+      identity,
+    },
+  });
+}
+=======
 };
 
 
+>>>>>>> workingpoint
 export const useAuthStore = defineStore("auth", {
   id: "auth",
   state: () => {
@@ -73,12 +115,61 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     async init() {
+<<<<<<< HEAD
+        // const authClient = await AuthClient.create(defaultOptions.createOptions);
+        // this.authClient = authClient;
+        // const isAuthenticated = await authClient.isAuthenticated();
+        // const identity = isAuthenticated ? authClient.getIdentity() : null;
+        // const whoamiActor = identity ? actorFromIdentity(identity) : null;       
+        
+        // this.isAuthenticated = isAuthenticated;
+        // this.identity = identity;
+        // this.whoamiActor = whoamiActor;
+        // this.isReady = true;
+        // this.isRegistered = false;
+        if (this.authType === "internet-identity"){
+          const authClient = await AuthClient.create(defaultOptions.createOptions);
+          this.authClient = authClient;
+          const isAuthenticated = await authClient.isAuthenticated();
+          const identity = isAuthenticated ? authClient.getIdentity() : null;
+          const whoamiActor = identity ? actorFromIdentity(identity) : null;
+
+          console.log('internet-identity' + whoamiActor);
+  
+          this.isAuthenticated = isAuthenticated;
+          this.identity = identity;
+          this.whoamiActor = whoamiActor;
+          this.isReady = true;
+          this.isRegistered = false;
+        }else if(this.authType === "connect2ic"){
+          this.isReady = true;
+          this.isRegistered = false;
+        }else if(this.authType === "siwe"){
+          const wallet = useMetaMaskWallet();
+          const accounts = await wallet.getAccounts();
+          const isAuthenticated = async () => {  
+            return Array.isArray(accounts) && accounts.length > 0;
+          };
+          const identity = isAuthenticated ? Ed25519KeyIdentity.generate() : null;
+          const whoamiActor = identity ? actorFromIdentity(identity) : null;
+
+          console.log('siwe' + whoamiActor);
+
+          this.isAuthenticated = isAuthenticated;
+          this.identity = identity;
+          this.whoamiActor = whoamiActor;
+          this.isReady = true;
+          this.isRegistered = false;
+        }
+      
+=======
       const authClient = await AuthClient.create(defaultOptions.createOptions);
       this.authClient = authClient;
       const isAuthenticated = await authClient.isAuthenticated();
       const identity = isAuthenticated ? authClient.getIdentity() : null;
       const whoamiActor = identity ? actorFromIdentity(identity) : null;
 
+>>>>>>> workingpoint
 
       this.isAuthenticated = isAuthenticated;
       this.identity = identity;
@@ -108,8 +199,31 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async connect2ic() {},
+<<<<<<< HEAD
+   
+    async  connect () {
+      const accounts = await wallet.connect();
+      if (typeof accounts === "string") {
+        console.log("An error occurred" + accounts);
+      }
+
+      console.log('accounts' + accounts)
+    
+       const statement = 'Sign in with Ethereum';
+       const identity = await Ed25519KeyIdentity.generate();
+       principal.value = identity.getPrincipal();
+       console.log('identity' + identity.getPrincipal());
+       
+      address.value = accounts[0];
+      console.log("Connected to account: ", accounts[0]);
+    },
+    async switchAccount () {
+      await wallet.switchAccounts();
+      await this.connect();
+=======
     async siwe() {
       // const { login, clear, identity } = useSiweIdentity();
+>>>>>>> workingpoint
     },
 
     async getBalance() {
@@ -118,6 +232,8 @@ export const useAuthStore = defineStore("auth", {
       this.tradingbalance = await balance;
     },
 
+<<<<<<< HEAD
+=======
     async decodeAddress(){
 //pseudocode for decoding address
 //       decodeAccount(text) = case Principal.fromText(text) of
@@ -135,6 +251,7 @@ export const useAuthStore = defineStore("auth", {
 
 
     },
+>>>>>>> workingpoint
 
     async refresh() {
       //const whoamiActor = toRaw(this.whoamiActor);
@@ -161,8 +278,13 @@ export const useAuthStore = defineStore("auth", {
       this.identity = null;
       this.whoamiActor = null;
     },
+<<<<<<< HEAD
+   
+    async siwelogout(){
+=======
 
     async siwelogout() {
+>>>>>>> workingpoint
       await siwe.clear_session();
     },
     updateRegistrationData(data) {
