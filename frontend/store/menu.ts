@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import allPlans from '../constants/selectPlans';
-import { AddOns, PricingObjKey } from '../types';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import allPlans from "../constants/selectPlans";
+import { AddOns, PricingObjKey } from "../types";
 
-export const useMenuStore = defineStore('menu', () => {
-  const menus = ref(['your info', 'select plan', 'add-ons', 'summary']);
+export const useMenuStore = defineStore("menu", () => {
+  const menus = ref(["your info", "select plan", "add-ons", "summary"]);
   const currentMenuIdx = ref(1);
 
   const setMenu = (menuIdx: number) => {
@@ -14,23 +14,23 @@ export const useMenuStore = defineStore('menu', () => {
   return { menus, currentMenuIdx, setMenu };
 });
 
-export const useStepOneStore = defineStore('step-1', () => {
-  const name = ref('');
-  const email = ref('');
-  const phoneNumber = ref('');
+export const useStepOneStore = defineStore("step-1", () => {
+  const name = ref("");
+  const email = ref("");
+  const phoneNumber = ref("");
 
   return { name, email, phoneNumber };
 });
 
-export const usePlanStore = defineStore('step-2', () => {
-  const pricingType = ref('monthly');
+export const usePlanStore = defineStore("step-2", () => {
+  const pricingType = ref("monthly");
   const selectedPlan = ref({
-    title: 'arcade',
+    title: "arcade",
     price: 9,
   });
 
   const handleChangePlan = () => {
-    pricingType.value = pricingType.value === 'monthly' ? 'yearly' : 'monthly';
+    pricingType.value = pricingType.value === "monthly" ? "yearly" : "monthly";
 
     const currentPlan = allPlans.find(
       (plan) =>
@@ -48,7 +48,7 @@ export const usePlanStore = defineStore('step-2', () => {
   return { pricingType, selectedPlan, handleChangePlan, handleSelectPlan };
 });
 
-export const useAddOnsStore = defineStore('step-3', () => {
+export const useAddOnsStore = defineStore("step-3", () => {
   const allSelectedAddOns = ref<AddOns[]>([]);
 
   const selectAddOns = (newTitle: string, price: number) => {

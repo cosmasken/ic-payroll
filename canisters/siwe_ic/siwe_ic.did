@@ -1,0 +1,17 @@
+
+type Session = record {
+    "address": text;
+    "expires_at": int64;
+};
+
+type SessionResult = variant {
+    "Ok": Session;
+    "Err": text;
+};
+
+service : {
+    "create_session": (text, text) -> (SessionResult);
+    "get_session": () -> (SessionResult) query;
+    "clear_session": () -> ();
+    "greet": (text) -> (text) query;
+};

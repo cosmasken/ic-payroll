@@ -14,7 +14,7 @@ module Base {
    */
   public func showYear(year : Year) : Text {
     let #Year n = year;
-    Int.toText(n)
+    Int.toText(n);
   };
 
   /**
@@ -52,7 +52,7 @@ module Base {
       case (#October) "October";
       case (#November) "November";
       case (#December) "December";
-    }
+    };
   };
 
   /**
@@ -72,7 +72,7 @@ module Base {
       case (#October) "Oct";
       case (#November) "Nov";
       case (#December) "Dec";
-    }
+    };
   };
 
   /**
@@ -87,7 +87,7 @@ module Base {
    */
   public func showDay(day : Day) : Text {
     let #Day n = day;
-    Int.toText(n)
+    Int.toText(n);
   };
 
   /**
@@ -115,7 +115,7 @@ module Base {
       case (#Thursday) "Thursday";
       case (#Friday) "Friday";
       case (#Saturday) "Saturday";
-    }
+    };
   };
 
   /**
@@ -130,7 +130,7 @@ module Base {
       case (#Thursday) "Thu";
       case (#Friday) "Fri";
       case (#Saturday) "Sat";
-    }
+    };
   };
 
   /**
@@ -145,7 +145,7 @@ module Base {
    */
   public func showHour(hour : Hour) : Text {
     let #Hour n = hour;
-    Int.toText(n)
+    Int.toText(n);
   };
 
   /**
@@ -160,7 +160,7 @@ module Base {
    */
   public func showMinute(min : Minute) : Text {
     let #Minute n = min;
-    Int.toText(n)
+    Int.toText(n);
   };
 
   /**
@@ -175,7 +175,7 @@ module Base {
    */
   public func showSecond(sec : Second) : Text {
     let #Second n = sec;
-    Int.toText(n)
+    Int.toText(n);
   };
 
   /**
@@ -190,7 +190,7 @@ module Base {
    */
   public func showNanos(nanos : Nanos) : Text {
     let #Nanos n = nanos;
-    Int.toText(n)
+    Int.toText(n);
   };
 
   /**
@@ -215,7 +215,7 @@ module Base {
     accum #= showWithPad(2, showDay(parts.day));
     accum #= " ";
     accum #= showWithPad(4, showYear(parts.year));
-    accum
+    accum;
   };
 
   /**
@@ -241,6 +241,6 @@ module Base {
       accum := "0" # accum;
       i += 1;
     };
-    accum
+    accum;
   };
 };
