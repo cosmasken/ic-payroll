@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-<template class="font-lexend">
-  
-  <main>
- 
-    <div v-if="isReady">
-      <router-view v-if="isAuthenticated" />
-      <SignIn v-else />
-    </div>
-    <div v-else>
-      <div class="flex justify-center items-center h-screen">
-=======
 <script setup>
 import { ref, watchEffect } from "vue";
 import { useAuthStore } from "./store/auth";
@@ -108,7 +96,6 @@ const data = {
         aria-modal="true"
       >
         <!-- Off-canvas menu backdrop, show/hide based on off-canvas menu state. -->
->>>>>>> workingpoint
         <div
           enter-class="transition ease-out duration-300"
           enter-start-class="opacity-0"
@@ -1472,40 +1459,10 @@ const data = {
   </main>
 </template>
 
-<<<<<<< HEAD
-<script setup>
-import "@rainbow-me/rainbowkit/styles.css";
-import router from "./router"
-import SignIn from "./components/auth/SignIn.vue"
-import { storeToRefs } from "pinia"
-import { useAuthStore } from "./store/auth"
-import {Connect2ICProvider} from "@connect2ic/vue"
-import "@connect2ic/core/style.css"
-
-const authStore = useAuthStore()
-
-const { isReady, isAuthenticated, authType } = storeToRefs(authStore)
-if (isReady.value === false) {
-
-  if (authType.value === "internet-identity") {
-    console.log("internet-identity")
-    authStore.init()
-  } else if(authType.value === "connect2ic") {
-    console.log("connect2ic")
-    authStore.init()
-  } else {
-    console.log("siwe")
-    authStore.init()
-  }
- // authStore.init()
-} else {
-  router.push("/home/dashboard")
-=======
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 300ms ease-out;
->>>>>>> workingpoint
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
