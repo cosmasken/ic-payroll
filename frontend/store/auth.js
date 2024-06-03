@@ -24,6 +24,9 @@ const defaultOptions = {
         ? "https://identity.ic0.app/#authorize"
         : `http://b77ix-eeaaa-aaaaa-qaada-cai.localhost:4943`,
   },
+  // loginOptions:{
+  //   identityProvider : "https://identity.ic0.app/#authorize"
+  // }
 };
 
 function actorFromIdentity(identity) {

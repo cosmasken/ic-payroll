@@ -83,21 +83,21 @@ ChartJS.register(
                 currency1="10"
                 headercolor="#1F2937"
                 currency1color="#4C98FF"
-                balance="500"
+                balance="0"
               />
               <OverviewCard
                 header="Employee Turnover"
                 currency1="20"
                 headercolor="#1F2937"
                 currency1color="#4C98FF"
-                balance="500"
+                balance="0"
               />
               <OverviewCard
                 header="Lent Assets"
                 currency1="$1400"
                 headercolor="#1F2937"
                 currency1color="#4C98FF"
-                balance="500"
+                balance="0"
               />
             </div>
 
@@ -122,9 +122,9 @@ ChartJS.register(
           presentheader="Present"
           absentheader="Absent"
           leaveheader="Leave"
-          present="90"
-          absent="4"
-          leave="3"
+          present="0"
+          absent="0"
+          leave="0"
         />
       </div>
     </aside>
