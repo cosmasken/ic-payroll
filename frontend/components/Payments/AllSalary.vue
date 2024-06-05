@@ -113,12 +113,12 @@ const organizations = [
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-      <SalaryCard header="Total Gross Salary" text="Ksh 1,273,618.37" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 1,273,618.37" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 1,273,618.37" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 1,273,618.37" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 1,273,618.37" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 1,273,618.37" />
+      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
+      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
+      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
+      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
+      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
+      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
     </div>
 
     <div class="flex flex-col sm:flex-row w-full justify-between py-5">

@@ -172,7 +172,7 @@ const organizations = [
               x-data="{id:'new-workflow-modal'}"
               x-on:click="$dispatch('modal-overlay',{id})"
             >
-              New Organization
+              Add New
             </button>
           </div>
         </div>
@@ -195,12 +195,25 @@ const organizations = [
                           scope="col"
                           class="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
                         >
-                          Name
+                          Job Group
                         </th>
                         <th
                           scope="col"
-                          class="px-3 py-3.5 pr-4 sm:pr-6 text-right text-sm font-medium text-gray-500"
+                          class="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
                         >
+                          NHIF
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
+                        >
+                          NSSF
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-3 py-3.5 pr-4 sm:pr-6  text-sm font-medium text-gray-500"
+                        >
+                        
                           &nbsp;
                         </th>
                       </tr>
@@ -210,6 +223,20 @@ const organizations = [
                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
                           <div class="font-normal text-gray-500">
                             {{ org.id }}
+                          </div>
+                        </td>
+                        <td
+                          class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                        >
+                          <div class="font-normal text-gray-500">
+                            {{ org.name }}
+                          </div>
+                        </td>
+                        <td
+                          class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                        >
+                          <div class="font-normal text-gray-500">
+                            {{ org.name }}
                           </div>
                         </td>
                         <td
@@ -409,7 +436,7 @@ const organizations = [
           x-transition:leave="transition ease-in duration-200"
           x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
           x-transition:leave-end="opacity-0 translat-y-4 sm:translate-y-0 sm:scale-95"
-          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
+          class="relative transform overflow-hidden rounded-lg bg-[#fff] text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
         >
           <div class="p-4 sm:px-5 sm:py-4 border-b border-gray-200">
             <h1 class="text-base font-semibold text-gray-700 m-0">
@@ -425,7 +452,7 @@ const organizations = [
                       <label
                         for="first-name"
                         class="block text-sm font-medium leading-6 text-gray-600"
-                        >Name</label
+                        >Job Grade</label
                       >
                       <div class="mt-1">
                         <input
@@ -433,7 +460,39 @@ const organizations = [
                           name="first-name"
                           id="first-name"
                           autocomplete="given-name"
-                          class="block w-full rounded-md border-0 py-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
+                          class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-span-3">
+                      <label
+                        for="nhif"
+                        class="block text-sm font-medium leading-6 text-gray-600"
+                        >NHIF</label
+                      >
+                      <div class="mt-1">
+                        <input
+                          type="number"
+                          name="nhif"
+                          id="nhif"
+                          autocomplete="nhif"
+                          class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-span-3">
+                      <label
+                        for="nssf"
+                        class="block text-sm font-medium leading-6 text-gray-600"
+                        >NSSF</label
+                      >
+                      <div class="mt-1">
+                        <input
+                          type="number"
+                          name="nssf"
+                          id="nssf"
+                          autocomplete="nssf"
+                          class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
                         />
                       </div>
                     </div>
@@ -444,12 +503,12 @@ const organizations = [
                 <button
                   type="button"
                   @click="modal = false"
-                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-white hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
+                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-[#fff] hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
                 >
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
                   class="rounded-md bg-autom8-blue-500 px-6 py-2 text-sm font-semibold text-white hover:bg-autom8-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-autom8-blue-500"
                 >
                   Save
@@ -496,7 +555,7 @@ const organizations = [
           x-transition:leave="transition ease-in duration-200"
           x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
           x-transition:leave-end="opacity-0 translat-y-4 sm:translate-y-0 sm:scale-95"
-          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
+          class="relative transform overflow-hidden rounded-lg bg-[#fff] text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
         >
           <div class="p-4 sm:px-5 sm:py-4 border-b border-gray-200">
             <h1 class="text-base font-semibold text-gray-700 m-0">
@@ -531,7 +590,7 @@ const organizations = [
                 <button
                   type="button"
                   @click="modal = false"
-                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-white hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
+                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-[#fff] hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
                 >
                   Cancel
                 </button>
@@ -583,7 +642,7 @@ const organizations = [
           x-transition:leave="transition ease-in duration-200"
           x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
           x-transition:leave-end="opacity-0 translat-y-4 sm:translate-y-0 sm:scale-95"
-          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
+          class="relative transform overflow-hidden rounded-lg bg-[#fff] text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
         >
           <div class="p-4 sm:px-5 sm:py-4 border-b border-gray-200">
             <h1 class="text-base font-semibold text-gray-700 m-0">
@@ -610,7 +669,7 @@ const organizations = [
                           >
                             <label
                               for="file-upload"
-                              class="relative cursor-pointer rounded-md bg-white font-semibold text-autom8-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-autom8-blue-300 focus-within:ring-offset-2 hover:text-autom8-blue-500"
+                              class="relative cursor-pointer rounded-md bg-[#fff] font-semibold text-autom8-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-autom8-blue-300 focus-within:ring-offset-2 hover:text-autom8-blue-500"
                             >
                               <span>Click to upload</span>
                               <input
@@ -644,7 +703,7 @@ const organizations = [
                 <button
                   type="button"
                   @click="modal = false"
-                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-white hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
+                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-[#fff] hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
                 >
                   Cancel
                 </button>
@@ -696,7 +755,7 @@ const organizations = [
           x-transition:leave="transition ease-in duration-200"
           x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
           x-transition:leave-end="opacity-0 translat-y-4 sm:translate-y-0 sm:scale-95"
-          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
+          class="relative transform overflow-hidden rounded-lg bg-[#fff] text-left shadow-xl transition-all sm:my-8 w-full max-w-xl"
         >
           <div class="p-4 sm:px-5 sm:py-4 border-b border-gray-200">
             <h1 class="text-base font-semibold text-gray-700 m-0">
@@ -735,7 +794,7 @@ const organizations = [
                 <button
                   type="button"
                   @click="modal = false"
-                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-white hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
+                  class="inline-flex items-center rounded-md border border-gray-300 px-6 py-2 text-sm font-medium text-gray-500 bg-[#fff] hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2 sm:w-auto"
                 >
                   Cancel
                 </button>

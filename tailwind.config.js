@@ -12,6 +12,19 @@ module.exports = {
         lexend: ['Lexend', 'sans-serif'],
     },
     colors: {
+      "autom8-blue": {
+        50: "#EEF3FC",
+        100: "#D8E3F8",
+        200: "#B5CBF2",
+        300: "#8EAFEB",
+        400: "#6793E4",
+        500: "#4379DE",
+        600: "#225BC3",
+        700: "#1A4493",
+        800: "#122E64",
+        900: "#081630",
+        950: "#050C1A"
+    },
       'backdrop': '#F5F6FA',
       'textcolor': '#16151C',
       'darktextcolor' : '#FFFFFF',

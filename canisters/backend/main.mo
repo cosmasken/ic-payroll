@@ -68,6 +68,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   // The user data store. The key is the user's principal ID.
   private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
   stable var transactionsStable : [(Nat, Transaction)] = [];
+  stable var metamaskUsers :[(Text,Principal)] = [];
   stable var departmentsStable : [(Nat, Department)] = [];
   stable var organizationsStable : [(Nat, Organization)] = [];
   stable var designationsStable : [(Nat, Designation)] = [];
@@ -86,6 +87,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   stable var notificationsCounter : Nat = 0;
   stable var invoiceCounter : Nat = 0;
   stable var payrollCounter : Nat = 0;
+  stable var noofmetamaskusers : Nat = 0;
   var transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
   var contacts : HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
   var employees : HashMap.HashMap<Nat, Emp> = HashMap.fromIter(Iter.fromArray(stableEmployees), stableEmployees.size(), Nat.equal, Hash.hash);
@@ -94,6 +96,8 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   var organizations : HashMap.HashMap<Nat, Organization> = HashMap.fromIter(Iter.fromArray(organizationsStable), organizationsStable.size(), Nat.equal, Hash.hash);
   var departments : HashMap.HashMap<Nat, Department> = HashMap.fromIter(Iter.fromArray(departmentsStable), departmentsStable.size(), Nat.equal, Hash.hash);
   var designations : HashMap.HashMap<Nat, Designation> = HashMap.fromIter(Iter.fromArray(designationsStable), designationsStable.size(), Nat.equal, Hash.hash);
+ var selfcustodyusers : HashMap.HashMap<Text, Principal> = HashMap.fromIter(Iter.fromArray(metamaskUsers), metamaskUsers.size(), Text.equal, Text.hash);
+
 
   var MAX_TRANSACTIONS = 30_000;
   let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
@@ -130,6 +134,53 @@ return Principal.fromText(wallet);
     };
   };
 };
+
+public shared ({ caller }) func addToMetamaskUsers(address:Text,identity:Principal): async Result.Result<Text, Text> {
+//check if address exists
+let addressExists = selfcustodyusers.get(address);
+
+Debug.print("address exists???? " # debug_show (addressExists));
+if (addressExists != null) {
+return #err("Address already exists");
+};
+
+selfcustodyusers.put(address,identity);
+
+return #ok("identity" # "address");
+
+};
+
+// public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
+
+//    let allEntries = Iter.toArray(selfcustodyusers.entries());
+//     let users = [(Text, Principal)];
+//     for ((Text, Principal) in allEntries.vals()) {
+//     //add to users and return
+
+//     };
+// };
+  // my_designations.add(designation);
+  //     };
+  //   };
+
+  //   return Buffer.toArray<Designation>(my_designations);
+
+public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
+    let allEntries = Iter.toArray(selfcustodyusers.entries());
+    var users : [(Text, Principal)] = [];
+    let buffer = Buffer.Buffer<(Text, Principal)>(10000); 
+    for ((key, value) in allEntries.vals()) {
+        // Assuming key is of type Text and value is of type Principal
+       // users := users.append((key, value));
+        buffer.add(key, value);
+    };
+    return Buffer.toArray<(Text,Principal)>(buffer);
+};
+
+// public shared ({ caller }) func getSelfCustodyUsers(): async ?HashMap.HashMap<Text, Principal> {
+//     return selfcustodyusers;
+// };
+
 
   public shared ({ caller }) func getUserPayslip(identity : Text) : async Types.Response<PayslipData> {
     let employee = await getEmpByPrincipal(Principal.fromText(identity));

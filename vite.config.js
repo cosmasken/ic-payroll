@@ -4,6 +4,7 @@ import path from "path"
 import dfxJson from "./dfx.json"
 import fs from "fs"
 
+
 const isDev = process.env["DFX_NETWORK"] !== "ic"
 
 let canisterIds
@@ -59,11 +60,14 @@ const DFX_PORT = dfxJson.networks.local.bind.split(":")[1]
 // See guide on how to configure Vite at:
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue()
+  ],
   resolve: {
     alias: {
       // Here we tell Vite the "fake" modules that we want to define
       "vue": path.resolve("./node_modules/vue"),
+      'buffer': 'buffer/',
       ...aliases,
     },
   },
@@ -88,4 +92,16 @@ export default defineConfig({
         isDev ? "development" : "production",
     ),
   },
+  // optimizeDeps: {
+  //   include: ['buffer'],
+  //   esbuildOptions: {
+  //     plugins: [
+  //       NodeGlobalsPolyfillPlugin({
+  //         process: true,
+  //         buffer: true,
+  //       }),
+  //       NodeModulesPolyfillPlugin(),
+  //     ],
+  //   },
+  // },
 })

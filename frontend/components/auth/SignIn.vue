@@ -58,8 +58,8 @@ const texted = "vwewegwegwegewe"
               </a>
             </div>
           </div-->
-          <!--div class="">
-            <div  class="mt-6 grid grid-cols-1 gap-4">
+          <div class="">
+            <div @click="authStore.requestAccounts()"  class="mt-6 grid grid-cols-1 gap-4">
               <a
                 href="#"
                 class="flex w-full items-center justify-left gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent"
@@ -69,10 +69,10 @@ const texted = "vwewegwegwegewe"
                   alt="Google"
                   class="h-5 w-5"
                 />
-                <span class="text-sm font-semibold leading-6">Ethereum</span>
+                <span class="text-sm font-semibold leading-6">Metamask</span>
               </a>
             </div>
-          </div-->
+          </div>
         </div>
       </div>
     </div>

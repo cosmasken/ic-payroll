@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
-import {HttpAgent} from '@dfinity/agent';
+import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { createActor, canisterId } from "../../src/declarations/backend";
-import { toRaw } from "vue";
+import { toRaw ,markRaw } from "vue";
 import Swal from "sweetalert2";
+import { ethers } from 'ethers';
+import { SiweMessage } from 'siwe';
+import Web3 from 'web3';
 
 const defaultOptions = {
   /**
@@ -24,6 +27,9 @@ const defaultOptions = {
         ? "https://identity.ic0.app/#authorize"
         : `http://b77ix-eeaaa-aaaaa-qaada-cai.localhost:4943`,
   },
+  // loginOptions:{
+  //   identityProvider : "https://identity.ic0.app/#authorize"
+  // }
 };
 
 function actorFromIdentity(identity) {
@@ -34,6 +40,7 @@ function actorFromIdentity(identity) {
   });
 };
 
+const web3 = new Web3();
 
 export const useAuthStore = defineStore("auth", {
   id: "auth",
@@ -63,6 +70,14 @@ export const useAuthStore = defineStore("auth", {
       userInfo: null,
       transactions: [],
       authType: "internet-identity",
+      message: null,
+      domain: null,
+      signature: null,
+      siweIdentity: null,
+      ethActor: null,
+      signer: null,
+      provider: null,
+      ethAddress: null,
     };
   },
   actions: {
@@ -72,13 +87,31 @@ export const useAuthStore = defineStore("auth", {
       const isAuthenticated = await authClient.isAuthenticated();
       const identity = isAuthenticated ? authClient.getIdentity() : null;
       const whoamiActor = identity ? actorFromIdentity(identity) : null;
-
+      const siweIdentity = await Ed25519KeyIdentity.generate();
+      const ethActor = siweIdentity ? actorFromIdentity(siweIdentity) : null;
+    //  if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+    
+        this.provider = markRaw(provider);
+        this.signer = markRaw(signer);
+    //  }
+       const domain = window.location.host;
+     
 
       this.isAuthenticated = isAuthenticated;
       this.identity = identity;
       this.whoamiActor = whoamiActor;
+      this.siweIdentity = siweIdentity;
+      this.ethActor = ethActor;
+       this.domain = domain;
       this.isReady = true;
       this.isRegistered = false;
+    },
+
+    async initSiwe() {
+
+
     },
     async login() {
       const authClient = toRaw(this.authClient);
@@ -101,10 +134,86 @@ export const useAuthStore = defineStore("auth", {
       });
     },
 
-    async connect2ic() {},
-    async siwe() {
-      // const { login, clear, identity } = useSiweIdentity();
+    async connect2ic() {
+
     },
+
+    async requestAccounts() {
+      try {
+        // Request account access
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        console.log('Accounts:', accounts);
+        
+        // Assuming the first account is used for signing
+        const account = accounts[0];
+    
+        // The message you want to sign
+        const message = 'Hello, Do you want to sign in to IC-PAY?';
+    
+        // Hash the message (optional but recommended)
+       // const messageHash = web3.utils.sha3(message);
+    
+        // Sign the hashed message
+        const signature = await ethereum.request({
+          method: 'personal_sign',
+          params: [message, account]
+        });
+    
+        console.log('Signature:', signature);
+      } catch (error) {
+        console.error('Error requesting accounts or signing message:', error);
+      }
+    },
+    
+    // Call the function
+   // requestAccounts();
+    
+    async connectWallet() {
+      const ethereum = window.ethereum
+      if (!ethereum) {
+        Swal.fire({
+          title: "Good job!",
+          text: "MetaMask is not installed! Please install it to your extensions for connect your wallet.",
+          icon: "error"
+        });
+        // return toast.error(
+        //   'MetaMask is not installed! Please install it to your extensions for connect your wallet.'
+        // )
+      } else {
+        const res = await ethereum.request({ method: 'eth_requestAccounts' })
+        this.ethAddress = res[0]
+        console.log('address', this.ethAddress)
+        Swal.fire({
+          title: "Good job!",
+          text: "You clicked the button!",
+          icon: "success"
+        });
+      }
+    },
+    async signInWithEthereum() {
+    //  const  statement = 'Sign in with Ethereum';
+    
+    //   const www = this.siweIdentity.getPrincipal();
+    
+    // const  message = createSiweMessage(
+    //     this.domain,
+    //     await this.signer.getAddress(),
+    //     'Sign in with Ethereum',
+    //     'did:icp:' + "this.siweIdentity.getPrincipal()",
+    //     ['icp:' + canisterId],
+    //   );
+
+    //   console.log('message', message);
+    
+    //   const signature = await this.signer.signMessage(message);
+    
+    //  // agent = Actor.agentOf(backend);
+    //  // agent.replaceIdentity(identity);
+     this.isAuthenticated = true;
+     console.log('Successfully signed in!');
+    
+    },
+    
 
     async getBalance() {
       // const whoamiActor = toRaw(this.whoamiActor);
