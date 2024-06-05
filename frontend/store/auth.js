@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
 import { Ed25519KeyIdentity } from '@dfinity/identity';
-import { createActor, canisterId } from "../../src/declarations/backend";
+import { createActor, canisterId ,idlFactory} from "../../src/declarations/backend";
+//import { idlFactory } from "../../src/declarations/backend.did.js";
 import { toRaw ,markRaw } from "vue";
 import Swal from "sweetalert2";
 import { ethers } from 'ethers';
@@ -38,6 +39,31 @@ function actorFromIdentity(identity) {
       identity,
     },
   });
+};
+
+
+ const ethActor = (canisterId, options = {}) => {  
+  const agent = options.agent || new HttpAgent({ ...options.agentOptions });
+  if (options.agent && options.agentOptions) {  
+    console.warn(  
+      "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."  
+    );  
+  }
+  // Fetch root key for certificate validation during development  
+  if (process.env.DFX_NETWORK !== "ic") {  
+    agent.fetchRootKey().catch((err) => {  
+      console.warn(  
+        "Unable to fetch root key. Check to ensure that your local replica is running"  
+      );  
+      console.error(err);  
+    });  
+  }
+  // Creates an actor with using the candid interface and the HttpAgent  
+  return Actor.createActor(idlFactory, {  
+    agent,  
+    canisterId,  
+    ...options.actorOptions,  
+  });  
 };
 
 const web3 = new Web3();
@@ -128,15 +154,15 @@ export const useAuthStore = defineStore("auth", {
             ? actorFromIdentity(this.identity)
             : null;
 
+            console.log('whoamiActor', this.whoamiActor);
+
           this.isRegistered = await this.whoamiActor.isRegistered();
           console.log("is registered" + this.isRegistered);
         },
       });
     },
 
-    async connect2ic() {
-
-    },
+   
 
     async requestAccounts() {
       try {
@@ -148,7 +174,7 @@ export const useAuthStore = defineStore("auth", {
         const account = accounts[0];
     
         // The message you want to sign
-        const message = 'Hello, Do you want to sign in to IC-PAY?';
+        const message = 'Sign In to IC-Pay';
     
         // Hash the message (optional but recommended)
        // const messageHash = web3.utils.sha3(message);
@@ -158,8 +184,22 @@ export const useAuthStore = defineStore("auth", {
           method: 'personal_sign',
           params: [message, account]
         });
-    
+
+        this.isAuthenticated = true ;
+
+        //generate identity
+        const identity = Ed25519KeyIdentity.generate();
+        //create whoami actor
+        const whoamiActor = identity ? ethActor(identity) : null;
+
+        const agent = new HttpAgent();
+        const myCanister = Actor.createActor(idlFactory, { agent, canisterId: canisterId });
+
         console.log('Signature:', signature);
+        console.log('Identity:', identity);
+        console.log('Whoami Actor:', whoamiActor);
+        this.isRegistered = await myCanister.isRegistered();
+        console.log("is registered" + this.isRegistered);
       } catch (error) {
         console.error('Error requesting accounts or signing message:', error);
       }
@@ -190,29 +230,7 @@ export const useAuthStore = defineStore("auth", {
         });
       }
     },
-    async signInWithEthereum() {
-    //  const  statement = 'Sign in with Ethereum';
-    
-    //   const www = this.siweIdentity.getPrincipal();
-    
-    // const  message = createSiweMessage(
-    //     this.domain,
-    //     await this.signer.getAddress(),
-    //     'Sign in with Ethereum',
-    //     'did:icp:' + "this.siweIdentity.getPrincipal()",
-    //     ['icp:' + canisterId],
-    //   );
 
-    //   console.log('message', message);
-    
-    //   const signature = await this.signer.signMessage(message);
-    
-    //  // agent = Actor.agentOf(backend);
-    //  // agent.replaceIdentity(identity);
-     this.isAuthenticated = true;
-     console.log('Successfully signed in!');
-    
-    },
     
 
     async getBalance() {
