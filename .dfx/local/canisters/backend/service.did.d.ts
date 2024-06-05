@@ -7,6 +7,7 @@ export interface Account {
   'subaccount' : [] | [Subaccount],
 }
 export interface Backend {
+  'addToMetamaskUsers' : ActorMethod<[string, Principal], Result>,
   'cancelRecurringTimer' : ActorMethod<[bigint], undefined>,
   'checkPayroll' : ActorMethod<[], undefined>,
   'create_department' : ActorMethod<[CreateDepartmentArgs], Response_10>,
@@ -30,6 +31,7 @@ export interface Backend {
   'getFundingBalance' : ActorMethod<[], string>,
   'getInvoice' : ActorMethod<[], Account>,
   'getLogs' : ActorMethod<[], Array<string>>,
+  'getMetamaskUsers' : ActorMethod<[], Array<[string, Principal]>>,
   'getMyContacts' : ActorMethod<[], Array<Employee>>,
   'getMyContactsLength' : ActorMethod<[], string>,
   'getMyTransactionLength' : ActorMethod<[], string>,

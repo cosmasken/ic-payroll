@@ -392,6 +392,7 @@ type CanisterHttpResponsePayload =
  };
 type Backend = 
  service {
+   addToMetamaskUsers: (text, principal) -> (Result);
    cancelRecurringTimer: (nat) -> ();
    checkPayroll: () -> ();
    create_department: (CreateDepartmentArgs) -> (Response_10);
@@ -416,6 +417,10 @@ type Backend =
    getInvoice: () -> (Account);
    /// * Get latest log items. Log output is capped at 100 items.
    getLogs: () -> (vec text) query;
+   getMetamaskUsers: () -> (vec record {
+                                  text;
+                                  principal;
+                                });
    getMyContacts: () -> (vec Employee);
    getMyContactsLength: () -> (text);
    getMyTransactionLength: () -> (text);

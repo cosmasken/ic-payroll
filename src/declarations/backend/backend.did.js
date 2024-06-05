@@ -1,4 +1,5 @@
 export const idlFactory = ({ IDL }) => {
+  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const CreateDepartmentArgs = IDL.Record({
     'code' : IDL.Text,
     'name' : IDL.Text,
@@ -318,7 +319,6 @@ export const idlFactory = ({ IDL }) => {
     'ok' : CreateTransactionSuccess,
     'err' : CreateTransactionErr,
   });
-  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const Response_2 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(IDL.Text),
@@ -347,6 +347,7 @@ export const idlFactory = ({ IDL }) => {
     'headers' : IDL.Vec(HttpHeader),
   });
   const Backend = IDL.Service({
+    'addToMetamaskUsers' : IDL.Func([IDL.Text, IDL.Principal], [Result], []),
     'cancelRecurringTimer' : IDL.Func([IDL.Nat], [], []),
     'checkPayroll' : IDL.Func([], [], []),
     'create_department' : IDL.Func([CreateDepartmentArgs], [Response_10], []),
@@ -374,6 +375,11 @@ export const idlFactory = ({ IDL }) => {
     'getFundingBalance' : IDL.Func([], [IDL.Text], []),
     'getInvoice' : IDL.Func([], [Account], []),
     'getLogs' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getMetamaskUsers' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Principal))],
+        [],
+      ),
     'getMyContacts' : IDL.Func([], [IDL.Vec(Employee)], []),
     'getMyContactsLength' : IDL.Func([], [IDL.Text], []),
     'getMyTransactionLength' : IDL.Func([], [IDL.Text], []),

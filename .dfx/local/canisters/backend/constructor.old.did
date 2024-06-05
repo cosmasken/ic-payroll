@@ -396,6 +396,7 @@ type Account =
    subaccount: opt Subaccount;
  };
 service : {
+  addToMetamaskUsers: (text, principal) -> (Result);
   cancelRecurringTimer: (nat) -> ();
   checkPayroll: () -> ();
   create_department: (CreateDepartmentArgs) -> (Response_10);
@@ -419,6 +420,10 @@ service : {
   getFundingBalance: () -> (text);
   getInvoice: () -> (Account);
   getLogs: () -> (vec text) query;
+  getMetamaskUsers: () -> (vec record {
+                                 text;
+                                 principal;
+                               });
   getMyContacts: () -> (vec Employee);
   getMyContactsLength: () -> (text);
   getMyTransactionLength: () -> (text);

@@ -1,5 +1,6 @@
 type Account = record { owner : principal; subaccount : opt Subaccount };
 type Backend = service {
+  addToMetamaskUsers : (text, principal) -> (Result);
   cancelRecurringTimer : (nat) -> ();
   checkPayroll : () -> ();
   create_department : (CreateDepartmentArgs) -> (Response_10);
@@ -23,6 +24,7 @@ type Backend = service {
   getFundingBalance : () -> (text);
   getInvoice : () -> (Account);
   getLogs : () -> (vec text) query;
+  getMetamaskUsers : () -> (vec record { text; principal });
   getMyContacts : () -> (vec Employee);
   getMyContactsLength : () -> (text);
   getMyTransactionLength : () -> (text);

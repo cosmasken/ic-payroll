@@ -136,6 +136,14 @@ return Principal.fromText(wallet);
 };
 
 public shared ({ caller }) func addToMetamaskUsers(address:Text,identity:Principal): async Result.Result<Text, Text> {
+//check if address exists
+let addressExists = selfcustodyusers.get(address);
+
+Debug.print("address exists???? " # debug_show (addressExists));
+if (addressExists != null) {
+return #err("Address already exists");
+};
+
 selfcustodyusers.put(address,identity);
 
 return #ok("identity" # "address");
@@ -160,7 +168,7 @@ return #ok("identity" # "address");
 public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     let allEntries = Iter.toArray(selfcustodyusers.entries());
     var users : [(Text, Principal)] = [];
-    let buffer = Buffer.Buffer<(Text, Principal)>(100); 
+    let buffer = Buffer.Buffer<(Text, Principal)>(10000); 
     for ((key, value) in allEntries.vals()) {
         // Assuming key is of type Text and value is of type Principal
        // users := users.append((key, value));

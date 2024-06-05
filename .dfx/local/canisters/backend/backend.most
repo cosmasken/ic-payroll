@@ -115,7 +115,9 @@ actor {
   stable var invoiceCounter : Nat;
   stable var invoicesStable : [(Nat, Invoice__1)];
   stable var latestTransactionIndex : Nat;
+  stable var metamaskUsers : [(Text, Principal)];
   stable var noOfEmployees : Nat;
+  stable var noofmetamaskusers : Nat;
   stable var notificationsCounter : Nat;
   stable var notificationsStable : [(Nat, Notification__1)];
   stable var organizationsCounter : Nat;
