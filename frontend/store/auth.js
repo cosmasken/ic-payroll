@@ -148,15 +148,15 @@ export const useAuthStore = defineStore("auth", {
         const account = accounts[0];
     
         // The message you want to sign
-        const message = 'Hello, please sign this message.';
+        const message = 'Hello, Do you want to sign in to IC-PAY?';
     
         // Hash the message (optional but recommended)
-        const messageHash = web3.utils.sha3(message);
+       // const messageHash = web3.utils.sha3(message);
     
         // Sign the hashed message
         const signature = await ethereum.request({
           method: 'personal_sign',
-          params: [messageHash, account]
+          params: [message, account]
         });
     
         console.log('Signature:', signature);
