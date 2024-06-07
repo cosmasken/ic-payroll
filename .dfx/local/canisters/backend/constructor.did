@@ -401,7 +401,7 @@ type Backend =
    create_employee: (CreateEmployeeArgs) -> (Response_4);
    create_organization: (CreateOrganizationArgs) -> (Response_8);
    emailExists: (text) -> (bool) query;
-   generatePayslip: (text) -> (Response_7);
+   generatePayslip: (nat) -> (Response_7);
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);

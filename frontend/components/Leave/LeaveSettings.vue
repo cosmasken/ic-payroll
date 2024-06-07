@@ -2,19 +2,24 @@
 import { ref } from "vue";
 const filterOpen = ref(false);
 
-const organizations = [
+const leaves = [
   {
-    id: 1,
-    name: "HarambeeApps",
+    days: 90,
+    name: "Maternity Leave",
   },
   {
-    id: 2,
-    name: "BitPochi",
+    days: 2,
+    name: "Partenity Leave",
   },
   {
-    id: 3,
-    name: "Bounty Safari",
+    days: 3,
+    name: "Sick Leave",
   },
+  {
+    days: 21,
+    name: "Annual Leave",
+  },
+
 ];
 </script>
 <template>
@@ -23,10 +28,10 @@ const organizations = [
   >
     <div class="mb-6">
       <h2 class="text-lg lg:text-xl font-semibold text-gray-900">
-        Organizations
+        Leaves
       </h2>
       <p class="text-sm sm:text-base text-gray-500 font-normal">
-        Your current organizations and details
+        Leave Types
       </p>
     </div>
     <!-- title section -->
@@ -185,17 +190,24 @@ const organizations = [
                   <table class="divide-y divide-gray-300 w-full">
                     <thead class="bg-gray-50">
                       <tr>
-                        <th
-                          scope="col"
-                          class="py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-500"
-                        >
-                          #
-                        </th>
+                        
                         <th
                           scope="col"
                           class="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
                         >
                           Name
+                        </th>
+                        <th
+                          scope="col"
+                          class="py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-500"
+                        >
+                          Days
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
+                        >
+                          Status
                         </th>
                         <th
                           scope="col"
@@ -206,10 +218,18 @@ const organizations = [
                       </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-[#fff]">
-                      <tr v-for="org in organizations" :key="org.id">
+                      <tr v-for="org in leaves" :key="org.days">
+                        
+                        <td
+                          class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                        >
+                          <div class="font-normal text-gray-500">
+                            {{ org.name }}
+                          </div>
+                        </td>
                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
                           <div class="font-normal text-gray-500">
-                            {{ org.id }}
+                            {{ org.days }}
                           </div>
                         </td>
                         <td

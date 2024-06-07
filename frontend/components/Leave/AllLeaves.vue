@@ -108,10 +108,10 @@ const leaves = [
   >
     <div class="mb-6">
       <h2 class="text-lg lg:text-xl font-semibold text-gray-900">
-        Organizations
+        Leaves
       </h2>
       <p class="text-sm sm:text-base text-gray-500 font-normal">
-        Your current organizations and details
+        Your current pending and accepted leaves
       </p>
     </div>
     <!-- title section -->
@@ -363,9 +363,9 @@ const leaves = [
                           </div>
                         </td>
                         <td
-                          class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                          class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 "
                         >
-                          <div class="font-normal text-gray-500">
+                          <div class="font-normal text-gray-500 bg-green-400 text-center rounded-sm">
                             {{ leave.status }}
                           </div>
                         </td>

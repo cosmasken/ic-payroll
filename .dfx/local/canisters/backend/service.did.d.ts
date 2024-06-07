@@ -16,7 +16,7 @@ export interface Backend {
   'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_4>,
   'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_8>,
   'emailExists' : ActorMethod<[string], boolean>,
-  'generatePayslip' : ActorMethod<[string], Response_7>,
+  'generatePayslip' : ActorMethod<[bigint], Response_7>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,

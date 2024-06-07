@@ -360,7 +360,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
-    'generatePayslip' : IDL.Func([IDL.Text], [Response_7], []),
+    'generatePayslip' : IDL.Func([IDL.Nat], [Response_7], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),

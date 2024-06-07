@@ -120,19 +120,9 @@ return Principal.fromText(wallet);
    };
    
 
-  public shared ({ caller }) func generatePayslip(income : Text) : async Types.Response<Payslip> {
- //    let dt : Nat = Nat.fromText(income);
-  switch (Nat.fromText(income)) {
-    case (null) {
-      
-       let payslipInfo = await Taxcalculator.calculateTax(5000);
+  public shared ({ caller }) func generatePayslip(income : Nat) : async Types.Response<Payslip> {
+  let payslipInfo = await Taxcalculator.calculateTax(income);
        return payslipInfo;
-       /* handle error here, perhaps return an error response */ };
-    case (?dt) {
-      let payslipInfo = await Taxcalculator.calculateTax(dt);
-      return payslipInfo;
-    };
-  };
 };
 
 public shared ({ caller }) func addToMetamaskUsers(address:Text,identity:Principal): async Result.Result<Text, Text> {
@@ -311,7 +301,51 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     ignore cancelTimer(id);
   };
 
-  // };
+
+//   public shared ({caller }) func saveDummyData() : async Types.Response<HashMap.HashMap<Nat, Emp>> {
+//       let id : Nat = noOfEmployees;
+//     // increment counter
+//     noOfEmployees += 1;
+     
+//        let newEmp : Emp = {
+//       creator = caller;
+//       first_name = "Cosmas";
+//       last_name = "Ken";
+//       identity = Principal.toText(caller);
+//       email_address = "cosmas@gmail.com";
+//       phone_number = "254712234567";
+//       joining_date = "Now";
+//       gender = "Male";
+//       disability = true;
+//       organization = "HarambeeApps";
+//       department = "Engineering";
+//       designation = "Frontend developer";
+//       employee_type = "Permanent";
+//       job_group = "A1";
+//       gross_salary = Nat.toText(100000);
+//       role = "EEngineer";
+//       permissions = ?{
+//         canAdd = true;
+//         canView = false;
+//         canEdit = true;
+//         canDelete = true;
+//         canUpdate = true;
+//         canPay = true;
+//       };
+//     };
+
+//  employees.put(id, newEmp);
+
+//     {
+//       status = 200;
+//       status_text = "OK";
+//       data = ?employees;
+//       error_text = null;
+//     };
+    
+    
+//     };
+
   public shared ({ caller }) func save_payroll(args : Types.SchedulePaymentsArgs) : async Types.SchedulePaymentsResult {
     let id : Nat = payrollCounter;
     let receivers = args.receivers;

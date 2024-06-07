@@ -1,13 +1,18 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
-import { Ed25519KeyIdentity } from '@dfinity/identity';
-import { createActor, canisterId ,idlFactory} from "../../src/declarations/backend";
+import {HttpAgent} from "@dfinity/agent";
+import { Ed25519KeyIdentity } from "@dfinity/identity";
+import {
+  createActor,
+  canisterId,
+  idlFactory,
+} from "../../src/declarations/backend";
 //import { idlFactory } from "../../src/declarations/backend.did.js";
-import { toRaw ,markRaw } from "vue";
+import { toRaw, markRaw } from "vue";
 import Swal from "sweetalert2";
-import { ethers } from 'ethers';
-import { SiweMessage } from 'siwe';
-import Web3 from 'web3';
+import { ethers } from "ethers";
+import { SiweMessage } from "siwe";
+import Web3 from "web3";
 
 const defaultOptions = {
   /**
@@ -39,34 +44,33 @@ function actorFromIdentity(identity) {
       identity,
     },
   });
-};
+}
 
+// const ethActor = (canisterId, options = {}) => {
+//   const agent = options.agent || new HttpAgent({ ...options.agentOptions });
+//   if (options.agent && options.agentOptions) {
+//     console.warn(
+//       "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."
+//     );
+//   }
+//   // Fetch root key for certificate validation during development
+//   if (process.env.DFX_NETWORK !== "ic") {
+//     agent.fetchRootKey().catch((err) => {
+//       console.warn(
+//         "Unable to fetch root key. Check to ensure that your local replica is running"
+//       );
+//       console.error(err);
+//     });
+//   }
+//   // Creates an actor with using the candid interface and the HttpAgent
+//   return Actor.createActor(idlFactory, {
+//     agent,
+//     canisterId,
+//     ...options.actorOptions,
+//   });
+// };
 
- const ethActor = (canisterId, options = {}) => {  
-  const agent = options.agent || new HttpAgent({ ...options.agentOptions });
-  if (options.agent && options.agentOptions) {  
-    console.warn(  
-      "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."  
-    );  
-  }
-  // Fetch root key for certificate validation during development  
-  if (process.env.DFX_NETWORK !== "ic") {  
-    agent.fetchRootKey().catch((err) => {  
-      console.warn(  
-        "Unable to fetch root key. Check to ensure that your local replica is running"  
-      );  
-      console.error(err);  
-    });  
-  }
-  // Creates an actor with using the candid interface and the HttpAgent  
-  return Actor.createActor(idlFactory, {  
-    agent,  
-    canisterId,  
-    ...options.actorOptions,  
-  });  
-};
-
-const web3 = new Web3();
+//const web3 = new Web3();
 
 export const useAuthStore = defineStore("auth", {
   id: "auth",
@@ -95,11 +99,6 @@ export const useAuthStore = defineStore("auth", {
       isRegistered: null,
       userInfo: null,
       transactions: [],
-      authType: "internet-identity",
-      message: null,
-      domain: null,
-      signature: null,
-      siweIdentity: null,
       ethActor: null,
       signer: null,
       provider: null,
@@ -113,32 +112,13 @@ export const useAuthStore = defineStore("auth", {
       const isAuthenticated = await authClient.isAuthenticated();
       const identity = isAuthenticated ? authClient.getIdentity() : null;
       const whoamiActor = identity ? actorFromIdentity(identity) : null;
-      const siweIdentity = await Ed25519KeyIdentity.generate();
-      const ethActor = siweIdentity ? actorFromIdentity(siweIdentity) : null;
-    //  if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-    
-        this.provider = markRaw(provider);
-        this.signer = markRaw(signer);
-    //  }
-       const domain = window.location.host;
-     
-
       this.isAuthenticated = isAuthenticated;
       this.identity = identity;
       this.whoamiActor = whoamiActor;
-      this.siweIdentity = siweIdentity;
-      this.ethActor = ethActor;
-       this.domain = domain;
       this.isReady = true;
       this.isRegistered = false;
     },
 
-    async initSiwe() {
-
-
-    },
     async login() {
       const authClient = toRaw(this.authClient);
 
@@ -154,7 +134,7 @@ export const useAuthStore = defineStore("auth", {
             ? actorFromIdentity(this.identity)
             : null;
 
-            console.log('whoamiActor', this.whoamiActor);
+          console.log("whoamiActor", this.whoamiActor);
 
           this.isRegistered = await this.whoamiActor.isRegistered();
           console.log("is registered" + this.isRegistered);
@@ -162,99 +142,58 @@ export const useAuthStore = defineStore("auth", {
       });
     },
 
-   
-
     async requestAccounts() {
       try {
         // Request account access
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        console.log('Accounts:', accounts);
-        
+        const accounts = await ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        console.log("Accounts:", accounts);
         // Assuming the first account is used for signing
         const account = accounts[0];
-    
         // The message you want to sign
-        const message = 'Sign In to IC-Pay';
-    
+        const message = "Sign In to IC-Pay";
         // Hash the message (optional but recommended)
-       // const messageHash = web3.utils.sha3(message);
-    
+        // const messageHash = web3.utils.sha3(message);
         // Sign the hashed message
         const signature = await ethereum.request({
-          method: 'personal_sign',
-          params: [message, account]
+          method: "personal_sign",
+          params: [message, account],
         });
 
-        this.isAuthenticated = true ;
+        this.isAuthenticated = true;
 
         //generate identity
         const identity = Ed25519KeyIdentity.generate();
         //create whoami actor
-        const whoamiActor = identity ? ethActor(identity) : null;
+        const whoamiActor = identity ? actorFromIdentity(identity) : null;
 
-        const agent = new HttpAgent();
-        const myCanister = Actor.createActor(idlFactory, { agent, canisterId: canisterId });
+        // const whoamiActor = createActor(canisterId, {
+        //   agentOptions: {
+        //     identity,
+        //   },
+        // });
+        // const agent = new HttpAgent();
+        // const myCanister = Actor.createActor(idlFactory, {
+        //   agent,
+        //   canisterId: canisterId,
+        // });
 
-        console.log('Signature:', signature);
-        console.log('Identity:', identity);
-        console.log('Whoami Actor:', whoamiActor);
-        this.isRegistered = await myCanister.isRegistered();
+        const whoami = await whoamiActor.emailExists("cosmas@gmail.com");
+
+        console.log("Whoami Actor:", whoami);
+      //  this.isRegistered = await whoamiActor?.isRegistered();
         console.log("is registered" + this.isRegistered);
       } catch (error) {
-        console.error('Error requesting accounts or signing message:', error);
-      }
-    },
-    
-    // Call the function
-   // requestAccounts();
-    
-    async connectWallet() {
-      const ethereum = window.ethereum
-      if (!ethereum) {
-        Swal.fire({
-          title: "Good job!",
-          text: "MetaMask is not installed! Please install it to your extensions for connect your wallet.",
-          icon: "error"
-        });
-        // return toast.error(
-        //   'MetaMask is not installed! Please install it to your extensions for connect your wallet.'
-        // )
-      } else {
-        const res = await ethereum.request({ method: 'eth_requestAccounts' })
-        this.ethAddress = res[0]
-        console.log('address', this.ethAddress)
-        Swal.fire({
-          title: "Good job!",
-          text: "You clicked the button!",
-          icon: "success"
-        });
+        console.error("Error requesting accounts or signing message:", error);
       }
     },
 
-    
 
     async getBalance() {
       // const whoamiActor = toRaw(this.whoamiActor);
       const balance = await whoamiActor.getTradingBalance();
       this.tradingbalance = await balance;
-    },
-
-    async decodeAddress(){
-//pseudocode for decoding address
-//       decodeAccount(text) = case Principal.fromText(text) of
-//   | (prefix · [n, 0x7f]) where Blob.size(prefix) < n ⇒ raise Error
-//   | (prefix · [n, 0x7f]) where n > 32 orelse n = 0 ⇒ raise Error
-//   | (prefix · suffix · [n, 0x7f]) where Blob.size(suffix) = n ⇒
-//     if suffix[0] = 0
-//     then raise Error
-//     else { owner = Principal.fromBlob(prefix); subaccount = Some(expand(suffix)) }
-//   | raw_bytes ⇒ { owner = Principal.fromBlob(raw_bytes); subaccount = None }
-
-// expand(bytes) = if Blob.size(bytes) < 32
-//                 then expand(0x00 :: bytes)
-//                 else bytes
-
-
     },
 
     async refresh() {
@@ -308,7 +247,7 @@ export const useAuthStore = defineStore("auth", {
     async update_user(firstname, lastname, email, phone) {
       const response = await this.whoamiActor?.updateUser({
         first_name: firstname,
-        last_name :lastname,
+        last_name: lastname,
         email_address: email,
         phone_number: phone,
         email_notifications: true,
@@ -319,7 +258,7 @@ export const useAuthStore = defineStore("auth", {
         Swal.fire({
           title: "Good job!",
           text: "You completed your profile!",
-          icon: "success"
+          icon: "success",
         });
         console.log(" user registered");
         console.log(response);
@@ -353,7 +292,7 @@ export const useAuthStore = defineStore("auth", {
         code: code,
         name: name,
       });
-      console.log("test");
+      
       if (response.status === 200) {
         console.log(" organization registered");
         console.log(response);
@@ -365,7 +304,7 @@ export const useAuthStore = defineStore("auth", {
         name: name,
       });
 
-      console.log("test");
+      
       if (response.status === 200) {
         console.log(" organization registered");
         console.log(response);

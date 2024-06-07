@@ -13,7 +13,7 @@ let payslips = ref([]);
 
 watchEffect(async () => {
   isLoading.value = true;
-  
+
   try {
     const res = await authStore.whoamiActor?.getEmployees();
     let usersArray = [];
@@ -23,7 +23,9 @@ watchEffect(async () => {
       const data = res[i];
       usersArray.push(data);
 
-      const payslip = await authStore.whoamiActor?.getUserPayslip(data.identity);
+      const payslip = await authStore.whoamiActor?.getUserPayslip(
+        data.identity
+      );
       if (payslip && payslip.data) {
         payslipData.push(payslip.data);
         console.log("Fetched payslip data:", payslip.data);
@@ -56,7 +58,7 @@ watchEffect(async () => {
 //  //   payslipData.push(payslip.data);
 //   //  console.log("original data is ",usersArray);
 //     // console.log("payslip data data is ",payslipData);
-  
+
 //   };
 
 //   for (let i = 0; i < res.length; i++) {
@@ -93,7 +95,6 @@ const organizations = [
     net: "23423",
     Reference: "saalry",
   },
-  
 ];
 </script>
 <template>
@@ -371,9 +372,7 @@ const organizations = [
                     <tbody class="divide-y divide-gray-200 bg-[#fff]">
                       <tr v-for="org in organizations" :key="org.name">
                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
-                          <div class="font-normal text-gray-500">
-                            eee
-                          </div>
+                          <div class="font-normal text-gray-500">eee</div>
                         </td>
                         <td
                           class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"

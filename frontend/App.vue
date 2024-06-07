@@ -21,7 +21,6 @@ const logout = () => {
 
 Alpine.start();
 
-
 const selectedLink = ref(null);
 
 const dashboard = [
@@ -1034,7 +1033,7 @@ const data = {
             <div class="hidden lg:block">
               <p class="text-gray-900 text-base font-semibold">IC-Payroll</p>
             </div>
-            <div class="hidden md:block">
+            <!--div class="hidden md:block">
               <label
                 for="accountType"
                 class="block text-sm font-medium leading-6 text-gray-600"
@@ -1052,7 +1051,7 @@ const data = {
                   <option>Employee</option>
                 </select>
               </div>
-            </div>
+            </div-->
           </div>
           <!-- logo section -->
 

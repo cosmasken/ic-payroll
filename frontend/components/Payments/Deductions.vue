@@ -211,9 +211,8 @@ const organizations = [
                         </th>
                         <th
                           scope="col"
-                          class="px-3 py-3.5 pr-4 sm:pr-6  text-sm font-medium text-gray-500"
+                          class="px-3 py-3.5 pr-4 sm:pr-6 text-sm font-medium text-gray-500"
                         >
-                        
                           &nbsp;
                         </th>
                       </tr>

@@ -1,13 +1,7 @@
 <script setup>
 import { useAuthStore } from "../../store/auth";
-import { useEthStore } from "../../store/eth";
 import { ref } from "vue";
 const authStore = useAuthStore();
-
-const ethStore = useEthStore();
-
-const texted = "vwewegwegwegewe"
-//import { ConnectButton, ConnectDialog, useConnect } from "@connect2ic/vue"
 </script>
 <template>
   <div class="flex min-h-full flex-1">
@@ -59,7 +53,10 @@ const texted = "vwewegwegwegewe"
             </div>
           </div-->
           <div class="">
-            <div @click="authStore.requestAccounts()"  class="mt-6 grid grid-cols-1 gap-4">
+            <div
+              @click="authStore.requestAccounts()"
+              class="mt-6 grid grid-cols-1 gap-4"
+            >
               <a
                 href="#"
                 class="flex w-full items-center justify-left gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent"

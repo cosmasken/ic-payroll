@@ -31,7 +31,7 @@ const router = createRouter({
       path: "/auth",
       component: () => import("../AuthGuard.vue"),
     },
-  
+
     {
       path: "/home",
       component: () => import("../App.vue"),
