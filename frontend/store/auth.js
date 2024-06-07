@@ -160,28 +160,20 @@ export const useAuthStore = defineStore("auth", {
           method: "personal_sign",
           params: [message, account],
         });
-
-        this.isAuthenticated = true;
-
         //generate identity
         const identity = Ed25519KeyIdentity.generate();
         //create whoami actor
         const whoamiActor = identity ? actorFromIdentity(identity) : null;
 
-        // const whoamiActor = createActor(canisterId, {
-        //   agentOptions: {
-        //     identity,
-        //   },
-        // });
-        // const agent = new HttpAgent();
-        // const myCanister = Actor.createActor(idlFactory, {
-        //   agent,
-        //   canisterId: canisterId,
-        // });
+        this.isAuthenticated = true;
+        this.identity = identity;
+        this.whoamiActor = whoamiActor;
+        this.isReady = true;
+        this.isRegistered = false;
 
-        const whoami = await whoamiActor.emailExists("cosmas@gmail.com");
+        const fundingaddress = await this.whoamiActor?.getFundingAddress();
 
-        console.log("Whoami Actor:", whoami);
+        console.log("Funding Address:", fundingaddress);
       //  this.isRegistered = await whoamiActor?.isRegistered();
         console.log("is registered" + this.isRegistered);
       } catch (error) {
