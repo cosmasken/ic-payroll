@@ -171,7 +171,12 @@ export const useAuthStore = defineStore("auth", {
         this.isReady = true;
         this.isRegistered = false;
 
-        const fundingaddress = await this.whoamiActor?.getFundingAddress();
+        const principal = identity.getPrincipal();
+
+        const fundingaddress = await this.whoamiActor?.addToMetamaskUsers({
+          address: account,
+          identity: principal,
+        });
 
         console.log("Funding Address:", fundingaddress);
       //  this.isRegistered = await whoamiActor?.isRegistered();

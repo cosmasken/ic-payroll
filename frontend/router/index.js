@@ -13,12 +13,15 @@ import LeaveSettings from "../components/Leave/LeaveSettings.vue";
 import AssignAssets from "../components/Assets/AssignAssets.vue";
 import AssignedAssets from "../components/Assets/AssignedAssets.vue";
 import AllSalary from "../components/Payments/AllSalary.vue";
+import OneTimePayments from "../components/Payments/OneTimePayments.vue";
 import Deductions from "../components/Payments/Deductions.vue";
 import Payslips from "../components/Payments/Payslips.vue";
 import Dashboard from "../components/Dashboard.vue";
 import OwnerProfile from "../components/Owner/OwnerProfile.vue";
+
 import SignIn from "../components/auth/SignIn.vue";
 import AuthGuard from "../AuthGuard.vue";
+import AccountSelector from "../AccountSelector.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +33,11 @@ const router = createRouter({
     {
       path: "/auth",
       component: () => import("../AuthGuard.vue"),
+    },
+
+    {
+      path: "/account-selector",
+      component: () => import("../AccountSelector.vue"),  
     },
 
     {
@@ -97,6 +105,10 @@ const router = createRouter({
         {
           path: "/home/all-salary",
           component: AllSalary,
+        },
+        {
+          path: "/home/one-time-payments",
+          component: OneTimePayments,
         },
         {
           path: "/home/deductions",

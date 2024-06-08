@@ -44,6 +44,7 @@ const payroll = [
   { to: "/home/all-salary", text: "All Salaries" },
   { to: "/home/deductions", text: "Deductions" },
   { to: "/home/payslips", text: "Payslips" },
+  { to: "/home/one-time-payments", text: "One Time Payments" },
   // Add more links here
 ];
 
@@ -390,6 +391,15 @@ const data = {
                     leave.duration.300ms
                     class="pl-[34px] pr-7 space-y-1"
                   >
+                  <router-link
+                      to="/home/one-time-payments"
+                      class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
+                    >
+                      <!-- Heroicon name: outline/home -->
+                      <span class="flex items-center">
+                        <span>One Time Payments</span>
+                      </span>
+                    </router-link>
                     <router-link
                       to="/home/all-salaries"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"

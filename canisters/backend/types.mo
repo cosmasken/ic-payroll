@@ -115,6 +115,20 @@ module {
     creator : Principal;
   };
 
+  // #region leave type
+  public type Leave = {
+    id : Nat;
+    creator : Principal;
+    owner : Principal;
+    start_date : Text;
+    end_date : Text;
+    leave_type : Text;
+    reason : Text;
+    status : Text;
+    created_at : Int;
+    modified_at : Int;
+  };
+
   //region payslip information
   public type Payslip = {
     gross_salary : Nat;

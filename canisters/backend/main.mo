@@ -8,6 +8,7 @@ import Blob "mo:base/Blob";
 import Char "mo:base/Char";
 import CkBtcLedger "canister:ckbtc_ledger";
 //import CkBtcIndex "canister:icrc1_index";
+import ImageTank "canister:image_tank";
 import Types "./types";
 import { toAccount; toSubaccount; defaultSubaccount } "./utils";
 import Error "mo:base/Error";
@@ -42,6 +43,7 @@ shared (actorContext) actor class Backend(_startBlock : Nat) = this {
   // #region Types
   type Account = Types.Account;
   type Payslip = Types.Payslip;
+  type Leave = Types.Leave;
   type PayslipData = Types.PayslipData;
   type AccountIdentifier = Types.AccountIdentifier;
   type Transaction = Types.Transaction;

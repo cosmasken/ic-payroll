@@ -3,7 +3,7 @@
     "local": "be2us-64aaa-aaaaa-qaabq-cai"
   },
   "assets": {
-    "local": "bw4dl-smaaa-aaaaa-qaacq-cai"
+    "local": "b77ix-eeaaa-aaaaa-qaada-cai"
   },
   "backend": {
     "local": "bd3sg-teaaa-aaaaa-qaaba-cai"
@@ -14,7 +14,10 @@
   "icrc1_index": {
     "local": "br5f7-7uaaa-aaaaa-qaaca-cai"
   },
+  "image_tank": {
+    "local": "bw4dl-smaaa-aaaaa-qaacq-cai"
+  },
   "internet_identity": {
-    "local": "b77ix-eeaaa-aaaaa-qaada-cai"
+    "local": "by6od-j4aaa-aaaaa-qaadq-cai"
   }
 }
