@@ -25,18 +25,14 @@ import Cycles "mo:base/ExperimentalCycles";
 import Buffer "mo:base/Buffer";
 import Nat8 "mo:base/Nat8";
 import Iter "mo:base/Iter";
-import SHA224 "./SHA224";
-import CRC32 "./CRC32";
 import Hash "mo:base/Hash";
 import Random "mo:base/Random";
-import Hex "./Hex";
 import Timer "mo:base/Timer";
 import { abs } = "mo:base/Int";
 import { now } = "mo:base/Time";
 import { setTimer; recurringTimer; cancelTimer } = "mo:base/Timer";
 import Rand "mo:random/Rand";
 import Taxcalculator "taxcalculator";
-import MyAccount "./Account";
 
 shared (actorContext) actor class Backend() = this {
 
@@ -446,8 +442,6 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
       subaccount = ?toSubaccount(caller);
     };
     let address = addressConverter_.toText(acc);
-
-    let readable = MyAccount.toText(acc);
     return address;
   };
 
