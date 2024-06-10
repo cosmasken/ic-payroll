@@ -2,11 +2,26 @@
 import { useAuthStore } from "../../store/auth";
 const authStore = useAuthStore();
 
+const init = () => {
+  authStore.init();
+};
+
+const login = () => {
+  init();
+  authStore.login();
+};
+
+
+const requestAccounts = () => {
+  init();
+  authStore.requestAccounts();
+};
+
 </script>
 <template>
-  <div class="flex min-h-full flex-1">
+  <div class="flex min-h-full">
     <div
-      class="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
+      class="flex  flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
     >
       <div class="mx-auto flex flex-col w-full max-w-sm lg:w-96 items-center">
         <img class="h-10 w-auto" src="../../assets/dfinity.svg" alt="Dfinity" />
@@ -40,7 +55,7 @@ const authStore = useAuthStore();
           </div>
 
           <div class="mt-10">
-            <div @click="authStore.login()"  class="mt-6 grid grid-cols-1 gap-4">
+            <div @click="login()"  class="mt-6 grid grid-cols-1 gap-4">
               <a
                 href="#"
                 class="flex w-full items-center justify-between gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent"
@@ -59,7 +74,7 @@ const authStore = useAuthStore();
           
           <div class="">
             <div
-               @click="authStore.requestAccounts()"
+               @click="requestAccounts()"
               class="mt-6 grid grid-cols-1 gap-4"
             >
               <a

@@ -1,46 +1,63 @@
-type StreamingStrategy = variant {
-                           Callback:
-                            record {
-                              callback: StreamingCallback;
-                              token: StreamingCallbackToken;
-                            };};
-type StreamingCallbackToken = 
- record {
-   content_encoding: text;
-   index: nat;
-   key: text;
- };
-type StreamingCallbackResponse = 
- record {
-   body: blob;
-   token: opt StreamingCallbackToken;
- };
-type StreamingCallback = func (StreamingCallbackToken) ->
-                          (StreamingCallbackResponse) query;
-type Response = 
- record {
-   body: blob;
-   headers: vec HeaderField;
-   status_code: nat16;
-   streaming_strategy: opt StreamingStrategy;
- };
-type Request = 
- record {
-   body: blob;
-   headers: vec HeaderField;
-   method: text;
-   url: text;
- };
-type ImgId = text;
-type HeaderField = 
- record {
-   text;
-   text;
- };
+type Account = record { owner : principal; subaccount : opt vec nat8 };
+type GetAccountTransactionsArgs = record {
+  max_results : nat;
+  start : opt TxId;
+  account : Account;
+};
+type GetTransactions = record {
+  transactions : vec TransactionWithId;
+  oldest_tx_id : opt TxId;
+};
+type GetTransactionsErr = record { message : text };
+type GetTransactionsResult = variant {
+  Ok : GetTransactions;
+  Err : GetTransactionsErr;
+};
+type InitArgs = record { ledger_id : principal };
+type ListSubaccountsArgs = record { owner : principal; start : opt SubAccount };
+type SubAccount = vec nat8;
+type Transaction = record {
+  burn : opt record {
+    from : Account;
+    memo : opt vec nat8;
+    created_at_time : opt nat64;
+    amount : nat;
+    spender : opt Account;
+  };
+  kind : text;
+  mint : opt record {
+    to : Account;
+    memo : opt vec nat8;
+    created_at_time : opt nat64;
+    amount : nat;
+  };
+  approve : opt record {
+    fee : opt nat;
+    from : Account;
+    memo : opt vec nat8;
+    created_at_time : opt nat64;
+    amount : nat;
+    expected_allowance : opt nat;
+    expires_at : opt nat64;
+    spender : opt Account;
+  };
+  timestamp : nat64;
+  transfer : opt record {
+    to : Account;
+    fee : opt nat;
+    from : Account;
+    memo : opt vec nat8;
+    created_at_time : opt nat64;
+    amount : nat;
+    spender : opt Account;
+  };
+};
+type TransactionWithId = record { id : TxId; transaction : Transaction };
+type TxId = nat;
 service : {
-  getPic: (ImgId) -> (blob) query;
-  getThumbnail: (ImgId) -> (blob) query;
-  http_request: (Request) -> (Response) query;
-  uploadImg: (ImgId, blob) -> () oneway;
-  uploadThumbnail: (ImgId, blob) -> () oneway;
+  get_account_transactions : (GetAccountTransactionsArgs) -> (
+      GetTransactionsResult,
+    );
+  ledger_id : () -> (principal) query;
+  list_subaccounts : (ListSubaccountsArgs) -> (vec SubAccount) query;
 }
