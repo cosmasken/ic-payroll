@@ -406,6 +406,7 @@ service : {
   create_organization: (CreateOrganizationArgs) -> (Response_8);
   emailExists: (text) -> (bool) query;
   generatePayslip: (nat) -> (Response_7);
+  generateUUID: () -> (text);
   getAddress: () -> (text);
   getCanisterAddress: () -> (text);
   getCanisterBalance: () -> (text);
@@ -452,7 +453,7 @@ service : {
   save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
   save_payroll: (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
   save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
-  sendToOwner: (nat, text) -> (Result);
+  sendToOwner: (nat, text) -> (Response_1);
   send_notifications: (text, text, text, text, text) -> ();
   setCourierApiKey: (text) -> (Response_2);
   setRecurringTimer: (nat) -> (nat);

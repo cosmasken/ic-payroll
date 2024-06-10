@@ -18,10 +18,8 @@ import Deductions from "../components/Payments/Deductions.vue";
 import Payslips from "../components/Payments/Payslips.vue";
 import Dashboard from "../components/Dashboard.vue";
 import OwnerProfile from "../components/Owner/OwnerProfile.vue";
-
-import SignIn from "../components/auth/SignIn.vue";
-import AuthGuard from "../AuthGuard.vue";
-import AccountSelector from "../AccountSelector.vue";
+import Transfer from "../components/Payments/Transfer.vue";
+import Transactions from "../components/Payments/Transactions.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -122,6 +120,14 @@ const router = createRouter({
           path: "/home/owner-profile",
           component: OwnerProfile,
         },
+        {
+          path: "/home/transfer",
+          component: Transfer,
+        },
+        {
+          path: "/home/transactions",
+          component: Transactions,
+        }
       ],
     },
   ],

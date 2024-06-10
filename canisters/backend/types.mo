@@ -278,7 +278,6 @@ module {
     job_group : Text;
     gross_salary : Text;
     role : Text;
-    permissions : ?Permissions;
   };
 
   //user permissions
@@ -413,7 +412,6 @@ module {
     job_group : Text;
     gross_salary : Text;
     role : Text;
-    // permissions : ?Permissions;
   };
 
   public type CreateEmpResult = Result.Result<CreateEmpSuccess, CreateEmpErr>;

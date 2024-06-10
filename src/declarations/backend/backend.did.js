@@ -47,18 +47,9 @@ export const idlFactory = ({ IDL }) => {
     'phone_number' : IDL.Text,
     'department' : IDL.Text,
   });
-  const Permissions = IDL.Record({
-    'canEdit' : IDL.Bool,
-    'canView' : IDL.Bool,
-    'canAdd' : IDL.Bool,
-    'canPay' : IDL.Bool,
-    'canDelete' : IDL.Bool,
-    'canUpdate' : IDL.Bool,
-  });
   const Emp = IDL.Record({
     'disability' : IDL.Bool,
     'email_address' : IDL.Text,
-    'permissions' : IDL.Opt(Permissions),
     'creator' : IDL.Principal,
     'joining_date' : IDL.Text,
     'gross_salary' : IDL.Text,
@@ -319,15 +310,15 @@ export const idlFactory = ({ IDL }) => {
     'ok' : CreateTransactionSuccess,
     'err' : CreateTransactionErr,
   });
-  const Response_2 = IDL.Record({
-    'status' : IDL.Nat16,
-    'data' : IDL.Opt(IDL.Text),
-    'status_text' : IDL.Text,
-    'error_text' : IDL.Opt(IDL.Text),
-  });
   const Response_1 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Transaction),
+    'status_text' : IDL.Text,
+    'error_text' : IDL.Opt(IDL.Text),
+  });
+  const Response_2 = IDL.Record({
+    'status' : IDL.Nat16,
+    'data' : IDL.Opt(IDL.Text),
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
   });
@@ -361,6 +352,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'generatePayslip' : IDL.Func([IDL.Nat], [Response_7], []),
+    'generateUUID' : IDL.Func([], [IDL.Text], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterBalance' : IDL.Func([], [IDL.Text], []),
@@ -425,7 +417,7 @@ export const idlFactory = ({ IDL }) => {
         [CreateTransactionResult],
         [],
       ),
-    'sendToOwner' : IDL.Func([IDL.Nat, IDL.Text], [Result], []),
+    'sendToOwner' : IDL.Func([IDL.Nat, IDL.Text], [Response_1], []),
     'send_notifications' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
@@ -450,4 +442,4 @@ export const idlFactory = ({ IDL }) => {
   });
   return Backend;
 };
-export const init = ({ IDL }) => { return [IDL.Nat]; };
+export const init = ({ IDL }) => { return []; };

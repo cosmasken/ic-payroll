@@ -17,6 +17,7 @@ export interface Backend {
   'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_8>,
   'emailExists' : ActorMethod<[string], boolean>,
   'generatePayslip' : ActorMethod<[bigint], Response_7>,
+  'generateUUID' : ActorMethod<[], string>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
@@ -63,7 +64,7 @@ export interface Backend {
     [CreateTransactionArgs],
     CreateTransactionResult
   >,
-  'sendToOwner' : ActorMethod<[bigint, string], Result>,
+  'sendToOwner' : ActorMethod<[bigint, string], Response_1>,
   'send_notifications' : ActorMethod<
     [string, string, string, string, string],
     undefined
@@ -156,7 +157,6 @@ export interface Designation {
 export interface Emp {
   'disability' : boolean,
   'email_address' : string,
-  'permissions' : [] | [Permissions],
   'creator' : Principal,
   'joining_date' : string,
   'gross_salary' : string,
@@ -263,14 +263,6 @@ export interface PayslipData {
   'department' : string,
   'other_deductions' : bigint,
   'housing' : bigint,
-}
-export interface Permissions {
-  'canEdit' : boolean,
-  'canView' : boolean,
-  'canAdd' : boolean,
-  'canPay' : boolean,
-  'canDelete' : boolean,
-  'canUpdate' : boolean,
 }
 export interface Response {
   'status' : number,

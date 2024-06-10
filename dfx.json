@@ -5,18 +5,9 @@
       "main": "canisters/backend/main.mo",
       "type": "motoko",
       "dependencies": [
-        "ckbtc_ledger",
-        "image_tank"
+        "ckbtc_ledger"
         
       ],
-      "declarations": {
-        "node_compatibility": true
-      }
-    },
-
-    "image_tank":{ 
-      "main": "canisters/image_tank/main.mo",
-      "type": "motoko",
       "declarations": {
         "node_compatibility": true
       }

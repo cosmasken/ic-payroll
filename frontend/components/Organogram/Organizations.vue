@@ -20,16 +20,16 @@ watchEffect(async () => {
   try {
     isLoading.value = true;
     const res = await authStore.whoamiActor?.getOrganizations();
-    console.log("res array:", res);
     let organizations = [];
     // Loop through the result and create an array of objects
     for (let i = 0; i < res.length; i++) {
       const data = res[i];
-      console.log("data is", data);
       organizations.push(data);
     }
     // Assign the array of objects to the users ref
     organizationsArray.value = organizations;
+
+    authStore.updateOrganizations(organizations)
 
     console.log("organizations", organizations);
   } catch (error) {
@@ -147,20 +147,7 @@ const addData = async () => {
               <div
                 class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
               >
-                <svg
-                  class="h-5 w-5"
-                  x-description="Heroicon name: mini/magnifying-glass"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
+              <img src="../../assets/search.svg" alt="search"/>
               </div>
               <input
                 id="search"
@@ -179,21 +166,7 @@ const addData = async () => {
               type="button"
               class="inline-flex items-center justify-center sm:w-48 min-w-[130px] rounded-md border border-gray-300 bg-[#fff] px-3 py-2 text-sm space-x-2 font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-              >
-                <path
-                  d="M5 10H15M2.5 5H17.5M7.5 15H12.5"
-                  stroke="#344054"
-                  stroke-width="1.66667"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></path>
-              </svg>
+            <img src="../../assets/filter.svg" alt="filter"/>
               <span>Apply Filter</span>
             </button>
 

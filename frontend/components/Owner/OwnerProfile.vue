@@ -12,6 +12,8 @@ const email_address = ref("");
 const phone_number = ref("");
 let fundingaddress = ref("");
 let tradingaddress = ref("");
+const fundingbalance = ref("");
+const tradingbalance = ref("");
 let isLoading = ref(false);
 let emailExists = ref(false);
 
@@ -23,6 +25,11 @@ watchEffect(async () => {
 watchEffect(async () => {
   fundingaddress.value = await authStore.whoamiActor.getFundingAddress();
   tradingaddress.value = await authStore.whoamiActor.getTradingAddress();
+});
+
+watchEffect(async () => {
+  fundingbalance.value = await authStore.whoamiActor.getFundingBalance();
+  tradingbalance.value = await authStore.whoamiActor.getTradingBalance();
 });
 
 watchEffect(async () => {
@@ -329,6 +336,43 @@ const addData = async () => {
                 class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
               >
                 {{ tradingaddress }}
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4">
+            <label
+              for="trading-balance"
+              class="block text-sm font-medium leading-6 text-gray-600"
+              >Trading Balance</label
+            >
+            <div class="mt-1">
+              <div
+                type="text"
+                name="trading-balance"
+                id="trading-balance"
+                autocomplete="trading-balance"
+                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
+              >
+                {{ tradingbalance }}
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-4">
+            <label
+              for="funding-balance"
+              class="block text-sm font-medium leading-6 text-gray-600"
+              >Funding Balance</label
+            >
+            <div class="mt-1">
+              <div
+                type="text"
+                name="funding-balance"
+                id="funding-balance"
+                autocomplete="funding-balance"
+                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
+              >
+                {{ fundingbalance }}
               </div>
             </div>
           </div>

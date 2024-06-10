@@ -29,14 +29,14 @@ const dashboard = [
 ];
 
 const organogram = [
-  { to: "/home/designations", text: "Desisgnation" },
+  { to: "/home/designations", text: "Designation" },
   { to: "/home/organizations", text: "Organizations" },
   { to: "/home/departments", text: "Departments" },
   // Add more links here
 ];
 const employees = [
   { to: "/home/all-employees", text: "All Employees" },
-  { to: "/home/consultants", text: "Consultants" },
+ // { to: "/home/consultants", text: "Consultants" },
   { to: "/home/add-employee", text: "Add Employee" },
   // Add more links here
 ];
@@ -45,6 +45,7 @@ const payroll = [
   { to: "/home/deductions", text: "Deductions" },
   { to: "/home/payslips", text: "Payslips" },
   { to: "/home/one-time-payments", text: "One Time Payments" },
+  { to: "/home/transactions", text: "Transactions" },
   // Add more links here
 ];
 
@@ -60,23 +61,7 @@ const assets = [
   // Add more links here
 ];
 
-const accountType = [
-  {
-    id: 1,
-    name: "Individual",
-  },
-  {
-    id: 2,
-    name: "Company",
-  },
-  {
-    id: 3,
-    name: "Employee",
-  },
-];
-const data = {
-  accountType: "",
-};
+
 </script>
 
 <template class="font-lexend">
@@ -163,7 +148,7 @@ const data = {
               </div>
               <nav class="mt-6 space-y-2">
                 <router-link
-                  href="javascript:void(0) "
+                  to="javascript:void(0) "
                   class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                 >
                   <!-- Heroicon name: outline/home -->
@@ -313,7 +298,7 @@ const data = {
                     class="pl-[34px] pr-7 space-y-1"
                   >
                     <router-link
-                      to="/home/all-empoyees"
+                      to="/home/all-employees"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
                       <!-- Heroicon name: outline/home -->
@@ -322,15 +307,15 @@ const data = {
                       </span>
                     </router-link>
 
-                    <router-link
+                    <!--router-link
                       to="/home/consultants"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                   
                       <span class="flex items-center">
                         <span>Consultants</span>
                       </span>
-                    </router-link>
+                    </router-link-->
 
                     <router-link
                       to="/home/add-employee"
@@ -401,7 +386,16 @@ const data = {
                       </span>
                     </router-link>
                     <router-link
-                      to="/home/all-salaries"
+                      to="/home/transactions"
+                      class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
+                    >
+                      <!-- Heroicon name: outline/home -->
+                      <span class="flex items-center">
+                        <span>Transactions</span>
+                      </span>
+                    </router-link>
+                    <router-link
+                      to="/home/all-salary"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
                       <!-- Heroicon name: outline/home -->

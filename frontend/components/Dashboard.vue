@@ -153,11 +153,12 @@ ChartJS.register(
         <div class="rounded-md bg-[#fff] flex flex-col px-5 space-y-5">
           <h1 class="text-[#000] text-lg p-4">Absent Employees</h1>
 
-          <AbsentCard />
+          <AbsentCard  name="Patya Pando" reason="Trip to Italy" when="Until Next Month"/>
+          <AbsentCard  name="Patya Pando" reason="Trip to Italy" when="Until Next Month"/>
+          <AbsentCard  name="Patya Pando" reason="Trip to Italy" when="Until Next Month"/>
+          
 
-          <AbsentCard />
-
-          <AbsentCard />
+          
         </div>
 
         <div class="rounded-md bg-[#fff] flex flex-col px-5 space-y-5">

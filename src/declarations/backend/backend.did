@@ -145,15 +145,6 @@ type Response =
    status: nat16;
    status_text: text;
  };
-type Permissions = 
- record {
-   canAdd: bool;
-   canDelete: bool;
-   canEdit: bool;
-   canPay: bool;
-   canUpdate: bool;
-   canView: bool;
- };
 type PayslipData = 
  record {
    department: text;
@@ -281,7 +272,6 @@ type Emp =
    joining_date: text;
    last_name: text;
    organization: text;
-   permissions: opt Permissions;
    phone_number: text;
    role: text;
  };
@@ -402,6 +392,7 @@ type Backend =
    create_organization: (CreateOrganizationArgs) -> (Response_8);
    emailExists: (text) -> (bool) query;
    generatePayslip: (nat) -> (Response_7);
+   generateUUID: () -> (text);
    getAddress: () -> (text);
    getCanisterAddress: () -> (text);
    getCanisterBalance: () -> (text);
@@ -452,7 +443,7 @@ type Backend =
    save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
    save_payroll: (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
    save_transaction: (CreateTransactionArgs) -> (CreateTransactionResult);
-   sendToOwner: (nat, text) -> (Result);
+   sendToOwner: (nat, text) -> (Response_1);
    send_notifications: (text, text, text, text, text) -> ();
    /// * Set the courier API key. Only the owner can set the courier API key.
    setCourierApiKey: (text) -> (Response_2);
@@ -470,4 +461,4 @@ type Account =
    owner: principal;
    subaccount: opt Subaccount;
  };
-service : (nat) -> Backend
+service : () -> Backend

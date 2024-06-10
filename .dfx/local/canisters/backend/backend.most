@@ -22,7 +22,6 @@ type Emp =
     joining_date : Text;
     last_name : Text;
     organization : Text;
-    permissions : ?Permissions;
     phone_number : Text;
     role : Text
   };
@@ -74,15 +73,6 @@ type PayrollType =
     successful : Bool
   };
 type PayrollType__1 = PayrollType;
-type Permissions =
-  {
-    canAdd : Bool;
-    canDelete : Bool;
-    canEdit : Bool;
-    canPay : Bool;
-    canUpdate : Bool;
-    canView : Bool
-  };
 type Transaction =
   {
     amount : Nat;

@@ -13,26 +13,22 @@ let noOfOrganizations = ref(0);
 const isLoading = ref(false);
 const filterOpen = ref(false);
 
+const disability = ref(false)
+
 const dropdownItems = [
   { text: "Account settings", url: "#" },
   { text: "Support", url: "#" },
   { text: "License", url: "#" },
 ];
 
-const organizations = [
-  {
-    id: 1,
-    name: "HarambeeApps",
-  },
-  {
-    id: 2,
-    name: "BitPochi",
-  },
-  {
-    id: 3,
-    name: "Bounty Safari",
-  },
-];
+
+permissionList: [
+        { id: 'view', label: 'View', model: 'canView' },
+        { id: 'edit', label: 'Edit', model: 'canEdit' },
+        { id: 'pay', label: 'Pay', model: 'canPay' },
+        { id: 'create', label: 'Create', model: 'canUpdate' },
+        { id: 'delete', label: 'Delete', model: 'canDelete' },
+      ];
 
 const gender = [
   {
@@ -45,43 +41,6 @@ const gender = [
   },
 ];
 
-const departments = [
-  {
-    id: 1,
-    name: "Hr",
-  },
-  {
-    id: 2,
-    name: "Software Deveopment",
-  },
-  {
-    id: 3,
-    name: "Technical Support",
-  },
-];
-
-const designation = [
-  {
-    id: 1,
-    name: "Hr Manager",
-  },
-  {
-    id: 2,
-    name: "Software Developer",
-  },
-  {
-    id: 3,
-    name: "Full Stack Developer",
-  },
-  {
-    id: 4,
-    name: "Front End Developer",
-  },
-  {
-    id: 5,
-    name: "Back End Developer",
-  },
-];
 
 const employeeType = [
   {
@@ -250,7 +209,6 @@ const data = {
   phone_number: "",
   joining_date: "",
   gender: "",
-  disability: "",
   organization: "",
   department: "",
   designation: "",
@@ -259,9 +217,10 @@ const data = {
   identity: "",
   gross_salary: "",
   role: "",
+
 };
 
-const permissions = {
+const userpermissions = {
   canAdd: Boolean,
   canView: Boolean,
   canEdit: Boolean,
@@ -281,7 +240,7 @@ const addUser = async () => {
       phone_number: data.phone_number,
       joining_date: data.joining_date,
       gender: data.gender,
-      disability: data.disability,
+      disability: disability.value,
       organization: data.organization,
       department: data.department,
       designation: data.designation,
@@ -290,15 +249,18 @@ const addUser = async () => {
       identity: data.identity,
       gross_salary: data.gross_salary,
       role: data.role,
-      permissions: {
-        canAdd: true,
-        canView: false,
-        canEdit: true,
-        canDelete: true,
-        canUpdate: true,
-        canPay: true,
-      },
+      // permissions: {
+      //   canAdd: true,
+      //   canView: false,
+      //   canEdit: true,
+      //   canDelete: true,
+      //   canUpdate: true,
+      //   canPay: true,
+      // },
+     // permissions : userpermissions,
     });
+
+    console.log(disability.value);
 
     if (res.status === 200) {
       console.log(" employee registered");
@@ -454,7 +416,7 @@ const addUser = async () => {
               <div class="mt-1">
                 <input
                   type="checkbox"
-                  v-model="data.disability"
+                  v-model="disability.value"
                   class="checkbox rounded-md"
                 />
               </div>
@@ -714,13 +676,40 @@ const addUser = async () => {
               >Permissions</label
             >
             <div class="mt-1">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                autocomplete="given-name"
-                class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
-              />
+              <!--form @submit.prevent="handleSubmit" class="mt-4">
+        <div class="flex items-center mb-4" v-for="permission in permissionList" :key="permission.id">
+          <input 
+            :id="permission.id" 
+            type="checkbox" 
+            v-model="permissions[permission.model]" 
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+          >
+          <label :for="permission.id" class="ml-2 text-sm font-medium text-gray-900">{{ permission.label }}</label>
+        </div>
+        </form-->
+         <form class="mt-4">
+                <div class="flex items-center mb-4">
+                    <input v-model="userpermissions.canView" id="view" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="view" class="ml-2 text-sm font-medium text-gray-900">View</label>
+                </div>
+                <div class="flex items-center mb-4">
+                    <input v-model="userpermissions.canEdit" id="edit" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="edit" class="ml-2 text-sm font-medium text-gray-900">Edit</label>
+                </div>
+                <div class="flex items-center mb-4">
+                    <input v-model="userpermissions.canPay" id="edit" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="edit" class="ml-2 text-sm font-medium text-gray-900">Pay</label>
+                </div>
+                <div class="flex items-center mb-4">
+                    <input v-model="userpermissions.canUpdate" id="create" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="create" class="ml-2 text-sm font-medium text-gray-900">Create</label>
+                </div>
+                <div class="flex items-center mb-4">
+                    <input v-model="userpermissions.canDelete" id="delete" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="delete" class="ml-2 text-sm font-medium text-gray-900">Delete</label>
+                </div>
+                    </form>
+             
             </div>
           </div>
         </div>

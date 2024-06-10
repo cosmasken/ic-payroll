@@ -10,6 +10,7 @@ type Backend = service {
   create_organization : (CreateOrganizationArgs) -> (Response_8);
   emailExists : (text) -> (bool) query;
   generatePayslip : (nat) -> (Response_7);
+  generateUUID : () -> (text);
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
@@ -50,7 +51,7 @@ type Backend = service {
   save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
   save_payroll : (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
   save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
-  sendToOwner : (nat, text) -> (Result);
+  sendToOwner : (nat, text) -> (Response_1);
   send_notifications : (text, text, text, text, text) -> ();
   setCourierApiKey : (text) -> (Response_2);
   setRecurringTimer : (nat) -> (nat);
@@ -134,7 +135,6 @@ type Designation = record { creator : principal; code : text; name : text };
 type Emp = record {
   disability : bool;
   email_address : text;
-  permissions : opt Permissions;
   creator : principal;
   joining_date : text;
   gross_salary : text;
@@ -236,14 +236,6 @@ type PayslipData = record {
   department : text;
   other_deductions : nat;
   housing : nat;
-};
-type Permissions = record {
-  canEdit : bool;
-  canView : bool;
-  canAdd : bool;
-  canPay : bool;
-  canDelete : bool;
-  canUpdate : bool;
 };
 type Response = record {
   status : nat16;

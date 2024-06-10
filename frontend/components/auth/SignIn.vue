@@ -8,6 +8,7 @@ const init = () => {
 
 const login = () => {
   init();
+  console.log("login");
   authStore.login();
 };
 
