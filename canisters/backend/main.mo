@@ -49,7 +49,6 @@ shared (actorContext) actor class Backend() = this {
   type User = Types.User;
   type Notification = Types.Notification;
   type PayrollType = Types.PayrollType;
-  type Employee = Types.Employee;
   type Invoice = Types.Invoice;
   type Emp = Types.Emp;
   public type TransactionId = Nat32;
@@ -70,7 +69,6 @@ shared (actorContext) actor class Backend() = this {
   stable var departmentsStable : [(Nat, Department)] = [];
   stable var organizationsStable : [(Nat, Organization)] = [];
   stable var designationsStable : [(Nat, Designation)] = [];
-  stable var contactsStable : [(Nat, Employee)] = [];
   stable var stableEmployees : [(Nat, Emp)] = [];
   stable var notificationsStable : [(Nat, Notification)] = [];
   stable var invoicesStable : [(Nat, Invoice)] = [];
@@ -87,7 +85,6 @@ shared (actorContext) actor class Backend() = this {
   stable var payrollCounter : Nat = 0;
   stable var noofmetamaskusers : Nat = 0;
   var transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
-  var contacts : HashMap.HashMap<Nat, Employee> = HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
   var employees : HashMap.HashMap<Nat, Emp> = HashMap.fromIter(Iter.fromArray(stableEmployees), stableEmployees.size(), Nat.equal, Hash.hash);
   var notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
   var payrolls : HashMap.HashMap<Nat, [PayrollType]> = HashMap.fromIter(Iter.fromArray(stablePayroll), stablePayroll.size(), Nat.equal, Hash.hash);
@@ -152,60 +149,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   public shared ({ caller }) func getUserPayslip(identity : Text) : async Types.Response<PayslipData> {
     let employee = await getEmpByPrincipal(Principal.fromText(identity));
      Debug.print("employee is " # debug_show (employee));
-//let employeedata = await employee.data;
-    // if (employee.status == 200) {
 
-    //   let payslip = await generatePayslip(employeedata.gross_salary);
-
-    //   let payslipData : PayslipData = {
-    //     name = employeedata.first_name;
-    //     organization = employeedata.organization;
-    //     department = employeedata.department;
-    //     designation = employeedata.designation;
-    //     gross_salary = payslip.gross_salary;
-    //     taxable_income = payslip.taxable_income;
-    //     net_salary = payslip.net_salary;
-    //     housing = payslip.housing;
-    //     nhif_deductions = payslip.nhif_deductions;
-    //     nssf_deductions = payslip.nssf_deductions;
-    //     personal_relief = payslip.personal_relief;
-    //     paye = payslip.paye;
-    //     other_deductions = payslip.other_deductions;
-    //     total_tax = payslip.total_tax;
-    //   };
-
-    //   {
-    //     status = 200;
-    //     status_text = "OK";
-    //     data = ?payslipData;
-    //     error_text = null;
-    //   };
-
-    // } else {
-      // let payslipData : PayslipData = {
-      //   name = "N/A";
-      //   organization = "N/A";
-      //   department = "N/A";
-      //   designation = "N/A";
-      //   gross_salary = 0;
-      //   taxable_income = 0;
-      //   net_salary = 0;
-      //   housing = 0;
-      //   nhif_deductions = 0;
-      //   nssf_deductions = 0;
-      //   personal_relief = 0;
-      //   paye = 0;
-      //   other_deductions = 0;
-      //   total_tax = 0;
-      // };
-    //   {
-    //     status = 500;
-    //     status_text = "FAILED";
-    //     data = ?payslipData;
-    //     error_text = null;
-    //   };
-
-    // };
           let payslipData : PayslipData = {
         name = "N/A";
         organization = "N/A";
@@ -805,8 +749,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   // #region Upgrade Hooks
   system func preupgrade() {
     transactionsStable := Iter.toArray(transactions.entries());
-    contactsStable := Iter.toArray(contacts.entries());
-    stableEmployees := Iter.toArray(employees.entries());
+      stableEmployees := Iter.toArray(employees.entries());
     notificationsStable := Iter.toArray(notifications.entries());
     invoicesStable := Iter.toArray(invoices.entries());
     organizationsStable := Iter.toArray(organizations.entries());
@@ -819,9 +762,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     //latestTransactionIndex := _startBlock;
     transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
      transactionsStable := [];
-    contacts := HashMap.fromIter(Iter.fromArray(contactsStable), contactsStable.size(), Nat.equal, Hash.hash);
-    contactsStable := [];
-    employees := HashMap.fromIter(Iter.fromArray(stableEmployees), stableEmployees.size(), Nat.equal, Hash.hash);
+     employees := HashMap.fromIter(Iter.fromArray(stableEmployees), stableEmployees.size(), Nat.equal, Hash.hash);
     stableEmployees := [];
     notifications := HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
     notificationsStable := [];

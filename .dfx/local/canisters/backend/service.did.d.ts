@@ -2,21 +2,16 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
-export interface Account {
-  'owner' : Principal,
-  'subaccount' : [] | [Subaccount],
-}
 export interface Backend {
   'addToMetamaskUsers' : ActorMethod<[string, Principal], Result>,
   'cancelRecurringTimer' : ActorMethod<[bigint], undefined>,
   'checkPayroll' : ActorMethod<[], undefined>,
-  'create_department' : ActorMethod<[CreateDepartmentArgs], Response_10>,
-  'create_designation' : ActorMethod<[CreateDesignationArgs], Response_9>,
-  'create_emp' : ActorMethod<[CreateEmpArgs], Response_6>,
-  'create_employee' : ActorMethod<[CreateEmployeeArgs], Response_4>,
-  'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_8>,
+  'create_department' : ActorMethod<[CreateDepartmentArgs], Response_9>,
+  'create_designation' : ActorMethod<[CreateDesignationArgs], Response_8>,
+  'create_emp' : ActorMethod<[CreateEmpArgs], Response_5>,
+  'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_7>,
   'emailExists' : ActorMethod<[string], boolean>,
-  'generatePayslip' : ActorMethod<[bigint], Response_7>,
+  'generatePayslip' : ActorMethod<[bigint], Response_6>,
   'generateUUID' : ActorMethod<[], string>,
   'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
@@ -25,16 +20,12 @@ export interface Backend {
   'getDepartmentsLength' : ActorMethod<[], string>,
   'getDesignations' : ActorMethod<[], Array<Designation>>,
   'getDesignationsLength' : ActorMethod<[], string>,
-  'getEmpByPrincipal' : ActorMethod<[Principal], Response_6>,
-  'getEmployeeByPrincipal' : ActorMethod<[Principal], Response_4>,
+  'getEmpByPrincipal' : ActorMethod<[Principal], Response_5>,
   'getEmployees' : ActorMethod<[], Array<Emp>>,
   'getFundingAddress' : ActorMethod<[], string>,
   'getFundingBalance' : ActorMethod<[], string>,
-  'getInvoice' : ActorMethod<[], Account>,
   'getLogs' : ActorMethod<[], Array<string>>,
   'getMetamaskUsers' : ActorMethod<[], Array<[string, Principal]>>,
-  'getMyContacts' : ActorMethod<[], Array<Employee>>,
-  'getMyContactsLength' : ActorMethod<[], string>,
   'getMyTransactionLength' : ActorMethod<[], string>,
   'getNotifications' : ActorMethod<[], Array<Notification__1>>,
   'getOrganizations' : ActorMethod<[], Array<Organization>>,
@@ -46,14 +37,12 @@ export interface Backend {
   'getUnreadNotificationsLength' : ActorMethod<[], string>,
   'getUser' : ActorMethod<[], Response>,
   'getUserByPrincipal' : ActorMethod<[Principal], Response>,
-  'getUserPayslip' : ActorMethod<[string], Response_5>,
+  'getUserPayslip' : ActorMethod<[string], Response_4>,
   'getUsersList' : ActorMethod<[], Array<[string, User]>>,
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
   'get_transactions' : ActorMethod<[], Array<Transaction>>,
   'isRegistered' : ActorMethod<[], boolean>,
-  'linkAccount' : ActorMethod<[], undefined>,
   'mapPrincipal' : ActorMethod<[string], Principal>,
-  'remove_employee' : ActorMethod<[string], Response_4>,
   'runpayroll' : ActorMethod<[Array<PayrollType__1>], Response_3>,
   'save_notification' : ActorMethod<
     [CreateNotificationArgs],
@@ -92,7 +81,7 @@ export interface CreateEmpArgs {
   'disability' : boolean,
   'email_address' : string,
   'joining_date' : string,
-  'gross_salary' : string,
+  'gross_salary' : bigint,
   'designation' : string,
   'role' : string,
   'employee_type' : string,
@@ -104,11 +93,6 @@ export interface CreateEmpArgs {
   'organization' : string,
   'phone_number' : string,
   'department' : string,
-}
-export interface CreateEmployeeArgs {
-  'emp_type' : string,
-  'wallet' : string,
-  'access_type' : string,
 }
 export interface CreateNotificationArgs {
   'isRead' : boolean,
@@ -159,7 +143,7 @@ export interface Emp {
   'email_address' : string,
   'creator' : Principal,
   'joining_date' : string,
-  'gross_salary' : string,
+  'gross_salary' : bigint,
   'designation' : string,
   'role' : string,
   'employee_type' : string,
@@ -171,18 +155,6 @@ export interface Emp {
   'organization' : string,
   'phone_number' : string,
   'department' : string,
-}
-export interface Employee {
-  'id' : bigint,
-  'email_address' : string,
-  'emp_type' : string,
-  'creator' : Principal,
-  'modified_at' : bigint,
-  'name' : string,
-  'created_at' : bigint,
-  'wallet' : string,
-  'phone_number' : string,
-  'access_type' : string,
 }
 export interface GetTransactionArgs { 'id' : bigint }
 export interface GetTransactionErr {
@@ -276,12 +248,6 @@ export interface Response_1 {
   'status_text' : string,
   'error_text' : [] | [string],
 }
-export interface Response_10 {
-  'status' : number,
-  'data' : [] | [Department],
-  'status_text' : string,
-  'error_text' : [] | [string],
-}
 export interface Response_2 {
   'status' : number,
   'data' : [] | [string],
@@ -296,37 +262,37 @@ export interface Response_3 {
 }
 export interface Response_4 {
   'status' : number,
-  'data' : [] | [Employee],
+  'data' : [] | [PayslipData],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_5 {
   'status' : number,
-  'data' : [] | [PayslipData],
+  'data' : [] | [Emp],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_6 {
   'status' : number,
-  'data' : [] | [Emp],
+  'data' : [] | [Payslip],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_7 {
   'status' : number,
-  'data' : [] | [Payslip],
+  'data' : [] | [Organization],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_8 {
   'status' : number,
-  'data' : [] | [Organization],
+  'data' : [] | [Designation],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_9 {
   'status' : number,
-  'data' : [] | [Designation],
+  'data' : [] | [Department],
   'status_text' : string,
   'error_text' : [] | [string],
 }
@@ -354,7 +320,6 @@ export interface SchedulePaymentsErr {
 export type SchedulePaymentsResult = { 'ok' : SchedulePaymentsSuccess } |
   { 'err' : SchedulePaymentsErr };
 export interface SchedulePaymentsSuccess { 'receivers' : Array<PayrollType> }
-export type Subaccount = Uint8Array | number[];
 export interface Transaction {
   'id' : bigint,
   'creator' : Principal,

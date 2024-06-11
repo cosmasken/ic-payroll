@@ -16,31 +16,16 @@ type Emp =
     employee_type : Text;
     first_name : Text;
     gender : Text;
-    gross_salary : Text;
+    gross_salary : Nat;
     identity : Text;
     job_group : Text;
     joining_date : Text;
     last_name : Text;
     organization : Text;
-    permissions : ?Permissions;
     phone_number : Text;
     role : Text
   };
 type Emp__1 = Emp;
-type Employee =
-  {
-    access_type : Text;
-    created_at : Int;
-    creator : Principal;
-    email_address : Text;
-    emp_type : Text;
-    id : Nat;
-    modified_at : Int;
-    name : Text;
-    phone_number : Text;
-    wallet : Text
-  };
-type Employee__1 = Employee;
 type Hash = Nat32;
 type Invoice =
   {
@@ -74,15 +59,6 @@ type PayrollType =
     successful : Bool
   };
 type PayrollType__1 = PayrollType;
-type Permissions =
-  {
-    canAdd : Bool;
-    canDelete : Bool;
-    canEdit : Bool;
-    canPay : Bool;
-    canUpdate : Bool;
-    canView : Bool
-  };
 type Transaction =
   {
     amount : Nat;
@@ -106,7 +82,6 @@ type User =
 type User__1 = User;
 actor {
   stable var contactsCounter : Nat;
-  stable var contactsStable : [(Nat, Employee__1)];
   stable var courierApiKey : Text;
   stable var departmentsCounter : Nat;
   stable var departmentsStable : [(Nat, Department__1)];

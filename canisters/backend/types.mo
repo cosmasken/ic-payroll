@@ -248,19 +248,6 @@ module {
   };
 
   //type representing  a user that is an employee/freelancer
-  public type Employee = {
-    id : Nat;
-    name : Text;
-    email_address : Text;
-    phone_number : Text;
-    wallet : Text;
-    creator : Principal;
-    created_at : Int;
-    modified_at : Int;
-    emp_type : Text;
-    access_type : Text;
-  };
-
   public type Emp = {
     creator : Principal;
     first_name : Text;
@@ -276,19 +263,11 @@ module {
     designation : Text;
     employee_type : Text;
     job_group : Text;
-    gross_salary : Text;
+    gross_salary : Nat;
     role : Text;
   };
 
-  //user permissions
-  public type Permissions = {
-    canAdd : Bool;
-    canView : Bool;
-    canEdit : Bool;
-    canDelete : Bool;
-    canUpdate : Bool;
-    canPay : Bool;
-  };
+  
 
   public type Response<T> = {
     status : Nat16;
@@ -410,7 +389,7 @@ module {
     designation : Text;
     employee_type : Text;
     job_group : Text;
-    gross_salary : Text;
+    gross_salary : Nat;
     role : Text;
   };
 
@@ -427,24 +406,6 @@ module {
     };
   };
 
-  // #region create employee
-  public type CreateEmployeeArgs = {
-    wallet : Text;
-    emp_type : Text;
-    access_type : Text;
-  };
-  public type CreateEmployeeResult = Result.Result<CreateEmployeeSuccess, CreateEmployeeErr>;
-  public type CreateEmployeeSuccess = {
-    employee : Employee;
-  };
-  public type CreateEmployeeErr = {
-    message : ?Text;
-    kind : {
-      #InvalidUser;
-      #InvalidPrincipal;
-      #Other;
-    };
-  };
 
   // #region create Department
   public type CreateDepartmentArgs = {

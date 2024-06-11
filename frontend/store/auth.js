@@ -221,8 +221,9 @@ export const useAuthStore = defineStore("auth", {
     setUserInfo(userInfo) {
       this.userInfo = userInfo;
     },
-    async update_user(firstname, lastname, email, phone) {
+    async update_user(principal,firstname, lastname, email, phone) {
       const response = await this.whoamiActor?.updateUser({
+        principal:principal,
         first_name: firstname,
         last_name: lastname,
         email_address: email,

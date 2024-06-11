@@ -1,6 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import { ref ,watchEffect } from "vue";
+import { useAuthStore } from "../../store/auth";
+const authStore = useAuthStore();
 const filterOpen = ref(false);
+const isLoading = ref(false);
+
+const payslips = ref([]);
 
 
 
@@ -83,6 +88,43 @@ const payslipData =
   },
 
       ];
+let userlength = ref(0);
+let noOfPaylips = ref(0);
+let users = ref([]);
+
+watchEffect(async () => {
+  isLoading.value = true;
+  const res = await authStore.whoamiActor?.getEmployees();
+  let usersArray = [];
+  let paylist = [];
+ 
+
+  // Loop through the result and create an array of objects
+  for (let i = 0; i < res.length; i++) {
+    const employees = res[i];
+
+  
+    const data = await authStore.whoamiActor?.generatePayslip({income:res.gross_pay});
+    usersArray.push(employees);
+    paylist.push(data);
+
+    console.log("data is :", data);
+  }
+
+  // Assign the array of objects to the users ref
+  users.value = usersArray;
+  payslips.value = paylist;
+
+  //get length
+  userlength.value = usersArray.length;
+  noOfPaylips.value = paylist.length;
+
+  console.log("Users array:", usersArray);
+  console.log("Payslips array:", paylist);
+  isLoading.value = false;
+});
+
+
 </script>
 <template>
   <main

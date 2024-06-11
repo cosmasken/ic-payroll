@@ -1,15 +1,13 @@
-type Account = record { owner : principal; subaccount : opt Subaccount };
 type Backend = service {
   addToMetamaskUsers : (text, principal) -> (Result);
   cancelRecurringTimer : (nat) -> ();
   checkPayroll : () -> ();
-  create_department : (CreateDepartmentArgs) -> (Response_10);
-  create_designation : (CreateDesignationArgs) -> (Response_9);
-  create_emp : (CreateEmpArgs) -> (Response_6);
-  create_employee : (CreateEmployeeArgs) -> (Response_4);
-  create_organization : (CreateOrganizationArgs) -> (Response_8);
+  create_department : (CreateDepartmentArgs) -> (Response_9);
+  create_designation : (CreateDesignationArgs) -> (Response_8);
+  create_emp : (CreateEmpArgs) -> (Response_5);
+  create_organization : (CreateOrganizationArgs) -> (Response_7);
   emailExists : (text) -> (bool) query;
-  generatePayslip : (nat) -> (Response_7);
+  generatePayslip : (nat) -> (Response_6);
   generateUUID : () -> (text);
   getAddress : () -> (text);
   getCanisterAddress : () -> (text);
@@ -18,16 +16,12 @@ type Backend = service {
   getDepartmentsLength : () -> (text) query;
   getDesignations : () -> (vec Designation) query;
   getDesignationsLength : () -> (text) query;
-  getEmpByPrincipal : (principal) -> (Response_6);
-  getEmployeeByPrincipal : (principal) -> (Response_4);
+  getEmpByPrincipal : (principal) -> (Response_5);
   getEmployees : () -> (vec Emp);
   getFundingAddress : () -> (text);
   getFundingBalance : () -> (text);
-  getInvoice : () -> (Account);
   getLogs : () -> (vec text) query;
   getMetamaskUsers : () -> (vec record { text; principal });
-  getMyContacts : () -> (vec Employee);
-  getMyContactsLength : () -> (text);
   getMyTransactionLength : () -> (text);
   getNotifications : () -> (vec Notification__1);
   getOrganizations : () -> (vec Organization) query;
@@ -39,14 +33,12 @@ type Backend = service {
   getUnreadNotificationsLength : () -> (text);
   getUser : () -> (Response) query;
   getUserByPrincipal : (principal) -> (Response) query;
-  getUserPayslip : (text) -> (Response_5);
+  getUserPayslip : (text) -> (Response_4);
   getUsersList : () -> (vec record { text; User }) query;
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions : () -> (vec Transaction) query;
   isRegistered : () -> (bool) query;
-  linkAccount : () -> ();
   mapPrincipal : (text) -> (principal);
-  remove_employee : (text) -> (Response_4);
   runpayroll : (vec PayrollType__1) -> (Response_3);
   save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
   save_payroll : (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
@@ -73,7 +65,7 @@ type CreateEmpArgs = record {
   disability : bool;
   email_address : text;
   joining_date : text;
-  gross_salary : text;
+  gross_salary : nat;
   designation : text;
   role : text;
   employee_type : text;
@@ -85,11 +77,6 @@ type CreateEmpArgs = record {
   organization : text;
   phone_number : text;
   department : text;
-};
-type CreateEmployeeArgs = record {
-  emp_type : text;
-  wallet : text;
-  access_type : text;
 };
 type CreateNotificationArgs = record {
   isRead : bool;
@@ -137,7 +124,7 @@ type Emp = record {
   email_address : text;
   creator : principal;
   joining_date : text;
-  gross_salary : text;
+  gross_salary : nat;
   designation : text;
   role : text;
   employee_type : text;
@@ -149,18 +136,6 @@ type Emp = record {
   organization : text;
   phone_number : text;
   department : text;
-};
-type Employee = record {
-  id : nat;
-  email_address : text;
-  emp_type : text;
-  creator : principal;
-  modified_at : int;
-  name : text;
-  created_at : int;
-  wallet : text;
-  phone_number : text;
-  access_type : text;
 };
 type GetTransactionArgs = record { id : nat };
 type GetTransactionErr = record {
@@ -249,12 +224,6 @@ type Response_1 = record {
   status_text : text;
   error_text : opt text;
 };
-type Response_10 = record {
-  status : nat16;
-  data : opt Department;
-  status_text : text;
-  error_text : opt text;
-};
 type Response_2 = record {
   status : nat16;
   data : opt text;
@@ -269,37 +238,37 @@ type Response_3 = record {
 };
 type Response_4 = record {
   status : nat16;
-  data : opt Employee;
+  data : opt PayslipData;
   status_text : text;
   error_text : opt text;
 };
 type Response_5 = record {
   status : nat16;
-  data : opt PayslipData;
+  data : opt Emp;
   status_text : text;
   error_text : opt text;
 };
 type Response_6 = record {
   status : nat16;
-  data : opt Emp;
+  data : opt Payslip;
   status_text : text;
   error_text : opt text;
 };
 type Response_7 = record {
   status : nat16;
-  data : opt Payslip;
+  data : opt Organization;
   status_text : text;
   error_text : opt text;
 };
 type Response_8 = record {
   status : nat16;
-  data : opt Organization;
+  data : opt Designation;
   status_text : text;
   error_text : opt text;
 };
 type Response_9 = record {
   status : nat16;
-  data : opt Designation;
+  data : opt Department;
   status_text : text;
   error_text : opt text;
 };
@@ -327,7 +296,6 @@ type SchedulePaymentsResult = variant {
   err : SchedulePaymentsErr;
 };
 type SchedulePaymentsSuccess = record { receivers : vec PayrollType };
-type Subaccount = vec nat8;
 type Transaction = record {
   id : nat;
   creator : principal;

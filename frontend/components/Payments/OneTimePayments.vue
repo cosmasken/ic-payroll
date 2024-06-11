@@ -2,6 +2,7 @@
 import { ref, watchEffect } from "vue";
 import { useAuthStore } from "../../store/auth";
 let tradingbalance = ref("");
+import Swal from 'sweetalert2'
 let transferResult = ref("");
 const isTransferring = ref(false);
 const showSuccess = ref(false);
@@ -18,7 +19,7 @@ const transferArgs = {
   address: "",
   memo: "",
   created_at: getTime(),
-  amount: "",
+  amount: 0,
 };
 
 watchEffect(async () => {
@@ -55,9 +56,11 @@ const transfer = async () => {
   const created_at = authStore.transferArgs.created_at;
   let response = ref("");
   try {
-    response = await authStore.whoamiActor?.sendToOwner(
-      BigInt(Math.round(amount)),  
-    address
+    response = await authStore.whoamiActor?.transferFromSubAccountToSubAccount(
+    
+    address,
+   parseInt(amount,10)
+    
       
     );
 
@@ -68,13 +71,21 @@ const transfer = async () => {
     isTransferring.value = false;
 
     if (response.status === 200) {
-      refreshBalance();
-      showSuccess.value = true;
+    //  refreshBalance();
+    Swal.fire({
+  title: "Success",
+  text: "You sent cksats",
+  icon: "success"
+});
       transferArgs.address = "";
       transferArgs.amount = "";
       transferArgs.memo = "";
     } else {
-      showFailure.value = true;
+      Swal.fire({
+  title: "Failure",
+  text: "You transcation was unsuccessful.Make sure you have some sats.Click on Get test token button",
+  icon: "error"
+});
     }
   }
 };

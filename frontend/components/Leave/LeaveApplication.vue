@@ -17,15 +17,6 @@ let tradingaddress = ref("");
 let isLoading = ref(false);
 let emailExists = ref(false);
 
-watchEffect(async () => {
-  const identity = await authStore.whoamiActor?.whoami();
-  principal.value = identity;
-});
-
-watchEffect(async () => {
-  fundingaddress.value = await authStore.whoamiActor.getFundingAddress();
-  tradingaddress.value = await authStore.whoamiActor.getTradingAddress();
-});
 
 watchEffect(async () => {
   isLoading.value = true;

@@ -93,7 +93,7 @@ const organizations = [
     nssf: "38383",
     nhif: "2332",
     net: "23423",
-    Reference: "saalry",
+    reference: "salary",
   },
 ];
 </script>
@@ -114,12 +114,12 @@ const organizations = [
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
-      <SalaryCard header="Total Gross Salary" text="Ksh 0" />
+      <SalaryCard header="Total Gross Salary" text="Ksh 850,000" />
+      <SalaryCard header="Total PAYE" text="Ksh 120.000" />
+      <SalaryCard header="Total Relief" text="Ksh 20,000" />
+      <SalaryCard header="Total Deductions" text="Ksh 50000" />
+      <SalaryCard header="Total NSSF" text="Ksh 15,000" />
+      <SalaryCard header="Total NHIF" text="Ksh 34,000" />
     </div>
 
     <div class="flex flex-col sm:flex-row w-full justify-between py-5">
@@ -344,8 +344,12 @@ const organizations = [
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-[#fff]">
                       <tr v-for="org in organizations" :key="org.name">
-                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
-                          <div class="font-normal text-gray-500">eee</div>
+                        <td
+                          class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                        >
+                          <div class="font-normal text-gray-500">
+                            {{ org.id }}
+                          </div>
                         </td>
                         <td
                           class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
@@ -358,7 +362,7 @@ const organizations = [
                           class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                         >
                           <div class="font-normal text-gray-500">
-                            {{ org.gross_salary }}
+                            {{ org.gross }}
                           </div>
                         </td>
                         <td
@@ -386,14 +390,14 @@ const organizations = [
                           class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                         >
                           <div class="font-normal text-gray-500">
-                            {{ org.nssf_deductions }}
+                            {{ org.nssf }}
                           </div>
                         </td>
                         <td
                           class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                         >
                           <div class="font-normal text-gray-500">
-                            {{ org.nhif_deductions }}
+                            {{ org.nhif }}
                           </div>
                         </td>
                         <td
@@ -407,7 +411,7 @@ const organizations = [
                           class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                         >
                           <div class="font-normal text-gray-500">
-                            {{ org.total_tax }}
+                            {{ org.reference }}
                           </div>
                         </td>
                         <td

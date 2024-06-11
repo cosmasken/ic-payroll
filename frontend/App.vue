@@ -7,6 +7,7 @@ const authStore = useAuthStore();
 const open = ref(false);
 const openCard = ref(false);
 const profileOpen = ref(false);
+const isLoading = ref(false);
 const modal = ref(false);
 const organogramOpen = ref(false);
 const employeeOpen = ref(false);
@@ -60,6 +61,19 @@ const assets = [
   { to: "/home/assigned-assets", text: "Assign Assets" },
   // Add more links here
 ];
+
+const getTestTokens = async () => {
+  try {
+    isLoading.value = true
+    const response = authStore.whoamiActor.transferFromCanistertoSubAccount()
+    console.log(response)
+   // transferresponse.value = await response
+  } catch (error) {
+    console.error("Error Getting tokens:", error)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 
 </script>
@@ -1037,6 +1051,13 @@ const assets = [
             <div class="hidden lg:block">
               <p class="text-gray-900 text-base font-semibold">IC-Payroll</p>
             </div>
+            <button
+            @click="getTestTokens()"
+            type="button"
+            class="inline-flex items-center justify-center sm:w-40 min-w-[125px] rounded-md border border-autom8-blue-500 bg-autom8-blue-500 px-3 py-2 text-sm space-x-2 font-medium leading-4 text-white shadow-sm hover:bg-autom8-blue-600 hover:border-autom8-blue-600 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
+          >
+            Get loan
+          </button>
             <!--div class="hidden md:block">
               <label
                 for="accountType"

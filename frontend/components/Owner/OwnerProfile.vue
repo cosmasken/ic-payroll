@@ -37,6 +37,7 @@ watchEffect(async () => {
   const user = await authStore.whoamiActor?.getUser();
   if (user.status === 200) {
     console.log("User:", user.data);
+    principal.value = await user.data[0].principal ;
     email_address.value = await user.data[0].email_address;
     phone_number.value = await user.data[0].phone_number;
     first_name.value = await user.data[0].first_name;
@@ -99,19 +100,32 @@ const addData = async () => {
 
   if (exists) {
     emailExists.value = true;
+    authStore.isRegistered = true;
     isLoading.value = false;
     return;
   }
+
+  console.log("exists"+exists);
+    
 
   const firstname = authStore.registrationData.first_name;
   const lastname = authStore.registrationData.last_name;
   const email = authStore.registrationData.email_address;
   const phone = authStore.registrationData.phone_number;
 
-  console.log(firstname, lastname, email, phone);
+  //console.log(firstname, lastname, email, phone);
 
   try {
-    const response = authStore.update_user(firstname, lastname, email, phone);
+    const response = authStore.whoamiActor.updateUser({
+     first_name : firstname,
+    last_name : lastname ,
+    email_notifications : true,
+    email_address : email,
+    phone_notifications : true,
+    phone_number : phone,
+       });
+
+
     // if (response.)
     //await new Promise((resolve) => setTimeout(resolve, 1000));
   } catch (error) {

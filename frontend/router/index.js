@@ -16,7 +16,7 @@ import AllSalary from "../components/Payments/AllSalary.vue";
 import OneTimePayments from "../components/Payments/OneTimePayments.vue";
 import Deductions from "../components/Payments/Deductions.vue";
 import Payslips from "../components/Payments/Payslips.vue";
-import Dashboard from "../components/Dashboard.vue";
+import Dashboard from "../components/Dashboard/Dashboard.vue";
 import OwnerProfile from "../components/Owner/OwnerProfile.vue";
 import Transfer from "../components/Payments/Transfer.vue";
 import Transactions from "../components/Payments/Transactions.vue";

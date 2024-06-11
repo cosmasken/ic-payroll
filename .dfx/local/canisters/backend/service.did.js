@@ -9,7 +9,7 @@ export const idlFactory = ({ IDL }) => {
     'code' : IDL.Text,
     'name' : IDL.Text,
   });
-  const Response_10 = IDL.Record({
+  const Response_9 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Department),
     'status_text' : IDL.Text,
@@ -24,7 +24,7 @@ export const idlFactory = ({ IDL }) => {
     'code' : IDL.Text,
     'name' : IDL.Text,
   });
-  const Response_9 = IDL.Record({
+  const Response_8 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Designation),
     'status_text' : IDL.Text,
@@ -34,7 +34,7 @@ export const idlFactory = ({ IDL }) => {
     'disability' : IDL.Bool,
     'email_address' : IDL.Text,
     'joining_date' : IDL.Text,
-    'gross_salary' : IDL.Text,
+    'gross_salary' : IDL.Nat,
     'designation' : IDL.Text,
     'role' : IDL.Text,
     'employee_type' : IDL.Text,
@@ -52,7 +52,7 @@ export const idlFactory = ({ IDL }) => {
     'email_address' : IDL.Text,
     'creator' : IDL.Principal,
     'joining_date' : IDL.Text,
-    'gross_salary' : IDL.Text,
+    'gross_salary' : IDL.Nat,
     'designation' : IDL.Text,
     'role' : IDL.Text,
     'employee_type' : IDL.Text,
@@ -65,32 +65,9 @@ export const idlFactory = ({ IDL }) => {
     'phone_number' : IDL.Text,
     'department' : IDL.Text,
   });
-  const Response_6 = IDL.Record({
+  const Response_5 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Emp),
-    'status_text' : IDL.Text,
-    'error_text' : IDL.Opt(IDL.Text),
-  });
-  const CreateEmployeeArgs = IDL.Record({
-    'emp_type' : IDL.Text,
-    'wallet' : IDL.Text,
-    'access_type' : IDL.Text,
-  });
-  const Employee = IDL.Record({
-    'id' : IDL.Nat,
-    'email_address' : IDL.Text,
-    'emp_type' : IDL.Text,
-    'creator' : IDL.Principal,
-    'modified_at' : IDL.Int,
-    'name' : IDL.Text,
-    'created_at' : IDL.Int,
-    'wallet' : IDL.Text,
-    'phone_number' : IDL.Text,
-    'access_type' : IDL.Text,
-  });
-  const Response_4 = IDL.Record({
-    'status' : IDL.Nat16,
-    'data' : IDL.Opt(Employee),
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
   });
@@ -103,7 +80,7 @@ export const idlFactory = ({ IDL }) => {
     'code' : IDL.Text,
     'name' : IDL.Text,
   });
-  const Response_8 = IDL.Record({
+  const Response_7 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Organization),
     'status_text' : IDL.Text,
@@ -121,16 +98,11 @@ export const idlFactory = ({ IDL }) => {
     'other_deductions' : IDL.Nat,
     'housing' : IDL.Nat,
   });
-  const Response_7 = IDL.Record({
+  const Response_6 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(Payslip),
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
-  });
-  const Subaccount = IDL.Vec(IDL.Nat8);
-  const Account = IDL.Record({
-    'owner' : IDL.Principal,
-    'subaccount' : IDL.Opt(Subaccount),
   });
   const Notification__1 = IDL.Record({
     'id' : IDL.Nat,
@@ -169,7 +141,7 @@ export const idlFactory = ({ IDL }) => {
     'other_deductions' : IDL.Nat,
     'housing' : IDL.Nat,
   });
-  const Response_5 = IDL.Record({
+  const Response_4 = IDL.Record({
     'status' : IDL.Nat16,
     'data' : IDL.Opt(PayslipData),
     'status_text' : IDL.Text,
@@ -341,17 +313,16 @@ export const idlFactory = ({ IDL }) => {
     'addToMetamaskUsers' : IDL.Func([IDL.Text, IDL.Principal], [Result], []),
     'cancelRecurringTimer' : IDL.Func([IDL.Nat], [], []),
     'checkPayroll' : IDL.Func([], [], []),
-    'create_department' : IDL.Func([CreateDepartmentArgs], [Response_10], []),
-    'create_designation' : IDL.Func([CreateDesignationArgs], [Response_9], []),
-    'create_emp' : IDL.Func([CreateEmpArgs], [Response_6], []),
-    'create_employee' : IDL.Func([CreateEmployeeArgs], [Response_4], []),
+    'create_department' : IDL.Func([CreateDepartmentArgs], [Response_9], []),
+    'create_designation' : IDL.Func([CreateDesignationArgs], [Response_8], []),
+    'create_emp' : IDL.Func([CreateEmpArgs], [Response_5], []),
     'create_organization' : IDL.Func(
         [CreateOrganizationArgs],
-        [Response_8],
+        [Response_7],
         [],
       ),
     'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
-    'generatePayslip' : IDL.Func([IDL.Nat], [Response_7], []),
+    'generatePayslip' : IDL.Func([IDL.Nat], [Response_6], []),
     'generateUUID' : IDL.Func([], [IDL.Text], []),
     'getAddress' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
@@ -360,20 +331,16 @@ export const idlFactory = ({ IDL }) => {
     'getDepartmentsLength' : IDL.Func([], [IDL.Text], ['query']),
     'getDesignations' : IDL.Func([], [IDL.Vec(Designation)], ['query']),
     'getDesignationsLength' : IDL.Func([], [IDL.Text], ['query']),
-    'getEmpByPrincipal' : IDL.Func([IDL.Principal], [Response_6], []),
-    'getEmployeeByPrincipal' : IDL.Func([IDL.Principal], [Response_4], []),
+    'getEmpByPrincipal' : IDL.Func([IDL.Principal], [Response_5], []),
     'getEmployees' : IDL.Func([], [IDL.Vec(Emp)], []),
     'getFundingAddress' : IDL.Func([], [IDL.Text], []),
     'getFundingBalance' : IDL.Func([], [IDL.Text], []),
-    'getInvoice' : IDL.Func([], [Account], []),
     'getLogs' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'getMetamaskUsers' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Principal))],
         [],
       ),
-    'getMyContacts' : IDL.Func([], [IDL.Vec(Employee)], []),
-    'getMyContactsLength' : IDL.Func([], [IDL.Text], []),
     'getMyTransactionLength' : IDL.Func([], [IDL.Text], []),
     'getNotifications' : IDL.Func([], [IDL.Vec(Notification__1)], []),
     'getOrganizations' : IDL.Func([], [IDL.Vec(Organization)], ['query']),
@@ -385,7 +352,7 @@ export const idlFactory = ({ IDL }) => {
     'getUnreadNotificationsLength' : IDL.Func([], [IDL.Text], []),
     'getUser' : IDL.Func([], [Response], ['query']),
     'getUserByPrincipal' : IDL.Func([IDL.Principal], [Response], ['query']),
-    'getUserPayslip' : IDL.Func([IDL.Text], [Response_5], []),
+    'getUserPayslip' : IDL.Func([IDL.Text], [Response_4], []),
     'getUsersList' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, User))],
@@ -398,9 +365,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'isRegistered' : IDL.Func([], [IDL.Bool], ['query']),
-    'linkAccount' : IDL.Func([], [], []),
     'mapPrincipal' : IDL.Func([IDL.Text], [IDL.Principal], []),
-    'remove_employee' : IDL.Func([IDL.Text], [Response_4], []),
     'runpayroll' : IDL.Func([IDL.Vec(PayrollType__1)], [Response_3], []),
     'save_notification' : IDL.Func(
         [CreateNotificationArgs],

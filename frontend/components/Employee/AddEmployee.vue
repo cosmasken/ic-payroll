@@ -240,7 +240,7 @@ const addUser = async () => {
       phone_number: data.phone_number,
       joining_date: data.joining_date,
       gender: data.gender,
-      disability: disability.value,
+      disability: false,
       organization: data.organization,
       department: data.department,
       designation: data.designation,
@@ -407,7 +407,7 @@ const addUser = async () => {
                 </select>
               </div>
             </div>
-            <div class="lg:col-span-4">
+            <!--div class="lg:col-span-4">
               <label
                 for="disability"
                 class="block text-sm font-medium leading-6 text-gray-600"
@@ -420,7 +420,7 @@ const addUser = async () => {
                   class="checkbox rounded-md"
                 />
               </div>
-            </div>
+            </div-->
           </div>
         </div>
         <div class="rounded-lg lg:col-span-2">
@@ -641,7 +641,7 @@ const addUser = async () => {
             >
             <div class="mt-1">
               <input
-                type="text"
+                type="number"
                 name="gross-salary"
                 id="gross-salary"
                 v-model="data.gross_salary"

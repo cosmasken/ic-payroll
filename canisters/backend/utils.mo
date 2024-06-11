@@ -11,7 +11,6 @@ import Time "mo:base/Time";
 import Random "mo:base/Random";
 import Sha256 "mo:sha2/Sha256";
 import ICRC1_AccountConverter "./icrc1-account-converter";
-import Account "./Account";
 
 module {
 
