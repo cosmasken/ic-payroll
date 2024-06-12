@@ -92,14 +92,10 @@ module {
     Blob.fromArrayMut(Array.init(32, 0 : Nat8));
   };
 
-
-
-
   type DefaultAccountArgs = {
     // Hex-encoded AccountIdentifier
     canisterId : Principal;
     principal : Principal;
   };
-
 
 };

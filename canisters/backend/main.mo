@@ -9,6 +9,10 @@ import Char "mo:base/Char";
 import CkBtcLedger "canister:ckbtc_ledger";
 //import CkBtcIndex "canister:icrc1_index";
 import Types "./types";
+import HttpTypes "./http-types";
+import UserTypes "./user-types";
+import PaymentTypes "./payment-types";
+import StorageTypes "./storage-types";
 import { toAccount; toSubaccount; defaultSubaccount } "./utils";
 import Error "mo:base/Error";
 import Nat "mo:base/Nat";
@@ -31,28 +35,29 @@ import Timer "mo:base/Timer";
 import { abs } = "mo:base/Int";
 import { now } = "mo:base/Time";
 import { setTimer; recurringTimer; cancelTimer } = "mo:base/Timer";
-import Rand "mo:random/Rand";
 import Taxcalculator "taxcalculator";
 
 shared (actorContext) actor class Backend() = this {
 
   // #region Types
-  type Account = Types.Account;
-  type Payslip = Types.Payslip;
-  type Leave = Types.Leave;
-  type PayslipData = Types.PayslipData;
-  type AccountIdentifier = Types.AccountIdentifier;
-  type Transaction = Types.Transaction;
-  type Department = Types.Department;
-  type Organization = Types.Organization;
-  type Designation = Types.Designation;
-  type User = Types.User;
-  type Notification = Types.Notification;
-  type PayrollType = Types.PayrollType;
-  type Invoice = Types.Invoice;
-  type Emp = Types.Emp;
+  type Account = UserTypes.Account;
+  type AccountIdentifier = UserTypes.AccountIdentifier;
+  type User = UserTypes.User;
+
+  type Emp = StorageTypes.Employee;
+  type Leave = StorageTypes.Leave;
+  type Department = StorageTypes.Department;
+  type Organization = StorageTypes.Organization;
+  type Designation = StorageTypes.Designation;
+  type Notification = StorageTypes.Notification;
+
+  type Payslip = PaymentTypes.Payslip;
+  type PayrollType = PaymentTypes.PayrollType;
+  type Transaction = PaymentTypes.Transaction;
+  type Invoice = PaymentTypes.Invoice;
+  type PayslipData = PaymentTypes.PayslipData;
+
   public type TransactionId = Nat32;
-  let r = Random.Finite("username");
 
   // #endregion
 
@@ -65,7 +70,7 @@ shared (actorContext) actor class Backend() = this {
   // The user data store. The key is the user's principal ID.
   private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
   stable var transactionsStable : [(Nat, Transaction)] = [];
-  stable var metamaskUsers :[(Text,Principal)] = [];
+  stable var metamaskUsers : [(Text, Principal)] = [];
   stable var departmentsStable : [(Nat, Department)] = [];
   stable var organizationsStable : [(Nat, Organization)] = [];
   stable var designationsStable : [(Nat, Designation)] = [];
@@ -91,81 +96,66 @@ shared (actorContext) actor class Backend() = this {
   var organizations : HashMap.HashMap<Nat, Organization> = HashMap.fromIter(Iter.fromArray(organizationsStable), organizationsStable.size(), Nat.equal, Hash.hash);
   var departments : HashMap.HashMap<Nat, Department> = HashMap.fromIter(Iter.fromArray(departmentsStable), departmentsStable.size(), Nat.equal, Hash.hash);
   var designations : HashMap.HashMap<Nat, Designation> = HashMap.fromIter(Iter.fromArray(designationsStable), designationsStable.size(), Nat.equal, Hash.hash);
- var selfcustodyusers : HashMap.HashMap<Text, Principal> = HashMap.fromIter(Iter.fromArray(metamaskUsers), metamaskUsers.size(), Text.equal, Text.hash);
-
+  var selfcustodyusers : HashMap.HashMap<Text, Principal> = HashMap.fromIter(Iter.fromArray(metamaskUsers), metamaskUsers.size(), Text.equal, Text.hash);
 
   var MAX_TRANSACTIONS = 30_000;
   let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
 
-  public shared ({ caller }) func getAddress() : async Text {
-    let acc : Types.Account = {
-      owner = Principal.fromActor(this);
-      subaccount = ?toSubaccount(caller);
-    };
-    let address = addressConverter_.toText(acc);
-    return address;
+  public func mapPrincipal(wallet : Text) : async Principal {
+
+    return Principal.fromText(wallet);
   };
 
-
-
-
-public func mapPrincipal(wallet:Text): async Principal{
-  
-return Principal.fromText(wallet);
-   };
-   
-
   public shared ({ caller }) func generatePayslip(income : Nat) : async Types.Response<Payslip> {
-  let payslipInfo = await Taxcalculator.calculateTax(income);
-       return payslipInfo;
-};
+    let payslipInfo = await Taxcalculator.calculateTax(income);
+    return payslipInfo;
+  };
 
-public shared ({ caller }) func addToMetamaskUsers(address:Text,identity:Principal): async Result.Result<Text, Text> {
-//check if address exists
-let addressExists = selfcustodyusers.get(address);
+  public shared ({ caller }) func addToMetamaskUsers(address : Text, identity : Principal) : async Result.Result<Text, Text> {
+    //check if address exists
+    let addressExists = selfcustodyusers.get(address);
 
-Debug.print("address exists???? " # debug_show (addressExists));
-if (addressExists != null) {
-return #err("Address already exists");
-};
+    Debug.print("address exists???? " # debug_show (addressExists));
+    if (addressExists != null) {
+      return #err("Address already exists");
+    };
 
-selfcustodyusers.put(address,identity);
+    selfcustodyusers.put(address, identity);
 
-return #ok("identity" # "address");
+    return #ok("identity" # "address");
 
-};
+  };
 
-public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
+  public shared ({ caller }) func getMetamaskUsers() : async [(Text, Principal)] {
     let allEntries = Iter.toArray(selfcustodyusers.entries());
     var users : [(Text, Principal)] = [];
-    let buffer = Buffer.Buffer<(Text, Principal)>(10000); 
+    let buffer = Buffer.Buffer<(Text, Principal)>(10000);
     for ((key, value) in allEntries.vals()) {
-        buffer.add(key, value);
+      buffer.add(key, value);
     };
-    return Buffer.toArray<(Text,Principal)>(buffer);
-};
-
+    return Buffer.toArray<(Text, Principal)>(buffer);
+  };
 
   public shared ({ caller }) func getUserPayslip(identity : Text) : async Types.Response<PayslipData> {
     let employee = await getEmpByPrincipal(Principal.fromText(identity));
-     Debug.print("employee is " # debug_show (employee));
+    Debug.print("employee is " # debug_show (employee));
 
-          let payslipData : PayslipData = {
-        name = "N/A";
-        organization = "N/A";
-        department = "N/A";
-        designation = "N/A";
-        gross_salary = 0;
-        taxable_income = 0;
-        net_salary = 0;
-        housing = 0;
-        nhif_deductions = 0;
-        nssf_deductions = 0;
-        personal_relief = 0;
-        paye = 0;
-        other_deductions = 0;
-        total_tax = 0;
-      };
+    let payslipData : PayslipData = {
+      name = "N/A";
+      organization = "N/A";
+      department = "N/A";
+      designation = "N/A";
+      gross_salary = 0;
+      taxable_income = 0;
+      net_salary = 0;
+      housing = 0;
+      nhif_deductions = 0;
+      nssf_deductions = 0;
+      personal_relief = 0;
+      paye = 0;
+      other_deductions = 0;
+      total_tax = 0;
+    };
     {
       status = 200;
       status_text = "Yes";
@@ -218,8 +208,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     ignore cancelTimer(id);
   };
 
-
-  public shared ({ caller }) func save_payroll(args : Types.SchedulePaymentsArgs) : async Types.SchedulePaymentsResult {
+  public shared ({ caller }) func save_payroll(args : StorageTypes.SchedulePaymentsArgs) : async StorageTypes.SchedulePaymentsResult {
     let id : Nat = payrollCounter;
     let receivers = args.receivers;
     // increment counter
@@ -334,10 +323,9 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     return usersArray;
   };
 
-  public shared query ({ caller })  func whoami() : async Principal {
+  public shared query ({ caller }) func whoami() : async Principal {
     return caller;
   };
-
 
   public shared ({ caller }) func getFundingBalance() : async Text {
     let balance = await CkBtcLedger.icrc1_balance_of(
@@ -370,7 +358,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   };
 
   public shared ({ caller }) func getFundingAddress() : async Text {
-    let acc : Types.Account = {
+    let acc : Account = {
       owner = caller;
       subaccount = null;
     };
@@ -378,10 +366,8 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     return address;
   };
 
-  
-
   public shared ({ caller }) func getTradingAddress() : async Text {
-    let acc : Types.Account = {
+    let acc : Account = {
       owner = Principal.fromActor(this);
       subaccount = ?toSubaccount(caller);
     };
@@ -389,10 +375,8 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     return address;
   };
 
-
-
   public shared ({ caller }) func getCanisterAddress() : async Text {
-    let acc : Types.Account = {
+    let acc : Account = {
       owner = Principal.fromActor(this);
       subaccount = null;
     };
@@ -606,9 +590,8 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
         error_text = ?"Couldn't transfer funds to Principal account";
       };
     };
-    
 
-   let transaction = await save_transaction({
+    let transaction = await save_transaction({
       amount = amount;
       creator = caller;
       destination = Principal.fromText(receiver);
@@ -741,7 +724,6 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   // }
   // );
 
-
   // #region Utils
 
   // #endregion
@@ -749,20 +731,20 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   // #region Upgrade Hooks
   system func preupgrade() {
     transactionsStable := Iter.toArray(transactions.entries());
-      stableEmployees := Iter.toArray(employees.entries());
+    stableEmployees := Iter.toArray(employees.entries());
     notificationsStable := Iter.toArray(notifications.entries());
     invoicesStable := Iter.toArray(invoices.entries());
     organizationsStable := Iter.toArray(organizations.entries());
-     departmentsStable := Iter.toArray(departments.entries());
-      designationsStable := Iter.toArray(designations.entries());
+    departmentsStable := Iter.toArray(departments.entries());
+    designationsStable := Iter.toArray(designations.entries());
   };
 
   system func postupgrade() {
     // Make sure we start to montitor transactions from the block set on deployment
     //latestTransactionIndex := _startBlock;
     transactions := HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
-     transactionsStable := [];
-     employees := HashMap.fromIter(Iter.fromArray(stableEmployees), stableEmployees.size(), Nat.equal, Hash.hash);
+    transactionsStable := [];
+    employees := HashMap.fromIter(Iter.fromArray(stableEmployees), stableEmployees.size(), Nat.equal, Hash.hash);
     stableEmployees := [];
     notifications := HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
     notificationsStable := [];
@@ -770,19 +752,18 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     organizations := HashMap.fromIter(Iter.fromArray(organizationsStable), organizationsStable.size(), Nat.equal, Hash.hash);
     organizationsStable := [];
 
-     departments := HashMap.fromIter(Iter.fromArray(departmentsStable), departmentsStable.size(), Nat.equal, Hash.hash);
+    departments := HashMap.fromIter(Iter.fromArray(departmentsStable), departmentsStable.size(), Nat.equal, Hash.hash);
     departmentsStable := [];
-    
-     designations := HashMap.fromIter(Iter.fromArray(designationsStable), designationsStable.size(), Nat.equal, Hash.hash);
+
+    designations := HashMap.fromIter(Iter.fromArray(designationsStable), designationsStable.size(), Nat.equal, Hash.hash);
     designationsStable := [];
-    
 
   };
 
   // #endregion
 
   // #region Create Invoice
-  public shared ({ caller }) func save_transaction(args : Types.CreateTransactionArgs) : async Types.CreateTransactionResult {
+  public shared ({ caller }) func save_transaction(args : PaymentTypes.CreateTransactionArgs) : async PaymentTypes.CreateTransactionResult {
     let id : Nat = transactionCounter;
     // increment counter
     transactionCounter += 1;
@@ -809,7 +790,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   };
 
   // #region Get Transaction
-  public shared query ({ caller }) func get_transaction(args : Types.GetTransactionArgs) : async Types.GetTransactionResult {
+  public shared query ({ caller }) func get_transaction(args : PaymentTypes.GetTransactionArgs) : async PaymentTypes.GetTransactionResult {
     let transaction = transactions.get(args.id);
     switch (transaction) {
       case (null) {
@@ -870,9 +851,8 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     return Nat.toText(size);
   };
 
-
   //create new employee
-  public shared ({ caller }) func create_emp(args : Types.CreateEmpArgs) : async Types.Response<Emp> {
+  public shared ({ caller }) func create_emp(args : StorageTypes.CreateEmpArgs) : async StorageTypes.Response<Emp> {
     let id : Nat = noOfEmployees;
     // increment counter
     noOfEmployees += 1;
@@ -894,7 +874,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
       job_group = args.job_group;
       gross_salary = args.gross_salary;
       role = args.role;
-      
+
     };
 
     employees.put(id, newEmp);
@@ -909,7 +889,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   };
 
   // #region Create Department
-  public shared ({ caller }) func create_department(args : Types.CreateDepartmentArgs) : async Types.Response<Department> {
+  public shared ({ caller }) func create_department(args : StorageTypes.CreateDepartmentArgs) : async StorageTypes.Response<Department> {
     let id : Nat = departmentsCounter;
     // increment counter
     departmentsCounter += 1;
@@ -934,7 +914,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   // #endregion
 
   // #region Create Organization
-  public shared ({ caller }) func create_organization(args : Types.CreateOrganizationArgs) : async Types.Response<Organization> {
+  public shared ({ caller }) func create_organization(args : StorageTypes.CreateOrganizationArgs) : async StorageTypes.Response<Organization> {
     let id : Nat = organizationsCounter;
     // increment counter
     organizationsCounter += 1;
@@ -995,7 +975,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   };
 
   // #region Create Designation
-  public shared ({ caller }) func create_designation(args : Types.CreateDesignationArgs) : async Types.Response<Designation> {
+  public shared ({ caller }) func create_designation(args : StorageTypes.CreateDesignationArgs) : async StorageTypes.Response<Designation> {
     let id : Nat = designationsCounter;
     // increment counter
     designationsCounter += 1;
@@ -1099,7 +1079,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
 
   //transfer funds from owner  caller to oter owner caller
 
-  public shared ({ caller }) func save_notification(args : Types.CreateNotificationArgs) : async Types.CreateNotificationResult {
+  public shared ({ caller }) func save_notification(args : StorageTypes.CreateNotificationArgs) : async StorageTypes.CreateNotificationResult {
     let id : Nat = notificationsCounter;
     // increment counter
     notificationsCounter += 1;
@@ -1208,8 +1188,8 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   };
 
   //function to transform the response
-  public query func transform(raw : Types.TransformArgs) : async Types.CanisterHttpResponsePayload {
-    let transformed : Types.CanisterHttpResponsePayload = {
+  public query func transform(raw : HttpTypes.TransformArgs) : async HttpTypes.CanisterHttpResponsePayload {
+    let transformed : HttpTypes.CanisterHttpResponsePayload = {
       status = raw.response.status;
       body = raw.response.body;
       headers = [
@@ -1242,14 +1222,12 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     transformed;
   };
 
- 
-
   //PULIC METHOD
   //This method sends a POST request to a URL with a free API we can test.
   public func send_notifications(name : Text, email : Text, phone : Text, amount : Text, sender : Text) : async () {
-    let ic : Types.IC = actor ("aaaaa-aa");
+    let ic : HttpTypes.IC = actor ("aaaaa-aa");
     let url = "https://icpos-notifications.xyz/.netlify/functions/notify";
-   // let idempotency_key : Text = Random.byte
+    // let idempotency_key : Text = Random.byte
     let request_headers = [
       { name = "Content-Type"; value = "application/json" },
     ];
@@ -1259,13 +1237,13 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
     let requestBodyAsBlob : Blob = Text.encodeUtf8(requestBodyJson);
     let requestBodyAsNat8 : [Nat8] = Blob.toArray(requestBodyAsBlob);
     // 2.2.1 Transform context
-    let transform_context : Types.TransformContext = {
+    let transform_context : HttpTypes.TransformContext = {
       function = transform;
       context = Blob.fromArray([]);
     };
 
     // 2.3 The HTTP request
-    let http_request : Types.HttpRequestArgs = {
+    let http_request : HttpTypes.HttpRequestArgs = {
       url = url;
       max_response_bytes = ?Nat64.fromNat(1000); //optional for request
       headers = request_headers;
@@ -1276,7 +1254,7 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
       //transform = null;
     };
     Cycles.add(70_000_000);
-    let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
+    let http_response : HttpTypes.HttpResponsePayload = await ic.http_request(http_request);
 
     Debug.print("http_response: " # debug_show (http_response));
 
@@ -1295,10 +1273,10 @@ public shared ({ caller }) func getMetamaskUsers(): async [(Text, Principal)] {
   //PRIVATE HELPER FUNCTION
   //Helper method that generates a Universally Unique Identifier
   //this method is used for the Idempotency Key used in the request headers of the POST request.
-   public func generateUUID() : async Text {
+  public func generateUUID() : async Text {
     let random = Random.Finite(await Random.blob());
     let randomNat = random.range(32);
-    switch(randomNat) {
+    switch (randomNat) {
       case (?nat) { return "UUID-" # Nat.toText(nat) };
       case null { throw Error.reject("Entropy exhausted") };
     };

@@ -4,9 +4,10 @@ import Nat32 "mo:base/Nat32";
 import Result "mo:base/Result";
 import Text "mo:base/Text";
 import Types "types";
+import PaymentTypes "payment-types";
 module {
 
-  type Payslip = Types.Payslip;
+  type Payslip = PaymentTypes.Payslip;
 
   public type Taxbands = {
     #tenpercent;

@@ -9,28 +9,26 @@ const registrationData = {
   phone_number: "",
 };
 
-
 //const whoamiActor = authStore.whoamiActor
 const logout = () => {
   // router.push("/auth")
   authStore.logout();
 };
-
 </script>
 <template>
   <main
-    
-    class=" flex h-full flex-col bg-primary md:min-h-full md:flex-row md:overflow-hidden"
+    class="flex h-full flex-col bg-primary md:min-h-full md:flex-row md:overflow-hidden"
   >
     <div
       class="flex min-h-screen w-full grow flex-col items-center justify-start bg-primary"
     >
       <div class="flex items-center justify-between self-stretch px-6 pt-6">
         <div class="flex gap-2">
-          <div class="text-md text-black">
-            Signing up as  
-          </div>
-          <div @click="logout()" class="cursor-pointer text-subtitle-md text-black">
+          <div class="text-md text-black">Signing up as</div>
+          <div
+            @click="logout()"
+            class="cursor-pointer text-subtitle-md text-black"
+          >
             Sign out
           </div>
         </div>
@@ -40,7 +38,7 @@ const logout = () => {
         <div
           class="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary"
         >
-          <img src="./assets/dfinity.svg" alt="Dfinity"  />
+          <img src="./assets/dfinity.svg" alt="Dfinity" />
         </div>
         <h1 class="text-headline-md text-primary">Tell us about you</h1>
         <form class="flex w-80 flex-col items-center gap-6">
@@ -86,10 +84,10 @@ const logout = () => {
             >
               <div class="flex-1">
                 <input
-                  type="text"
+                  type="email"
                   class="w-full border-0 bg-inherit p-0 shadow-none outline-none ring-0 placeholder:text-disabled focus:shadow-none focus:outline-none focus:ring-0 rounded-l-lg rounded-r-lg text-primary h-[30px] text-body-lg"
-                  placeholder="Company name"
-                  value=""
+                  placeholder="Email Address"
+                  value="youremail@backup.com"
                 />
               </div>
             </div>
@@ -99,7 +97,7 @@ const logout = () => {
                 data-tooltip-id="daa7b629-823e-4f02-93db-ffda5ffc95de"
               >
                 <div class="flex w-full items-center justify-between gap-3">
-                  <p class="text-black">Your role</p>
+                  <p class="text-black">Choose Account Type</p>
                   <span class="text-black shrink-0"
                     ><svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -110,10 +108,10 @@ const logout = () => {
                     >
                       <path
                         d="M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z"
-                      ></path>
-                      </svg></span>
+                      ></path></svg
+                  ></span>
                 </div>
-                </button >
+              </button>
               <select
                 class="absolute inset-y-0 left-2 w-full cursor-pointer opacity-0"
               >
@@ -123,7 +121,7 @@ const logout = () => {
                 </option>
                 <option value="Business-Owner">Business Owner</option>
                 <option value="Employee"></option>
-                <option value="Individual">Individual</option>
+                <!--option value="Individual">Individual</option-->
                 <option value="Design-Agency-Freelance">
                   Design Agency &amp; Freelance
                 </option>
@@ -140,15 +138,13 @@ const logout = () => {
             </button>
             <p class="text-center text-body-md text-black">
               By clicking “Continue”, you agree to our
-              <a class="text-autom8-blue-500" href="#">Terms</a> and
-              acknowledge our
-              <a class="text-autom8-blue-500" href="#"
-                >Privacy policy</a
-              >
+              <a class="text-autom8-blue-500" href="#">Terms</a> and acknowledge
+              our
+              <a class="text-autom8-blue-500" href="#">Privacy policy</a>
             </p>
           </div>
         </form>
       </div>
     </div>
- </main>
+  </main>
 </template>

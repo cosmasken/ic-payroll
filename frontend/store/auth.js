@@ -119,8 +119,13 @@ export const useAuthStore = defineStore("auth", {
     async requestAccounts() {
       try {
         // Request account access
-        const accounts = await ethereum.request({
-          method: "eth_requestAccounts",
+        // const accounts = await ethereum.request({
+        //   method: "eth_requestAccounts",
+        // });
+
+        // Check if there are any accounts already connected
+        const existingAccounts = await ethereum.request({
+          method: "eth_accounts",
         });
         console.log("Accounts:", accounts);
         // Assuming the first account is used for signing
