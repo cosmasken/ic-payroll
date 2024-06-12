@@ -170,7 +170,7 @@ const organizations = [
                 <div
                   class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                 >
-                <img src="../../assets/search.svg" alt="search"/>
+                  <img src="../../assets/search.svg" alt="search" />
                 </div>
                 <input
                   id="search"
@@ -189,7 +189,7 @@ const organizations = [
                 type="button"
                 class="inline-flex items-center justify-center sm:w-48 min-w-[130px] rounded-md border border-gray-300 bg-[#fff] px-3 py-2 text-sm space-x-2 font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
               >
-              <img src="../../assets/filter.svg" alt="filter"/>
+                <img src="../../assets/filter.svg" alt="filter" />
                 <span>Apply Filter</span>
               </button>
 

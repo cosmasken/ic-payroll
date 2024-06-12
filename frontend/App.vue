@@ -37,7 +37,7 @@ const organogram = [
 ];
 const employees = [
   { to: "/home/all-employees", text: "All Employees" },
- // { to: "/home/consultants", text: "Consultants" },
+  // { to: "/home/consultants", text: "Consultants" },
   { to: "/home/add-employee", text: "Add Employee" },
   // Add more links here
 ];
@@ -64,18 +64,16 @@ const assets = [
 
 const getTestTokens = async () => {
   try {
-    isLoading.value = true
-    const response = authStore.whoamiActor.transferFromCanistertoSubAccount()
-    console.log(response)
-   // transferresponse.value = await response
+    isLoading.value = true;
+    const response = authStore.whoamiActor.transferFromCanistertoSubAccount();
+    console.log(response);
+    // transferresponse.value = await response
   } catch (error) {
-    console.error("Error Getting tokens:", error)
+    console.error("Error Getting tokens:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
-
-
+};
 </script>
 
 <template class="font-lexend">
@@ -390,7 +388,7 @@ const getTestTokens = async () => {
                     leave.duration.300ms
                     class="pl-[34px] pr-7 space-y-1"
                   >
-                  <router-link
+                    <router-link
                       to="/home/one-time-payments"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
@@ -1052,12 +1050,12 @@ const getTestTokens = async () => {
               <p class="text-gray-900 text-base font-semibold">IC-Payroll</p>
             </div>
             <button
-            @click="getTestTokens()"
-            type="button"
-            class="inline-flex items-center justify-center sm:w-40 min-w-[125px] rounded-md border border-autom8-blue-500 bg-autom8-blue-500 px-3 py-2 text-sm space-x-2 font-medium leading-4 text-white shadow-sm hover:bg-autom8-blue-600 hover:border-autom8-blue-600 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
-          >
-            Get loan
-          </button>
+              @click="getTestTokens()"
+              type="button"
+              class="inline-flex items-center justify-center sm:w-40 min-w-[125px] rounded-md border border-autom8-blue-500 bg-autom8-blue-500 px-3 py-2 text-sm space-x-2 font-medium leading-4 text-white shadow-sm hover:bg-autom8-blue-600 hover:border-autom8-blue-600 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
+            >
+              Get loan
+            </button>
             <!--div class="hidden md:block">
               <label
                 for="accountType"

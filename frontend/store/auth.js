@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
-import {HttpAgent} from "@dfinity/agent";
+import { HttpAgent } from "@dfinity/agent";
 import { Ed25519KeyIdentity } from "@dfinity/identity";
 import {
   createActor,
@@ -147,19 +147,18 @@ export const useAuthStore = defineStore("auth", {
 
         const principal = identity.getPrincipal();
 
-        const fundingaddress = await this.whoamiActor?.addToMetamaskUsers({
+        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers({
           address: account,
           identity: principal,
         });
 
-        console.log("Funding Address:", fundingaddress);
-      //  this.isRegistered = await whoamiActor?.isRegistered();
+        console.log("addToMetamaskUsers:", addToMetamaskUsers);
+        //  this.isRegistered = await whoamiActor?.isRegistered();
         console.log("is registered" + this.isRegistered);
       } catch (error) {
         console.error("Error requesting accounts or signing message:", error);
       }
     },
-
 
     async getBalance() {
       // const whoamiActor = toRaw(this.whoamiActor);
@@ -203,7 +202,6 @@ export const useAuthStore = defineStore("auth", {
     updateOrganizations(data) {
       this.organizations = data;
       console.log("organizations", this.organizations);
-
     },
 
     updateTranferArgs(data) {
@@ -221,9 +219,9 @@ export const useAuthStore = defineStore("auth", {
     setUserInfo(userInfo) {
       this.userInfo = userInfo;
     },
-    async update_user(principal,firstname, lastname, email, phone) {
+    async update_user(principal, firstname, lastname, email, phone) {
       const response = await this.whoamiActor?.updateUser({
-        principal:principal,
+        principal: principal,
         first_name: firstname,
         last_name: lastname,
         email_address: email,
@@ -270,7 +268,7 @@ export const useAuthStore = defineStore("auth", {
         code: code,
         name: name,
       });
-      
+
       if (response.status === 200) {
         console.log(" organization registered");
         console.log(response);
@@ -282,7 +280,6 @@ export const useAuthStore = defineStore("auth", {
         name: name,
       });
 
-      
       if (response.status === 200) {
         console.log(" organization registered");
         console.log(response);

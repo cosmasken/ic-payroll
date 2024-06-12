@@ -3,21 +3,18 @@ import router from "./router";
 import SignIn from "./components/auth/SignIn.vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "./store/auth";
-//import { useEthStore } from "./store/eth"
-
 const authStore = useAuthStore();
-//const ethStore = useEthStore();
 
 const { isReady, isAuthenticated } = storeToRefs(authStore);
 if (isReady.value === false) {
   authStore.init();
 } else {
   //router.push("/home/dashboard");
-    if(isAuthenticated.value === false){
-      router.push("/auth");
-    }else {
-      router.push("/home/owner-profile");
-    };
+  if (isAuthenticated.value === false) {
+    router.push("/auth");
+  } else {
+    router.push("/setup-account");
+  }
 }
 </script>
 <template class="font-lexend">

@@ -19,7 +19,6 @@ const leaves = [
     days: 21,
     name: "Annual Leave",
   },
-
 ];
 </script>
 <template>
@@ -27,12 +26,8 @@ const leaves = [
     class="flex-1 flex flex-col min-h-full px-4 md:px-6 lg:px-7 pt-4 md:pt-6"
   >
     <div class="mb-6">
-      <h2 class="text-lg lg:text-xl font-semibold text-gray-900">
-        Leaves
-      </h2>
-      <p class="text-sm sm:text-base text-gray-500 font-normal">
-        Leave Types
-      </p>
+      <h2 class="text-lg lg:text-xl font-semibold text-gray-900">Leaves</h2>
+      <p class="text-sm sm:text-base text-gray-500 font-normal">Leave Types</p>
     </div>
     <!-- title section -->
     <!-- table section -->
@@ -50,7 +45,7 @@ const leaves = [
                 <div
                   class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                 >
-                <img src="../../assets/search.svg" alt="search"/>
+                  <img src="../../assets/search.svg" alt="search" />
                 </div>
                 <input
                   id="search"
@@ -69,7 +64,7 @@ const leaves = [
                 type="button"
                 class="inline-flex items-center justify-center sm:w-48 min-w-[130px] rounded-md border border-gray-300 bg-[#fff] px-3 py-2 text-sm space-x-2 font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
               >
-              <img src="../../assets/filter.svg" alt="filter"/>
+                <img src="../../assets/filter.svg" alt="filter" />
                 <span>Apply Filter</span>
               </button>
 
@@ -163,7 +158,6 @@ const leaves = [
                   <table class="divide-y divide-gray-300 w-full">
                     <thead class="bg-gray-50">
                       <tr>
-                        
                         <th
                           scope="col"
                           class="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
@@ -192,7 +186,6 @@ const leaves = [
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-[#fff]">
                       <tr v-for="org in leaves" :key="org.days">
-                        
                         <td
                           class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                         >

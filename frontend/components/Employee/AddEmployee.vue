@@ -13,7 +13,7 @@ let noOfOrganizations = ref(0);
 const isLoading = ref(false);
 const filterOpen = ref(false);
 
-const disability = ref(false)
+const disability = ref(false);
 
 const dropdownItems = [
   { text: "Account settings", url: "#" },
@@ -21,14 +21,13 @@ const dropdownItems = [
   { text: "License", url: "#" },
 ];
 
-
 permissionList: [
-        { id: 'view', label: 'View', model: 'canView' },
-        { id: 'edit', label: 'Edit', model: 'canEdit' },
-        { id: 'pay', label: 'Pay', model: 'canPay' },
-        { id: 'create', label: 'Create', model: 'canUpdate' },
-        { id: 'delete', label: 'Delete', model: 'canDelete' },
-      ];
+  { id: "view", label: "View", model: "canView" },
+  { id: "edit", label: "Edit", model: "canEdit" },
+  { id: "pay", label: "Pay", model: "canPay" },
+  { id: "create", label: "Create", model: "canUpdate" },
+  { id: "delete", label: "Delete", model: "canDelete" },
+];
 
 const gender = [
   {
@@ -40,7 +39,6 @@ const gender = [
     name: "Female",
   },
 ];
-
 
 const employeeType = [
   {
@@ -217,7 +215,6 @@ const data = {
   identity: "",
   gross_salary: "",
   role: "",
-
 };
 
 const userpermissions = {
@@ -257,7 +254,7 @@ const addUser = async () => {
       //   canUpdate: true,
       //   canPay: true,
       // },
-     // permissions : userpermissions,
+      // permissions : userpermissions,
     });
 
     console.log(disability.value);
@@ -687,29 +684,73 @@ const addUser = async () => {
           <label :for="permission.id" class="ml-2 text-sm font-medium text-gray-900">{{ permission.label }}</label>
         </div>
         </form-->
-         <form class="mt-4">
+              <form class="mt-4">
                 <div class="flex items-center mb-4">
-                    <input v-model="userpermissions.canView" id="view" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                    <label for="view" class="ml-2 text-sm font-medium text-gray-900">View</label>
+                  <input
+                    v-model="userpermissions.canView"
+                    id="view"
+                    type="checkbox"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    for="view"
+                    class="ml-2 text-sm font-medium text-gray-900"
+                    >View</label
+                  >
                 </div>
                 <div class="flex items-center mb-4">
-                    <input v-model="userpermissions.canEdit" id="edit" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                    <label for="edit" class="ml-2 text-sm font-medium text-gray-900">Edit</label>
+                  <input
+                    v-model="userpermissions.canEdit"
+                    id="edit"
+                    type="checkbox"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    for="edit"
+                    class="ml-2 text-sm font-medium text-gray-900"
+                    >Edit</label
+                  >
                 </div>
                 <div class="flex items-center mb-4">
-                    <input v-model="userpermissions.canPay" id="edit" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                    <label for="edit" class="ml-2 text-sm font-medium text-gray-900">Pay</label>
+                  <input
+                    v-model="userpermissions.canPay"
+                    id="edit"
+                    type="checkbox"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    for="edit"
+                    class="ml-2 text-sm font-medium text-gray-900"
+                    >Pay</label
+                  >
                 </div>
                 <div class="flex items-center mb-4">
-                    <input v-model="userpermissions.canUpdate" id="create" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                    <label for="create" class="ml-2 text-sm font-medium text-gray-900">Create</label>
+                  <input
+                    v-model="userpermissions.canUpdate"
+                    id="create"
+                    type="checkbox"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    for="create"
+                    class="ml-2 text-sm font-medium text-gray-900"
+                    >Create</label
+                  >
                 </div>
                 <div class="flex items-center mb-4">
-                    <input v-model="userpermissions.canDelete" id="delete" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                    <label for="delete" class="ml-2 text-sm font-medium text-gray-900">Delete</label>
+                  <input
+                    v-model="userpermissions.canDelete"
+                    id="delete"
+                    type="checkbox"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    for="delete"
+                    class="ml-2 text-sm font-medium text-gray-900"
+                    >Delete</label
+                  >
                 </div>
-                    </form>
-             
+              </form>
             </div>
           </div>
         </div>

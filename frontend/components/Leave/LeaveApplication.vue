@@ -17,7 +17,6 @@ let tradingaddress = ref("");
 let isLoading = ref(false);
 let emailExists = ref(false);
 
-
 watchEffect(async () => {
   isLoading.value = true;
   const user = await authStore.whoamiActor?.getUser();
@@ -145,8 +144,8 @@ const schema = yup.object({
             <label
               for="leave-days"
               class="block text-sm font-medium leading-6 text-gray-600"
-              >Leave Days </label
-            >
+              >Leave Days
+            </label>
             <div class="mt-1">
               <input
                 v-model="data.leave_days"
@@ -228,7 +227,7 @@ const schema = yup.object({
             </div>
           </div>
         </div>
-       
+
         <div v-show="authStore.isRegistered === false" class="flex justify-end">
           <button
             @click="addData"

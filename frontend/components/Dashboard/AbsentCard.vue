@@ -25,9 +25,8 @@ const props = defineProps([
 
     <div class="flex flex-col justify-center">
       <p class="text-xs font-normal text-red-500 text-center">
-          {{ props.when }}
-        </p>
-     
+        {{ props.when }}
+      </p>
     </div>
   </div>
 </template>
