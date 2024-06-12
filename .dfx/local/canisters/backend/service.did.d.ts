@@ -6,21 +6,20 @@ export interface Backend {
   'addToMetamaskUsers' : ActorMethod<[string, Principal], Result>,
   'cancelRecurringTimer' : ActorMethod<[bigint], undefined>,
   'checkPayroll' : ActorMethod<[], undefined>,
-  'create_department' : ActorMethod<[CreateDepartmentArgs], Response_9>,
-  'create_designation' : ActorMethod<[CreateDesignationArgs], Response_8>,
-  'create_emp' : ActorMethod<[CreateEmpArgs], Response_5>,
-  'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_7>,
+  'create_department' : ActorMethod<[CreateDepartmentArgs], Response_10>,
+  'create_designation' : ActorMethod<[CreateDesignationArgs], Response_9>,
+  'create_emp' : ActorMethod<[CreateEmpArgs], Response_6>,
+  'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_8>,
   'emailExists' : ActorMethod<[string], boolean>,
-  'generatePayslip' : ActorMethod<[bigint], Response_6>,
+  'generatePayslip' : ActorMethod<[bigint], Response_7>,
   'generateUUID' : ActorMethod<[], string>,
-  'getAddress' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
   'getDepartments' : ActorMethod<[], Array<Department>>,
   'getDepartmentsLength' : ActorMethod<[], string>,
   'getDesignations' : ActorMethod<[], Array<Designation>>,
   'getDesignationsLength' : ActorMethod<[], string>,
-  'getEmpByPrincipal' : ActorMethod<[Principal], Response_5>,
+  'getEmpByPrincipal' : ActorMethod<[Principal], Response_6>,
   'getEmployees' : ActorMethod<[], Array<Emp>>,
   'getFundingAddress' : ActorMethod<[], string>,
   'getFundingBalance' : ActorMethod<[], string>,
@@ -30,6 +29,7 @@ export interface Backend {
   'getNotifications' : ActorMethod<[], Array<Notification__1>>,
   'getOrganizations' : ActorMethod<[], Array<Organization>>,
   'getOrganizationsLength' : ActorMethod<[], string>,
+  'getPrincipalByAddress' : ActorMethod<[string], Response_5>,
   'getTradingAddress' : ActorMethod<[], string>,
   'getTradingBalance' : ActorMethod<[], string>,
   'getTransactionLength' : ActorMethod<[], string>,
@@ -248,6 +248,12 @@ export interface Response_1 {
   'status_text' : string,
   'error_text' : [] | [string],
 }
+export interface Response_10 {
+  'status' : number,
+  'data' : [] | [Department],
+  'status_text' : string,
+  'error_text' : [] | [string],
+}
 export interface Response_2 {
   'status' : number,
   'data' : [] | [string],
@@ -268,31 +274,31 @@ export interface Response_4 {
 }
 export interface Response_5 {
   'status' : number,
-  'data' : [] | [Emp],
+  'data' : [] | [Principal],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_6 {
   'status' : number,
-  'data' : [] | [Payslip],
+  'data' : [] | [Emp],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_7 {
   'status' : number,
-  'data' : [] | [Organization],
+  'data' : [] | [Payslip],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_8 {
   'status' : number,
-  'data' : [] | [Designation],
+  'data' : [] | [Organization],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_9 {
   'status' : number,
-  'data' : [] | [Department],
+  'data' : [] | [Designation],
   'status_text' : string,
   'error_text' : [] | [string],
 }

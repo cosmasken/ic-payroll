@@ -69,35 +69,35 @@ type Result =
  };
 type Response_9 = 
  record {
-   data: opt Department;
+   data: opt Designation;
    error_text: opt text;
    status: nat16;
    status_text: text;
  };
 type Response_8 = 
  record {
-   data: opt Designation;
+   data: opt Organization;
    error_text: opt text;
    status: nat16;
    status_text: text;
  };
 type Response_7 = 
  record {
-   data: opt Organization;
+   data: opt Payslip;
    error_text: opt text;
    status: nat16;
    status_text: text;
  };
 type Response_6 = 
  record {
-   data: opt Payslip;
+   data: opt Emp;
    error_text: opt text;
    status: nat16;
    status_text: text;
  };
 type Response_5 = 
  record {
-   data: opt Emp;
+   data: opt principal;
    error_text: opt text;
    status: nat16;
    status_text: text;
@@ -119,6 +119,13 @@ type Response_3 =
 type Response_2 = 
  record {
    data: opt text;
+   error_text: opt text;
+   status: nat16;
+   status_text: text;
+ };
+type Response_10 = 
+ record {
+   data: opt Department;
    error_text: opt text;
    status: nat16;
    status_text: text;
@@ -357,21 +364,20 @@ service : {
   addToMetamaskUsers: (text, principal) -> (Result);
   cancelRecurringTimer: (nat) -> ();
   checkPayroll: () -> ();
-  create_department: (CreateDepartmentArgs) -> (Response_9);
-  create_designation: (CreateDesignationArgs) -> (Response_8);
-  create_emp: (CreateEmpArgs) -> (Response_5);
-  create_organization: (CreateOrganizationArgs) -> (Response_7);
+  create_department: (CreateDepartmentArgs) -> (Response_10);
+  create_designation: (CreateDesignationArgs) -> (Response_9);
+  create_emp: (CreateEmpArgs) -> (Response_6);
+  create_organization: (CreateOrganizationArgs) -> (Response_8);
   emailExists: (text) -> (bool) query;
-  generatePayslip: (nat) -> (Response_6);
+  generatePayslip: (nat) -> (Response_7);
   generateUUID: () -> (text);
-  getAddress: () -> (text);
   getCanisterAddress: () -> (text);
   getCanisterBalance: () -> (text);
   getDepartments: () -> (vec Department) query;
   getDepartmentsLength: () -> (text) query;
   getDesignations: () -> (vec Designation) query;
   getDesignationsLength: () -> (text) query;
-  getEmpByPrincipal: (principal) -> (Response_5);
+  getEmpByPrincipal: (principal) -> (Response_6);
   getEmployees: () -> (vec Emp);
   getFundingAddress: () -> (text);
   getFundingBalance: () -> (text);
@@ -384,13 +390,14 @@ service : {
   getNotifications: () -> (vec Notification__1);
   getOrganizations: () -> (vec Organization) query;
   getOrganizationsLength: () -> (text) query;
+  getPrincipalByAddress: (text) -> (Response_5);
   getTradingAddress: () -> (text);
   getTradingBalance: () -> (text);
   getTransactionLength: () -> (text) query;
   getUnreadNotifications: () -> (vec Notification__1);
   getUnreadNotificationsLength: () -> (text);
-  getUser: () -> (Response) query;
-  getUserByPrincipal: (principal) -> (Response) query;
+  getUser: () -> (Response);
+  getUserByPrincipal: (principal) -> (Response);
   getUserPayslip: (text) -> (Response_4);
   getUsersList: () -> (vec record {
                              text;

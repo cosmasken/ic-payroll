@@ -14,7 +14,7 @@ const login = () => {
 
 const requestAccounts = () => {
   init();
-  authStore.requestAccounts();
+  authStore.siwe();
 };
 </script>
 <template>

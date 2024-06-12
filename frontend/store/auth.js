@@ -51,6 +51,7 @@ export const useAuthStore = defineStore("auth", {
   state: () => {
     return {
       isReady: false,
+      isRefreshing: false,
       isAuthenticated: null,
       isFirstLaunch: null,
       authClient: null,
@@ -117,15 +118,9 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async requestAccounts() {
-      try {
-        // Request account access
-        // const accounts = await ethereum.request({
-        //   method: "eth_requestAccounts",
-        // });
-
         // Check if there are any accounts already connected
-        const existingAccounts = await ethereum.request({
-          method: "eth_accounts",
+        const accounts = await ethereum.request({
+          method: "eth_requestAccounts",
         });
         console.log("Accounts:", accounts);
         // Assuming the first account is used for signing
@@ -134,11 +129,15 @@ export const useAuthStore = defineStore("auth", {
         const message = "Sign In to IC-Pay";
         // Hash the message (optional but recommended)
         // const messageHash = web3.utils.sha3(message);
+         // Convert the message to hex format
+    const msgHex = `0x${Buffer.from(message, "utf8").toString("hex")}`;
         // Sign the hashed message
         const signature = await ethereum.request({
           method: "personal_sign",
-          params: [message, account],
+          params: [msgHex, account], // Note the correct order of parameters
         });
+
+        console.log("Signature:", signature);
         //generate identity
         const identity = Ed25519KeyIdentity.generate();
         //create whoami actor
@@ -152,17 +151,57 @@ export const useAuthStore = defineStore("auth", {
 
         const principal = identity.getPrincipal();
 
-        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers({
-          address: account,
-          identity: principal,
-        });
+        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(account, principal,);
 
         console.log("addToMetamaskUsers:", addToMetamaskUsers);
         //  this.isRegistered = await whoamiActor?.isRegistered();
         console.log("is registered" + this.isRegistered);
-      } catch (error) {
-        console.error("Error requesting accounts or signing message:", error);
+     
+    },
+
+
+    async siwe(){
+      //generate identity
+      const identity = Ed25519KeyIdentity.generate();
+      //create whoami actor
+      const whoamiActor = identity ? actorFromIdentity(identity) : null;
+      // Check if there are any accounts already connected
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Accounts:", accounts);
+      // Assuming the first account is used for signing
+      const account = accounts[0];
+      // The message you want to sign
+      const message = "Sign In to IC-Pay";
+      const msgHex = `0x${Buffer.from(message, "utf8").toString("hex")}`;
+      const signature = await ethereum.request({
+        method: "personal_sign",
+        params: [msgHex, account], // Note the correct order of parameters
+      });
+
+      //check if address is already registered
+      const isRegistered = await whoamiActor?.getPrincipalByAddress(account);
+      
+      if(isRegistered){
+        this.isAuthenticated = true;
+        this.identity = identity;
+        this.whoamiActor = whoamiActor;
+        this.isReady = true;
+        this.isRegistered = false;
+        console.log("already registered");
+      }else{
+        const principal = identity.getPrincipal();
+        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(account, principal,);
+        this.isAuthenticated = true;
+        this.identity = identity;
+        this.whoamiActor = whoamiActor;
+        this.isReady = true;
+        this.isRegistered = false;
+        console.log("addedToMetamaskUsers:", principal);
+        console.log("identity" , identity);
       }
+
     },
 
     async getBalance() {

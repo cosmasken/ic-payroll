@@ -6,7 +6,8 @@ type Department = {code : Text; creator : Principal; name : Text};
 type Department__1 = Department;
 type Designation = {code : Text; creator : Principal; name : Text};
 type Designation__1 = Designation;
-type Emp =
+type Emp = Employee;
+type Employee =
   {
     creator : Principal;
     department : Text;
@@ -25,7 +26,6 @@ type Emp =
     phone_number : Text;
     role : Text
   };
-type Emp__1 = Emp;
 type Hash = Nat32;
 type Invoice =
   {
@@ -59,7 +59,7 @@ type PayrollType =
     successful : Bool
   };
 type PayrollType__1 = PayrollType;
-type Transaction =
+type Transaction__1 =
   {
     amount : Nat;
     created_at : Int;
@@ -68,7 +68,7 @@ type Transaction =
     id : Nat;
     successful : Bool
   };
-type Transaction__2 = Transaction;
+type Transaction__3 = Transaction__1;
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
 type User =
   {
@@ -79,7 +79,7 @@ type User =
     phone_notifications : Bool;
     phone_number : Text
   };
-type User__1 = User;
+type User__2 = User;
 actor {
   stable var contactsCounter : Nat;
   stable var courierApiKey : Text;
@@ -98,10 +98,10 @@ actor {
   stable var organizationsCounter : Nat;
   stable var organizationsStable : [(Nat, Organization__1)];
   stable var payrollCounter : Nat;
-  stable var stableEmployees : [(Nat, Emp__1)];
+  stable var stableEmployees : [(Nat, Emp)];
   stable var stablePayroll : [(Nat, [PayrollType__1])];
   stable var transactionCounter : Nat;
-  stable var transactionsStable : [(Nat, Transaction__2)];
+  stable var transactionsStable : [(Nat, Transaction__3)];
   stable var userStore :
-    {#branch : Branch<Text, User__1>; #empty; #leaf : Leaf<Text, User__1>}
+    {#branch : Branch<Text, User__2>; #empty; #leaf : Leaf<Text, User__2>}
 };

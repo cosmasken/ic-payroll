@@ -7,6 +7,7 @@ import Array "mo:base/Array";
 import Blob "mo:base/Blob";
 import Char "mo:base/Char";
 import CkBtcLedger "canister:ckbtc_ledger";
+
 //import CkBtcIndex "canister:icrc1_index";
 import Types "./types";
 import HttpTypes "./http-types";
@@ -36,6 +37,8 @@ import { abs } = "mo:base/Int";
 import { now } = "mo:base/Time";
 import { setTimer; recurringTimer; cancelTimer } = "mo:base/Timer";
 import Taxcalculator "taxcalculator";
+import BalanceUtils "balance-utils";
+import UserUtils "user-utils";
 
 shared (actorContext) actor class Backend() = this {
 
@@ -136,6 +139,30 @@ shared (actorContext) actor class Backend() = this {
     return Buffer.toArray<(Text, Principal)>(buffer);
   };
 
+    public shared ({ caller }) func getPrincipalByAddress(walletAddress : Text) : async Types.Response<Principal> {
+    let allEntries = Iter.toArray(selfcustodyusers.entries());
+
+    //get employee by principal and then if creator is caller return employee
+    for ((key, value) in allEntries.vals()) {
+      if (walletAddress == key) {
+          return {
+            status = 200;
+            status_text = "OK";
+            data = ?value;
+            error_text = null;
+          };
+        
+      };
+    };
+
+    return {
+      status = 404;
+      status_text = "Not Found";
+      data = null;
+      error_text = null;
+    };
+  };
+
   public shared ({ caller }) func getUserPayslip(identity : Text) : async Types.Response<PayslipData> {
     let employee = await getEmpByPrincipal(Principal.fromText(identity));
     Debug.print("employee is " # debug_show (employee));
@@ -208,7 +235,7 @@ shared (actorContext) actor class Backend() = this {
     ignore cancelTimer(id);
   };
 
-  public shared ({ caller }) func save_payroll(args : StorageTypes.SchedulePaymentsArgs) : async StorageTypes.SchedulePaymentsResult {
+  public shared ({ caller }) func save_payroll(args : PaymentTypes.SchedulePaymentsArgs) : async PaymentTypes.SchedulePaymentsResult {
     let id : Nat = payrollCounter;
     let receivers = args.receivers;
     // increment counter
@@ -229,51 +256,33 @@ shared (actorContext) actor class Backend() = this {
   /**
     *  Get the merchant's information
     */
-  public query (context) func getUser() : async Types.Response<User> {
-    let caller : Principal = context.caller;
-
-    switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
-      case (?user) {
-        {
-          status = 200;
-          status_text = "OK";
-          data = ?user;
-          error_text = null;
-        };
-      };
-      case null {
-        {
-          status = 404;
-          status_text = "Not Found";
-          data = null;
-          error_text = ?("User with principal ID: " # Principal.toText(caller) # " not found.");
-        };
-      };
-    };
+  public  shared ({ caller }) func getUser() : async Types.Response<User> {
+return await  UserUtils.getUser(userStore,caller);
   };
 
   /**
     *  Get user data by principal
     */
-  public query (context) func getUserByPrincipal(principal : Principal) : async Types.Response<User> {
-    switch (Trie.get(userStore, userKey(Principal.toText(principal)), Text.equal)) {
-      case (?user) {
-        {
-          status = 200;
-          status_text = "OK";
-          data = ?user;
-          error_text = null;
-        };
-      };
-      case null {
-        {
-          status = 404;
-          status_text = "Not Found";
-          data = null;
-          error_text = ?("User with principal ID: " # Principal.toText(principal) # " not found.");
-        };
-      };
-    };
+  public shared ({ caller }) func getUserByPrincipal(principal : Principal) : async Types.Response<User> {
+    // switch (Trie.get(userStore, userKey(Principal.toText(principal)), Text.equal)) {
+    //   case (?user) {
+    //     {
+    //       status = 200;
+    //       status_text = "OK";
+    //       data = ?user;
+    //       error_text = null;
+    //     };
+    //   };
+    //   case null {
+    //     {
+    //       status = 404;
+    //       status_text = "Not Found";
+    //       data = null;
+    //       error_text = ?("User with principal ID: " # Principal.toText(principal) # " not found.");
+    //     };
+    //   };
+    // };
+    return await UserUtils.getUserByPrincipal(userStore,principal);
   };
 
   /**
@@ -328,33 +337,15 @@ shared (actorContext) actor class Backend() = this {
   };
 
   public shared ({ caller }) func getFundingBalance() : async Text {
-    let balance = await CkBtcLedger.icrc1_balance_of(
-
-      {
-        owner = caller;
-        subaccount = null;
-      },
-    );
-    return Nat.toText(balance);
+    return await BalanceUtils.getFundingBalance(caller);
   };
 
   public shared ({ caller }) func getTradingBalance() : async Text {
-    let balance = await CkBtcLedger.icrc1_balance_of({
-      owner = Principal.fromActor(this);
-      subaccount = ?toSubaccount(caller);
-    });
-    return Nat.toText(balance);
+    return await BalanceUtils.getTradingBalance(Principal.fromActor(this), caller);
   };
 
   public shared ({ caller }) func getCanisterBalance() : async Text {
-    let balance = await CkBtcLedger.icrc1_balance_of(
-
-      {
-        owner = Principal.fromActor(this);
-        subaccount = null;
-      },
-    );
-    return Nat.toText(balance);
+    return await BalanceUtils.getCanisterBalance(Principal.fromActor(this));
   };
 
   public shared ({ caller }) func getFundingAddress() : async Text {
@@ -852,7 +843,7 @@ shared (actorContext) actor class Backend() = this {
   };
 
   //create new employee
-  public shared ({ caller }) func create_emp(args : StorageTypes.CreateEmpArgs) : async StorageTypes.Response<Emp> {
+  public shared ({ caller }) func create_emp(args : StorageTypes.CreateEmpArgs) : async Types.Response<Emp> {
     let id : Nat = noOfEmployees;
     // increment counter
     noOfEmployees += 1;
@@ -889,7 +880,7 @@ shared (actorContext) actor class Backend() = this {
   };
 
   // #region Create Department
-  public shared ({ caller }) func create_department(args : StorageTypes.CreateDepartmentArgs) : async StorageTypes.Response<Department> {
+  public shared ({ caller }) func create_department(args : StorageTypes.CreateDepartmentArgs) : async Types.Response<Department> {
     let id : Nat = departmentsCounter;
     // increment counter
     departmentsCounter += 1;
@@ -914,7 +905,7 @@ shared (actorContext) actor class Backend() = this {
   // #endregion
 
   // #region Create Organization
-  public shared ({ caller }) func create_organization(args : StorageTypes.CreateOrganizationArgs) : async StorageTypes.Response<Organization> {
+  public shared ({ caller }) func create_organization(args : StorageTypes.CreateOrganizationArgs) : async Types.Response<Organization> {
     let id : Nat = organizationsCounter;
     // increment counter
     organizationsCounter += 1;
@@ -975,7 +966,7 @@ shared (actorContext) actor class Backend() = this {
   };
 
   // #region Create Designation
-  public shared ({ caller }) func create_designation(args : StorageTypes.CreateDesignationArgs) : async StorageTypes.Response<Designation> {
+  public shared ({ caller }) func create_designation(args : StorageTypes.CreateDesignationArgs) : async Types.Response<Designation> {
     let id : Nat = designationsCounter;
     // increment counter
     designationsCounter += 1;

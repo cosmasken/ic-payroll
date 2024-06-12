@@ -101,8 +101,7 @@ const addData = async () => {
   if (exists) {
     emailExists.value = true;
     authStore.isRegistered = true;
-    isLoading.value = false;
-    return;
+    
   }
 
   console.log("exists" + exists);
@@ -130,7 +129,7 @@ const addData = async () => {
     console.error("Error submitting data:", error);
   } finally {
     isLoading.value = false;
-    refresh();
+   // refresh();
   }
 };
 </script>

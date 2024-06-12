@@ -2,21 +2,20 @@ type Backend = service {
   addToMetamaskUsers : (text, principal) -> (Result);
   cancelRecurringTimer : (nat) -> ();
   checkPayroll : () -> ();
-  create_department : (CreateDepartmentArgs) -> (Response_9);
-  create_designation : (CreateDesignationArgs) -> (Response_8);
-  create_emp : (CreateEmpArgs) -> (Response_5);
-  create_organization : (CreateOrganizationArgs) -> (Response_7);
+  create_department : (CreateDepartmentArgs) -> (Response_10);
+  create_designation : (CreateDesignationArgs) -> (Response_9);
+  create_emp : (CreateEmpArgs) -> (Response_6);
+  create_organization : (CreateOrganizationArgs) -> (Response_8);
   emailExists : (text) -> (bool) query;
-  generatePayslip : (nat) -> (Response_6);
+  generatePayslip : (nat) -> (Response_7);
   generateUUID : () -> (text);
-  getAddress : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
   getDepartments : () -> (vec Department) query;
   getDepartmentsLength : () -> (text) query;
   getDesignations : () -> (vec Designation) query;
   getDesignationsLength : () -> (text) query;
-  getEmpByPrincipal : (principal) -> (Response_5);
+  getEmpByPrincipal : (principal) -> (Response_6);
   getEmployees : () -> (vec Emp);
   getFundingAddress : () -> (text);
   getFundingBalance : () -> (text);
@@ -26,13 +25,14 @@ type Backend = service {
   getNotifications : () -> (vec Notification__1);
   getOrganizations : () -> (vec Organization) query;
   getOrganizationsLength : () -> (text) query;
+  getPrincipalByAddress : (text) -> (Response_5);
   getTradingAddress : () -> (text);
   getTradingBalance : () -> (text);
   getTransactionLength : () -> (text) query;
   getUnreadNotifications : () -> (vec Notification__1);
   getUnreadNotificationsLength : () -> (text);
-  getUser : () -> (Response) query;
-  getUserByPrincipal : (principal) -> (Response) query;
+  getUser : () -> (Response);
+  getUserByPrincipal : (principal) -> (Response);
   getUserPayslip : (text) -> (Response_4);
   getUsersList : () -> (vec record { text; User }) query;
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
@@ -224,6 +224,12 @@ type Response_1 = record {
   status_text : text;
   error_text : opt text;
 };
+type Response_10 = record {
+  status : nat16;
+  data : opt Department;
+  status_text : text;
+  error_text : opt text;
+};
 type Response_2 = record {
   status : nat16;
   data : opt text;
@@ -244,31 +250,31 @@ type Response_4 = record {
 };
 type Response_5 = record {
   status : nat16;
-  data : opt Emp;
+  data : opt principal;
   status_text : text;
   error_text : opt text;
 };
 type Response_6 = record {
   status : nat16;
-  data : opt Payslip;
+  data : opt Emp;
   status_text : text;
   error_text : opt text;
 };
 type Response_7 = record {
   status : nat16;
-  data : opt Organization;
+  data : opt Payslip;
   status_text : text;
   error_text : opt text;
 };
 type Response_8 = record {
   status : nat16;
-  data : opt Designation;
+  data : opt Organization;
   status_text : text;
   error_text : opt text;
 };
 type Response_9 = record {
   status : nat16;
-  data : opt Department;
+  data : opt Designation;
   status_text : text;
   error_text : opt text;
 };

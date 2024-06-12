@@ -9,6 +9,7 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Text "mo:base/Text";
 import Types "./types";
+import UserTypes "user-types";
 
 /** https://github.com/dfinity/ICRC-1/blob/main/ref/Account.mo */
 module Account2TextConverter {
@@ -20,7 +21,7 @@ module Account2TextConverter {
   };
 
   /// Converts an account to text.
-  public func toText({ owner; subaccount } : Types.Account) : Text {
+  public func toText({ owner; subaccount } : UserTypes.Account) : Text {
     let ownerText = Principal.toText(owner);
     switch (subaccount) {
       case (null) { ownerText };
@@ -36,7 +37,7 @@ module Account2TextConverter {
   };
 
   /// Parses account from its textual representation.
-  public func fromText(text : Text) : Result.Result<Types.Account, ParseError> {
+  public func fromText(text : Text) : Result.Result<UserTypes.Account, ParseError> {
     let n = text.size();
 
     if (n == 0) {
