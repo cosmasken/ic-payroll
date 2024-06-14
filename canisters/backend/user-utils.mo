@@ -3,9 +3,17 @@ import Principal "mo:base/Principal";
 import Types "types";
 import Trie "mo:base/Trie";
 import Text "mo:base/Text";
+import Nat "mo:base/Nat";
 module UserUtils{
 
     type User = UserTypes.User;
+   
+     /**
+    * Generate a Trie key based on  principal ID
+    */
+  private func userKey(x : Text) : Trie.Key<Text> {
+    return { hash = Text.hash(x); key = x };
+  };
 
   public func getUser(userStore:Trie.Trie<Text, User>,caller:Principal) : async Types.Response<User> {
 
@@ -55,9 +63,28 @@ module UserUtils{
   };
 
     /**
-    * Generate a Trie key based on  principal ID
+    *  Check if user exists and return Bool
     */
-  private func userKey(x : Text) : Trie.Key<Text> {
-    return { hash = Text.hash(x); key = x };
+  public func isRegistered(userStore:Trie.Trie<Text, User>, caller : Principal) : async Bool {
+  
+    switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
+      case (?user) {
+        return true;
+      };
+      case null {
+        return false;
+      };
+    };
   };
+
+
+  /**
+    *  Check no of registered users
+    */
+  public  func userLength(userStore:Trie.Trie<Text, User>) : async Text {
+    var size = Trie.size(userStore);
+    return Nat.toText(size);
+  };
+
+   
 }

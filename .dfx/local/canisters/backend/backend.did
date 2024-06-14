@@ -370,6 +370,7 @@ type Backend =
    create_emp: (CreateEmpArgs) -> (Response_6);
    create_organization: (CreateOrganizationArgs) -> (Response_8);
    emailExists: (text) -> (bool) query;
+   generateCode: (text) -> (text);
    generatePayslip: (nat) -> (Response_7);
    generateUUID: () -> (text);
    getCanisterAddress: () -> (text);
@@ -410,7 +411,7 @@ type Backend =
    get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
    get_transactions: () -> (vec Transaction) query;
    /// *  Check if user exists and return Bool
-   isRegistered: () -> (bool) query;
+   isRegistered: () -> (bool);
    mapPrincipal: (text) -> (principal);
    runpayroll: (vec PayrollType__1) -> (Response_3);
    save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
@@ -426,7 +427,7 @@ type Backend =
    transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;
    /// * Update the user's information
    updateUser: (User) -> (Response);
-   userLength: () -> (text) query;
+   userLength: () -> (text);
    whoami: () -> (principal) query;
  };
 service : () -> Backend

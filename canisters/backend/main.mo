@@ -39,6 +39,7 @@ import { setTimer; recurringTimer; cancelTimer } = "mo:base/Timer";
 import Taxcalculator "taxcalculator";
 import BalanceUtils "balance-utils";
 import UserUtils "user-utils";
+import EmailUtils "email-utils";
 
 shared (actorContext) actor class Backend() = this {
 
@@ -288,17 +289,10 @@ return await  UserUtils.getUser(userStore,caller);
   /**
     *  Check if user exists and return Bool
     */
-  public query (context) func isRegistered() : async Bool {
-    let caller : Principal = context.caller;
+  public shared ({ caller }) func isRegistered() : async Bool {
 
-    switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
-      case (?user) {
-        return true;
-      };
-      case null {
-        return false;
-      };
-    };
+    return await UserUtils.isRegistered(userStore,caller);
+    
   };
 
   /**
@@ -322,9 +316,9 @@ return await  UserUtils.getUser(userStore,caller);
   };
 
   //no of users
-  public query func userLength() : async Text {
-    var size = Trie.size(userStore);
-    return Nat.toText(size);
+  public shared ({ caller }) func userLength() : async Text {
+   
+     return await UserUtils.userLength(userStore);
   };
 
   public query func getUsersList() : async [(Text, User)] {
@@ -1214,10 +1208,12 @@ return await  UserUtils.getUser(userStore,caller);
   };
 
   //PULIC METHOD
-  //This method sends a POST request to a URL with a free API we can test.
+ //This method sends a POST request to a URL with a free API we can test.
   public func send_notifications(name : Text, email : Text, phone : Text, amount : Text, sender : Text) : async () {
     let ic : HttpTypes.IC = actor ("aaaaa-aa");
-    let url = "https://icpos-notifications.xyz/.netlify/functions/notify";
+    
+    //to get emails working fork https://github.com/cosmasken/bitpochi-notifications/ and deploy on netlify and change the follwing line
+    let url = "https://bitpochi-notifications.netlify.app/.netlify/functions/notify";
     // let idempotency_key : Text = Random.byte
     let request_headers = [
       { name = "Content-Type"; value = "application/json" },
@@ -1255,9 +1251,11 @@ return await  UserUtils.getUser(userStore,caller);
         case (null) { "No value returned" };
         case (?y) { y };
       };
-      log("Error sending notification: " # decoded_text);
+     // log("Error sending notification: " # decoded_text);
+     Debug.print("Error sending notification: " # decoded_text);
     } else {
-      log("Notification sent");
+        Debug.print("Notification sent to " # email );
+    //  log("Notification sent");
     };
   };
 
@@ -1269,6 +1267,16 @@ return await  UserUtils.getUser(userStore,caller);
     let randomNat = random.range(32);
     switch (randomNat) {
       case (?nat) { return "UUID-" # Nat.toText(nat) };
+      case null { throw Error.reject("Entropy exhausted") };
+    };
+  };
+
+  //Helper method that generates a unique code for departments/employees/organizations
+   public func generateCode(prefix:Text) : async Text {
+    let random = Random.Finite(await Random.blob());
+    let randomNat = random.range(32);
+    switch (randomNat) {
+      case (?nat) { return prefix # Nat.toText(nat) };
       case null { throw Error.reject("Entropy exhausted") };
     };
   };

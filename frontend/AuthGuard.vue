@@ -13,7 +13,7 @@ if (isReady.value === false) {
   if (isAuthenticated.value === false) {
     router.push("/auth");
   } else {
-    router.push("/home/owner-profile");
+    router.push("/select-account");
   }
 }
 </script>

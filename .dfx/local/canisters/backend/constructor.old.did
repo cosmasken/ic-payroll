@@ -369,6 +369,7 @@ service : {
   create_emp: (CreateEmpArgs) -> (Response_6);
   create_organization: (CreateOrganizationArgs) -> (Response_8);
   emailExists: (text) -> (bool) query;
+  generateCode: (text) -> (text);
   generatePayslip: (nat) -> (Response_7);
   generateUUID: () -> (text);
   getCanisterAddress: () -> (text);
@@ -405,7 +406,7 @@ service : {
                            }) query;
   get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions: () -> (vec Transaction) query;
-  isRegistered: () -> (bool) query;
+  isRegistered: () -> (bool);
   mapPrincipal: (text) -> (principal);
   runpayroll: (vec PayrollType__1) -> (Response_3);
   save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
@@ -419,6 +420,6 @@ service : {
   transferFromSubAccountToSubAccount: (text, nat) -> (Response_1);
   transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;
   updateUser: (User) -> (Response);
-  userLength: () -> (text) query;
+  userLength: () -> (text);
   whoami: () -> (principal) query;
 }

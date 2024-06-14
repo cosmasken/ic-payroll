@@ -4,12 +4,7 @@ import { useAuthStore } from "../../store/auth";
 import * as yup from "yup";
 import Spinner from "../Common/Spinner.vue";
 const authStore = useAuthStore();
-const filterOpen = ref(false);
 const principal = ref("");
-const first_name = ref("");
-const last_name = ref("");
-const email_address = ref("");
-const phone_number = ref("");
 let fundingaddress = ref("");
 let tradingaddress = ref("");
 const fundingbalance = ref("");
@@ -65,20 +60,7 @@ watchEffect(async () => {
   const identity = await authStore.whoamiActor?.whoami();
   principal.value = identity;
 });
-const organizations = [
-  {
-    id: 1,
-    name: "HarambeeApps",
-  },
-  {
-    id: 2,
-    name: "BitPochi",
-  },
-  {
-    id: 3,
-    name: "Bounty Safari",
-  },
-];
+
 const data = {
   first_name: "",
   last_name: "",
@@ -86,30 +68,23 @@ const data = {
   phone_number: "",
 };
 
-const schema = yup.object({
-  email: yup.string().required().email(),
-  firstname: yup.string().required(),
-  lastname: yup.string().required(),
-  phone: yup.string().required(),
-  phone: yup.string().matches(phoneRegExp, "Phone number is not valid"),
-});
 const addData = async () => {
   isLoading.value = true;
-  authStore.updateRegistrationData(data);
-  const exists = await authStore.whoamiActor.emailExists(data.email_address);
+ // authStore.updateRegistrationData(data);
+  // const exists = await authStore.whoamiActor.emailExists(data.email_address);
 
-  if (exists) {
-    emailExists.value = true;
-    authStore.isRegistered = true;
+  // if (exists) {
+  //   emailExists.value = true;
+  //   authStore.isRegistered = true;
     
-  }
+  // }
 
   console.log("exists" + exists);
 
-  const firstname = authStore.registrationData.first_name;
-  const lastname = authStore.registrationData.last_name;
-  const email = authStore.registrationData.email_address;
-  const phone = authStore.registrationData.phone_number;
+  const firstname = data.first_name;
+  const lastname = data.last_name;
+  const email = data.email_address;
+  const phone = data.phone_number;
 
   //console.log(firstname, lastname, email, phone);
 

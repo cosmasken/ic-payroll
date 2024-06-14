@@ -328,6 +328,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'emailExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+    'generateCode' : IDL.Func([IDL.Text], [IDL.Text], []),
     'generatePayslip' : IDL.Func([IDL.Nat], [Response_7], []),
     'generateUUID' : IDL.Func([], [IDL.Text], []),
     'getCanisterAddress' : IDL.Func([], [IDL.Text], []),
@@ -370,7 +371,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
-    'isRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+    'isRegistered' : IDL.Func([], [IDL.Bool], []),
     'mapPrincipal' : IDL.Func([IDL.Text], [IDL.Principal], []),
     'runpayroll' : IDL.Func([IDL.Vec(PayrollType__1)], [Response_3], []),
     'save_notification' : IDL.Func(
@@ -408,7 +409,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'updateUser' : IDL.Func([User], [Response], []),
-    'userLength' : IDL.Func([], [IDL.Text], ['query']),
+    'userLength' : IDL.Func([], [IDL.Text], []),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
   return Backend;
