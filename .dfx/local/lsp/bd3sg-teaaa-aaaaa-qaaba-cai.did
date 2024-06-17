@@ -1,0 +1,334 @@
+type Backend = service {
+  addToMetamaskUsers : (text, principal) -> (Result);
+  cancelRecurringTimer : (nat) -> ();
+  checkPayroll : () -> ();
+  create_department : (CreateDepartmentArgs) -> (Response_10);
+  create_designation : (CreateDesignationArgs) -> (Response_9);
+  create_emp : (CreateEmpArgs) -> (Response_6);
+  create_organization : (CreateOrganizationArgs) -> (Response_8);
+  emailExists : (text) -> (bool) query;
+  generateCode : (text) -> (text);
+  generatePayslip : (nat) -> (Response_7);
+  generateUUID : () -> (text);
+  getCanisterAddress : () -> (text);
+  getCanisterBalance : () -> (text);
+  getDepartments : () -> (vec Department) query;
+  getDepartmentsLength : () -> (text) query;
+  getDesignations : () -> (vec Designation) query;
+  getDesignationsLength : () -> (text) query;
+  getEmpByPrincipal : (principal) -> (Response_6);
+  getEmployees : () -> (vec Emp);
+  getFundingAddress : () -> (text);
+  getFundingBalance : () -> (text);
+  getLogs : () -> (vec text) query;
+  getMetamaskUsers : () -> (vec record { text; principal });
+  getMyTransactionLength : () -> (text);
+  getNotifications : () -> (vec Notification__1);
+  getOrganizations : () -> (vec Organization) query;
+  getOrganizationsLength : () -> (text) query;
+  getPrincipalByAddress : (text) -> (Response_5);
+  getTradingAddress : () -> (text);
+  getTradingBalance : () -> (text);
+  getTransactionLength : () -> (text) query;
+  getUnreadNotifications : () -> (vec Notification__1);
+  getUnreadNotificationsLength : () -> (text);
+  getUser : () -> (Response);
+  getUserByPrincipal : (principal) -> (Response);
+  getUserPayslip : (text) -> (Response_4);
+  getUsersList : () -> (vec record { text; User }) query;
+  get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
+  get_transactions : () -> (vec Transaction) query;
+  isRegistered : () -> (bool);
+  mapPrincipal : (text) -> (principal);
+  runpayroll : (vec PayrollType__1) -> (Response_3);
+  save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
+  save_payroll : (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
+  save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
+  sendToOwner : (nat, text) -> (Response_1);
+  send_notifications : (text, text, text, text, text) -> ();
+  setCourierApiKey : (text) -> (Response_2);
+  setRecurringTimer : (nat) -> (nat);
+  transferFromCanistertoSubAccount : () -> (Result);
+  transferFromSubAccountToSubAccount : (text, nat) -> (Response_1);
+  transform : (TransformArgs) -> (CanisterHttpResponsePayload) query;
+  updateUser : (User) -> (Response);
+  userLength : () -> (text);
+  whoami : () -> (principal) query;
+};
+type CanisterHttpResponsePayload = record {
+  status : nat;
+  body : vec nat8;
+  headers : vec HttpHeader;
+};
+type CreateDepartmentArgs = record { code : text; name : text };
+type CreateDesignationArgs = record { code : text; name : text };
+type CreateEmpArgs = record {
+  disability : bool;
+  email_address : text;
+  joining_date : text;
+  gross_salary : nat;
+  designation : text;
+  role : text;
+  employee_type : text;
+  gender : text;
+  job_group : text;
+  first_name : text;
+  last_name : text;
+  identity : text;
+  organization : text;
+  phone_number : text;
+  department : text;
+};
+type CreateNotificationArgs = record {
+  isRead : bool;
+  sender : text;
+  amount : nat;
+  receiver : text;
+};
+type CreateNotificationErr = record {
+  kind : variant { InvalidNotification; Other };
+  message : opt text;
+};
+type CreateNotificationResult = variant {
+  ok : CreateNotificationSuccess;
+  err : CreateNotificationErr;
+};
+type CreateNotificationSuccess = record { notification : Notification };
+type CreateOrganizationArgs = record { code : text; name : text };
+type CreateTransactionArgs = record {
+  creator : principal;
+  destination : principal;
+  amount : nat;
+  successful : bool;
+};
+type CreateTransactionErr = record {
+  kind : variant {
+    InvalidDetails;
+    InvalidAmount;
+    InvalidDestination;
+    MaxTransactionsReached;
+    InsufficientBalance;
+    InvalidSender;
+    Other;
+  };
+  message : opt text;
+};
+type CreateTransactionResult = variant {
+  ok : CreateTransactionSuccess;
+  err : CreateTransactionErr;
+};
+type CreateTransactionSuccess = record { transaction : Transaction__1 };
+type Department = record { creator : principal; code : text; name : text };
+type Designation = record { creator : principal; code : text; name : text };
+type Emp = record {
+  disability : bool;
+  email_address : text;
+  creator : principal;
+  joining_date : text;
+  gross_salary : nat;
+  designation : text;
+  role : text;
+  employee_type : text;
+  gender : text;
+  job_group : text;
+  first_name : text;
+  last_name : text;
+  identity : text;
+  organization : text;
+  phone_number : text;
+  department : text;
+};
+type GetTransactionArgs = record { id : nat };
+type GetTransactionErr = record {
+  kind : variant { NotFound; NotAuthorized; Other; InvalidTransactionId };
+  message : opt text;
+};
+type GetTransactionResult = variant {
+  ok : GetTransactionSuccess;
+  err : GetTransactionErr;
+};
+type GetTransactionSuccess = record { transaction : Transaction__1 };
+type HttpHeader = record { value : text; name : text };
+type HttpResponsePayload = record {
+  status : nat;
+  body : vec nat8;
+  headers : vec HttpHeader;
+};
+type Notification = record {
+  id : nat;
+  isRead : bool;
+  sender : text;
+  amount : nat;
+  receiver : text;
+};
+type Notification__1 = record {
+  id : nat;
+  isRead : bool;
+  sender : text;
+  amount : nat;
+  receiver : text;
+};
+type Organization = record { creator : principal; code : text; name : text };
+type PayrollType = record {
+  id : nat;
+  creator : text;
+  destination : text;
+  created_at : int;
+  amount : nat;
+  successful : bool;
+};
+type PayrollType__1 = record {
+  id : nat;
+  creator : text;
+  destination : text;
+  created_at : int;
+  amount : nat;
+  successful : bool;
+};
+type Payslip = record {
+  nhif_deductions : nat;
+  nssf_deductions : nat;
+  gross_salary : nat;
+  paye : nat;
+  net_salary : nat;
+  total_tax : nat;
+  taxable_income : nat;
+  personal_relief : nat;
+  other_deductions : nat;
+  housing : nat;
+};
+type PayslipData = record {
+  nhif_deductions : nat;
+  nssf_deductions : nat;
+  gross_salary : nat;
+  name : text;
+  designation : text;
+  paye : nat;
+  net_salary : nat;
+  total_tax : nat;
+  taxable_income : nat;
+  personal_relief : nat;
+  organization : text;
+  department : text;
+  other_deductions : nat;
+  housing : nat;
+};
+type Response = record {
+  status : nat16;
+  data : opt User;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_1 = record {
+  status : nat16;
+  data : opt Transaction;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_10 = record {
+  status : nat16;
+  data : opt Department;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_2 = record {
+  status : nat16;
+  data : opt text;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_3 = record {
+  status : nat16;
+  data : opt vec PayrollType__1;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_4 = record {
+  status : nat16;
+  data : opt PayslipData;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_5 = record {
+  status : nat16;
+  data : opt principal;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_6 = record {
+  status : nat16;
+  data : opt Emp;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_7 = record {
+  status : nat16;
+  data : opt Payslip;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_8 = record {
+  status : nat16;
+  data : opt Organization;
+  status_text : text;
+  error_text : opt text;
+};
+type Response_9 = record {
+  status : nat16;
+  data : opt Designation;
+  status_text : text;
+  error_text : opt text;
+};
+type Result = variant { ok : text; err : text };
+type SchedulePaymentsArgs = record {
+  status : variant { Paid; Rejected; Unpaid; Accepted };
+  created_at : int;
+  receivers : vec PayrollType;
+  payment_at : int;
+};
+type SchedulePaymentsErr = record {
+  kind : variant {
+    InvalidDetails;
+    InvalidAmount;
+    InvalidDestination;
+    MaxTransactionsReached;
+    InsufficientBalance;
+    InvalidSender;
+    Other;
+  };
+  message : opt text;
+};
+type SchedulePaymentsResult = variant {
+  ok : SchedulePaymentsSuccess;
+  err : SchedulePaymentsErr;
+};
+type SchedulePaymentsSuccess = record { receivers : vec PayrollType };
+type Transaction = record {
+  id : nat;
+  creator : principal;
+  destination : principal;
+  created_at : int;
+  amount : nat;
+  successful : bool;
+};
+type Transaction__1 = record {
+  id : nat;
+  creator : principal;
+  destination : principal;
+  created_at : int;
+  amount : nat;
+  successful : bool;
+};
+type TransformArgs = record {
+  context : vec nat8;
+  response : HttpResponsePayload;
+};
+type User = record {
+  email_address : text;
+  phone_notifications : bool;
+  email_notifications : bool;
+  first_name : text;
+  last_name : text;
+  phone_number : text;
+};
+service : Backend
