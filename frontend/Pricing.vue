@@ -14,9 +14,7 @@
       </div>
       <div>
         <button
-          class="flex items-center justify-center gap-2 rounded-lg 
-          bg-clip-border duration-75 ease-out border border-primary/[.13]
-           bg-top-layer text-primary shadow-sm enabled:hover:bg-secondary text-subtitle-md px-3 h-8 text-secondary hover:text-primary"
+          class="flex items-center justify-center gap-2 rounded-lg bg-clip-border duration-75 ease-out border border-primary/[.13] bg-top-layer text-primary shadow-sm enabled:hover:bg-secondary text-subtitle-md px-3 h-8 text-secondary hover:text-primary"
           data-tooltip-id="4a852685-4870-47ca-b66e-ea9fb73c8888"
         >
           Skip now

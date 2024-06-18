@@ -12,7 +12,7 @@ dfx deploy ic_siwe_provider --argument $'(
         salt = "qweertfguavbkdbvjkbvkbvjkwefweuh2389r23";
         chain_id = opt 1;
         scheme = opt "http";
-        statement = opt "Login to the app";
+        statement = opt "Login to IC-PAY";
         sign_in_expires_in = opt 300000000000;       
         session_expires_in = opt 604800000000000;    
         targets = opt vec {

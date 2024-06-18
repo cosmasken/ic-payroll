@@ -23,8 +23,8 @@
   "scripts": {
     "dev": "vite",
     "deploy:identity": "dfx deploy --network local internet_identity",
-    "deploy:siwe_provider": "dfx deploy ic_siwe_provider --argument '(record { domain = \"127.0.0.1\"; uri = \"http://127.0.0.1:5173\"; salt = \"vsnsvnu4n398tu4u9jffjlwek\"; chain_id = opt 1; scheme = opt \"http\"; statement = opt \"Login to the IC-Payroll\"; sign_in_expires_in = opt 300000000000; session_expires_in = opt 604800000000000; targets = opt vec { \"'$(dfx canister id ic_siwe_provider)'\"; \"'$(dfx canister id assets)'\"; }; })'",
-    "start": "npm install  && npm run replica && npm run private-dids && npm run deploy && npm run deploy:identity",
+    "deploy:siwe_provider": "dfx deploy ic_siwe_provider --argument '(record { domain = \"127.0.0.1\"; uri = \"http://127.0.0.1:3000\"; salt = \"vsnsvnu4n398tu4u9jffjlwek\"; chain_id = opt 1; scheme = opt \"http\"; statement = opt \"Login to the IC-Payroll\"; sign_in_expires_in = opt 300000000000; session_expires_in = opt 604800000000000; targets = opt vec { \"'$(dfx canister id ic_siwe_provider)'\"; \"'$(dfx canister id assets)'\"; }; })'",
+    "start": "npm install  && npm run replica && npm run private-dids && npm run deploy && npm run deploy:identity && dfx canister create ic_siwe_provider && npm run deploy:siwe_provider",
     "replica": "dfx stop && rm -rf .dfx && dfx start --clean --background  && dfx canister create ckbtc_ledger && dfx canister create backend",
     "deploy": "npm run deploy:ledger && npm run deploy:index  &&   npm run deploy:backend  && dfx generate backend  && npm run deploy:assets",
     "public-dids": "perl -i -pe 's|icrc1\\.did|icrc1\\.public\\.did|g' dfx.json",
@@ -42,7 +42,7 @@
     "format:vue": "prettier --write frontend/"
   },
   "dependencies": {
-    "@dfinity/agent": "^1.3.0",
+    "@dfinity/agent": ">=1.0.1",
     "@dfinity/auth-client": "^1.3.0",
     "@dfinity/candid": "^1.2.0",
     "@dfinity/identity": "^1.2.0",
@@ -53,8 +53,12 @@
     "@vueuse/core": "^10.9.0",
     "@vueuse/motion": "^2.1.0",
     "alpinejs": "^3.14.0",
+    "asn1": "^0.2.6",
+    "asn1js": "^3.0.5",
     "chart.js": "^4.4.3",
+    "ethereumjs-util": "^7.1.5",
     "ethers": "^5.6.8",
+    "keccak256": "^1.0.6",
     "pinia": "^2.1.7",
     "radix-vue": "^1.6.1",
     "siwe": "^2.3.2",

@@ -14,7 +14,7 @@ const login = () => {
 
 const requestAccounts = () => {
   init();
-  authStore.siwe();
+  authStore.siwe_ic();
 };
 </script>
 <template>

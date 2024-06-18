@@ -1,17 +1,12 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
-import { HttpAgent } from "@dfinity/agent";
+import * as asn1js from "asn1js";
+import { toChecksumAddress } from "ethereumjs-util";
 import { Ed25519KeyIdentity } from "@dfinity/identity";
-import {
-  createActor,
-  canisterId,
-  idlFactory,
-} from "../../src/declarations/backend";
-//import { idlFactory } from "../../src/declarations/backend.did.js";
+import { createActor, canisterId } from "../../src/declarations/backend";
+import { ic_siwe_provider } from "../../src/declarations/ic_siwe_provider";
 import { toRaw, markRaw } from "vue";
 import Swal from "sweetalert2";
-import { ethers } from "ethers";
-import { SiweMessage } from "siwe";
 import Web3 from "web3";
 
 const defaultOptions = {
@@ -115,49 +110,115 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async requestAccounts() {
+      // Check if there are any accounts already connected
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Accounts:", accounts);
+      // Assuming the first account is used for signing
+      const account = accounts[0];
+      // The message you want to sign
+      const message = "Sign In to IC-Pay";
+      // Hash the message (optional but recommended)
+      // const messageHash = web3.utils.sha3(message);
+      // Convert the message to hex format
+      const msgHex = `0x${Buffer.from(message, "utf8").toString("hex")}`;
+      // Sign the hashed message
+      const signature = await ethereum.request({
+        method: "personal_sign",
+        params: [msgHex, account], // Note the correct order of parameters
+      });
+
+      console.log("Signature:", signature);
+      //generate identity
+      const identity = Ed25519KeyIdentity.generate();
+      //create whoami actor
+      const whoamiActor = identity ? actorFromIdentity(identity) : null;
+
+      this.isAuthenticated = true;
+      this.identity = identity;
+      this.whoamiActor = whoamiActor;
+      this.isReady = true;
+      this.isRegistered = false;
+
+      const principal = identity.getPrincipal();
+
+      const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(
+        account,
+        principal
+      );
+
+      console.log("addToMetamaskUsers:", addToMetamaskUsers);
+      //  this.isRegistered = await whoamiActor?.isRegistered();
+      console.log("is registered" + this.isRegistered);
+    },
+
+    async siwe_ic() {
+      try {
         // Check if there are any accounts already connected
         const accounts = await ethereum.request({
           method: "eth_requestAccounts",
         });
-        console.log("Accounts:", accounts);
-        // Assuming the first account is used for signing
-        const account = accounts[0];
-        // The message you want to sign
-        const message = "Sign In to IC-Pay";
-        // Hash the message (optional but recommended)
-        // const messageHash = web3.utils.sha3(message);
-         // Convert the message to hex format
-    const msgHex = `0x${Buffer.from(message, "utf8").toString("hex")}`;
-        // Sign the hashed message
+        // Get the first account and ensure it is EIP-55 encoded
+        let account = Web3.utils.toChecksumAddress(accounts[0]);
+        // Prepare the login challenge
+        const prepareLoginResponse = await ic_siwe_provider.siwe_prepare_login(account);
+        const loginChallenge = prepareLoginResponse.Ok;
+
+        // Sign the login challenge
         const signature = await ethereum.request({
           method: "personal_sign",
-          params: [msgHex, account], // Note the correct order of parameters
+          params: [loginChallenge, account],
         });
 
-        console.log("Signature:", signature);
-        //generate identity
-        const identity = Ed25519KeyIdentity.generate();
-        //create whoami actor
-        const whoamiActor = identity ? actorFromIdentity(identity) : null;
+        // Prepare a dummy session key for demonstration purposes
+        const sessionKey = new Uint8Array([67]);
+        //use asn1js to generate a DER-encoded OctetString
+        const derSessionKey = new asn1js.OctetString({
+          valueHex: sessionKey,
+        }).toBER(false);
+        // Convert the DER-encoded ArrayBuffer to a Uint8Array
+        const derSessionKeyUint8 = new Uint8Array(derSessionKey);
 
-        this.isAuthenticated = true;
-        this.identity = identity;
-        this.whoamiActor = whoamiActor;
-        this.isReady = true;
-        this.isRegistered = false;
+        // Log in with the signed challenge and session key
+        const loginResponse = await ic_siwe_provider.siwe_login(
+          signature,
+          account,
+          derSessionKeyUint8
+        );
+        console.log("Login response:", loginResponse);
+        //get principal
 
-        const principal = identity.getPrincipal();
+        const principal = await ic_siwe_provider.get_principal(account);
+        console.log("Principal:", principal);
+        // Get the current timestamp in milliseconds
+        const currentTimestamp = Date.now();
+        // Convert the timestamp to a BigInt
+        const nat64Timestamp = BigInt(currentTimestamp);
 
-        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(account, principal,);
+     //   const pubkey = loginResponse.Ok.user_canister_pubkey;
+       // const expiration = loginResponse.Ok.expiration;
+        // const delegation = await ic_siwe_provider.siwe_get_delegation(
+        //   account,
+        //   pubkey,
+        //   expiration
+        // );
+     //   console.log("Delegation:", delegation);
 
-        console.log("addToMetamaskUsers:", addToMetamaskUsers);
-        //  this.isRegistered = await whoamiActor?.isRegistered();
-        console.log("is registered" + this.isRegistered);
-     
+        if (loginResponse.Ok) {
+          console.log("Login successful");
+          this.isAuthenticated = true;
+          this.isReady = true;
+        }
+
+      } catch (error) {
+        console.error("Error during login:", error);
+      }
     },
 
 
-    async siwe(){
+
+    async siwe() {
       //generate identity
       const identity = Ed25519KeyIdentity.generate();
       //create whoami actor
@@ -179,26 +240,33 @@ export const useAuthStore = defineStore("auth", {
 
       //check if address is already registered
       const isRegistered = await whoamiActor?.getPrincipalByAddress(account);
-      
-      if(isRegistered){
+
+      if (isRegistered) {
         this.isAuthenticated = true;
         this.identity = identity;
         this.whoamiActor = whoamiActor;
         this.isReady = true;
         this.isRegistered = false;
         console.log("already registered");
-      }else{
+      } else {
         const principal = identity.getPrincipal();
-        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(account, principal,);
+        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(
+          account,
+          principal
+        );
         this.isAuthenticated = true;
         this.identity = identity;
         this.whoamiActor = whoamiActor;
         this.isReady = true;
         this.isRegistered = false;
         console.log("addedToMetamaskUsers:", principal);
-        console.log("identity" , identity);
+        console.log("identity", identity);
       }
+    },
 
+    async prepareLogin() {
+      const prep = await ic_siwe_provider.siwe_prepare_login();
+      console.log("prep", prep);
     },
 
     async getBalance() {

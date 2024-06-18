@@ -70,13 +70,13 @@ const data = {
 
 const addData = async () => {
   isLoading.value = true;
- // authStore.updateRegistrationData(data);
+  // authStore.updateRegistrationData(data);
   // const exists = await authStore.whoamiActor.emailExists(data.email_address);
 
   // if (exists) {
   //   emailExists.value = true;
   //   authStore.isRegistered = true;
-    
+
   // }
 
   console.log("exists" + exists);
@@ -104,7 +104,7 @@ const addData = async () => {
     console.error("Error submitting data:", error);
   } finally {
     isLoading.value = false;
-   // refresh();
+    // refresh();
   }
 };
 </script>
