@@ -196,17 +196,31 @@ export const useAuthStore = defineStore("auth", {
         // Convert the timestamp to a BigInt
         const nat64Timestamp = BigInt(currentTimestamp);
 
-     //   const pubkey = loginResponse.Ok.user_canister_pubkey;
-       // const expiration = loginResponse.Ok.expiration;
-        // const delegation = await ic_siwe_provider.siwe_get_delegation(
-        //   account,
-        //   pubkey,
-        //   expiration
-        // );
-     //   console.log("Delegation:", delegation);
+       const pubkey = loginResponse.Ok.user_canister_pubkey;
+       const expiration = loginResponse.Ok.expiration;
+       console.log("Pubkey:", pubkey);
+       console.log("Expiration:", expiration);
+        const delegation = await ic_siwe_provider.siwe_get_delegation(
+          account,
+          derSessionKeyUint8,
+          expiration
+        );
+       console.log("Delegation:", delegation);
+       console.log("Delegation ok delegation:", delegation.Ok.delegation);
+       console.log("Delegation ok Signature:", delegation.Ok.signature);
 
-        if (loginResponse.Ok) {
-          console.log("Login successful");
+
+        if (delegation.Ok) {
+          
+
+          const whoamiActor = actorFromIdentity(delegation.Ok.signature);
+          this.whoamiActor = whoamiActor;
+         
+          const isRegistered = await this.whoamiActor?.isRegistered();
+          this.isRegistered = isRegistered;
+          console.log("is registered" + this.isRegistered);
+          console.log("Delegation successful");
+          console.log("whoamiActor", whoamiActor);
           this.isAuthenticated = true;
           this.isReady = true;
         }

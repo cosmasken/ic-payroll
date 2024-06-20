@@ -21,6 +21,7 @@ import OwnerProfile from "../components/Owner/OwnerProfile.vue";
 import Transfer from "../components/Payments/Transfer.vue";
 import Transactions from "../components/Payments/Transactions.vue";
 import SetupAccount from "../SetupAccount.vue";
+import Freelancer from "../components/Freelancer/Freelancer.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -128,6 +129,10 @@ const router = createRouter({
         {
           path: "/home/transactions",
           component: Transactions,
+        },
+        {
+          path: "/home/freelancer",
+          component: Freelancer,
         },
       ],
     },
