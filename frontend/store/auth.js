@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
 import * as asn1js from "asn1js";
-import { toChecksumAddress } from "ethereumjs-util";
-import { Ed25519KeyIdentity } from "@dfinity/identity";
-import { createActor, canisterId } from "../../src/declarations/backend";
+import { DelegationIdentity, DelegationChain } from "@dfinity/identity";
+import {
+  createActor,
+  canisterId,
+  idlFactory,
+} from "../../src/declarations/backend";
 import { ic_siwe_provider } from "../../src/declarations/ic_siwe_provider";
 import { toRaw, markRaw } from "vue";
 import Swal from "sweetalert2";
@@ -32,6 +35,22 @@ const defaultOptions = {
   //   identityProvider : "https://identity.ic0.app/#authorize"
   // }
 };
+
+async function createIdentityFromDelegation(account, delegationResponse) {
+  const { delegation, signature } = delegationResponse.Ok;
+
+  // Create the DelegationIdentity
+  const delegationIdentity = DelegationIdentity.fromDelegation(account, {
+    delegation: {
+      pubkey: Uint8Array.from(delegation.pubkey),
+      expiration: BigInt(delegation.expiration),
+      targets: delegation.targets,
+    },
+    signature: Uint8Array.from(signature),
+  });
+
+  return delegationIdentity;
+}
 
 function actorFromIdentity(identity) {
   return createActor(canisterId, {
@@ -101,56 +120,16 @@ export const useAuthStore = defineStore("auth", {
             ? actorFromIdentity(this.identity)
             : null;
 
+          console.log("identity format is", this.identity);
+
           console.log("whoamiActor", this.whoamiActor);
 
           this.isRegistered = await this.whoamiActor.isRegistered();
           console.log("is registered" + this.isRegistered);
+          const whoami = await this.whoamiActor?.whoami();
+          console.log("whoami", whoami);
         },
       });
-    },
-
-    async requestAccounts() {
-      // Check if there are any accounts already connected
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      console.log("Accounts:", accounts);
-      // Assuming the first account is used for signing
-      const account = accounts[0];
-      // The message you want to sign
-      const message = "Sign In to IC-Pay";
-      // Hash the message (optional but recommended)
-      // const messageHash = web3.utils.sha3(message);
-      // Convert the message to hex format
-      const msgHex = `0x${Buffer.from(message, "utf8").toString("hex")}`;
-      // Sign the hashed message
-      const signature = await ethereum.request({
-        method: "personal_sign",
-        params: [msgHex, account], // Note the correct order of parameters
-      });
-
-      console.log("Signature:", signature);
-      //generate identity
-      const identity = Ed25519KeyIdentity.generate();
-      //create whoami actor
-      const whoamiActor = identity ? actorFromIdentity(identity) : null;
-
-      this.isAuthenticated = true;
-      this.identity = identity;
-      this.whoamiActor = whoamiActor;
-      this.isReady = true;
-      this.isRegistered = false;
-
-      const principal = identity.getPrincipal();
-
-      const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(
-        account,
-        principal
-      );
-
-      console.log("addToMetamaskUsers:", addToMetamaskUsers);
-      //  this.isRegistered = await whoamiActor?.isRegistered();
-      console.log("is registered" + this.isRegistered);
     },
 
     async siwe_ic() {
@@ -162,7 +141,8 @@ export const useAuthStore = defineStore("auth", {
         // Get the first account and ensure it is EIP-55 encoded
         let account = Web3.utils.toChecksumAddress(accounts[0]);
         // Prepare the login challenge
-        const prepareLoginResponse = await ic_siwe_provider.siwe_prepare_login(account);
+        const prepareLoginResponse =
+          await ic_siwe_provider.siwe_prepare_login(account);
         const loginChallenge = prepareLoginResponse.Ok;
 
         // Sign the login challenge
@@ -196,85 +176,60 @@ export const useAuthStore = defineStore("auth", {
         // Convert the timestamp to a BigInt
         const nat64Timestamp = BigInt(currentTimestamp);
 
-       const pubkey = loginResponse.Ok.user_canister_pubkey;
-       const expiration = loginResponse.Ok.expiration;
-       console.log("Pubkey:", pubkey);
-       console.log("Expiration:", expiration);
+        const pubkey = loginResponse.Ok.user_canister_pubkey;
+        const expiration = loginResponse.Ok.expiration;
+        console.log("Pubkey:", pubkey);
+        console.log("Expiration:", expiration);
         const delegation = await ic_siwe_provider.siwe_get_delegation(
           account,
           derSessionKeyUint8,
           expiration
         );
-       console.log("Delegation:", delegation);
-       console.log("Delegation ok delegation:", delegation.Ok.delegation);
-       console.log("Delegation ok Signature:", delegation.Ok.signature);
+        console.log("Delegation:", delegation);
+        console.log("Delegation ok delegation:", delegation.Ok.delegation);
+        console.log("Delegation ok Signature:", delegation.Ok.signature);
 
+        const delegationSignature = delegation.Ok.signature;
+
+        const delegationok = delegation.Ok.delegation;
+        const publickey = new Uint8Array(delegationok.public_key);
+        const delegationExpiration = delegationok.expiration;
+        const targets = delegationok.targets;
 
         if (delegation.Ok) {
-          
+          // Create the DelegationIdentity
+          const delegationIdentity = DelegationIdentity.fromDelegation(
+            account,
+            {
+              delegation: {
+                pubkey: Uint8Array.from(publickey),
+                expiration: BigInt(delegationExpiration),
+                targets: targets,
+              },
+              signature: Uint8Array.from(delegation.Ok.signature),
+            }
+          );
 
-          const whoamiActor = actorFromIdentity(delegation.Ok.signature);
+          console.log("identity format is", delegationIdentity);
+
+          const whoamiActor = createActor(canisterId, {
+            agentOptions: { delegationIdentity },
+          });
+          this.identity = delegationIdentity;
+
           this.whoamiActor = whoamiActor;
-         
+
           const isRegistered = await this.whoamiActor?.isRegistered();
+
+          const whoami = await this.whoamiActor?.whoami();
           this.isRegistered = isRegistered;
           console.log("is registered" + this.isRegistered);
-          console.log("Delegation successful");
-          console.log("whoamiActor", whoamiActor);
+          console.log("whoami", whoami);
           this.isAuthenticated = true;
           this.isReady = true;
         }
-
       } catch (error) {
         console.error("Error during login:", error);
-      }
-    },
-
-
-
-    async siwe() {
-      //generate identity
-      const identity = Ed25519KeyIdentity.generate();
-      //create whoami actor
-      const whoamiActor = identity ? actorFromIdentity(identity) : null;
-      // Check if there are any accounts already connected
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      console.log("Accounts:", accounts);
-      // Assuming the first account is used for signing
-      const account = accounts[0];
-      // The message you want to sign
-      const message = "Sign In to IC-Pay";
-      const msgHex = `0x${Buffer.from(message, "utf8").toString("hex")}`;
-      const signature = await ethereum.request({
-        method: "personal_sign",
-        params: [msgHex, account], // Note the correct order of parameters
-      });
-
-      //check if address is already registered
-      const isRegistered = await whoamiActor?.getPrincipalByAddress(account);
-
-      if (isRegistered) {
-        this.isAuthenticated = true;
-        this.identity = identity;
-        this.whoamiActor = whoamiActor;
-        this.isReady = true;
-        this.isRegistered = false;
-        console.log("already registered");
-      } else {
-        const principal = identity.getPrincipal();
-        const addToMetamaskUsers = await this.whoamiActor?.addToMetamaskUsers(
-          account,
-          principal
-        );
-        this.isAuthenticated = true;
-        this.identity = identity;
-        this.whoamiActor = whoamiActor;
-        this.isReady = true;
-        this.isRegistered = false;
-        console.log("addedToMetamaskUsers:", principal);
-        console.log("identity", identity);
       }
     },
 
