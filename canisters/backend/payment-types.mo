@@ -97,6 +97,22 @@ module {
     successful : Bool;
     destination : Text;
   };
+
+public type Autom8Payment = {
+id : Nat;
+created_at : Int;
+creator : Principal;
+amount : Nat;
+receiver : Principal;
+status : {
+#Accepted;
+#Rejected;
+#Unpaid;
+#Paid;
+};
+scheduled_at : Int;
+};
+
   public type CreateInvoiceArgs = {
 
     client : Text;

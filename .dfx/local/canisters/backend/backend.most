@@ -1,6 +1,17 @@
 // Version: 1.0.0
 type AssocList<K, V> = List<(K, V)>;
 type AssocList__1<K, V> = AssocList<K, V>;
+type Autom8Payment =
+  {
+    amount : Nat;
+    created_at : Int;
+    creator : Principal;
+    id : Nat;
+    receiver : Principal;
+    scheduled_at : Int;
+    status : {#Accepted; #Paid; #Rejected; #Unpaid}
+  };
+type Autom8Payment__1 = Autom8Payment;
 type Branch<K, V> = {left : Trie<K, V>; right : Trie<K, V>; size : Nat};
 type Department = {code : Text; creator : Principal; name : Text};
 type Department__1 = Department;
@@ -20,11 +31,11 @@ type Employee =
     gross_salary : Nat;
     identity : Text;
     job_group : Text;
-    joining_date : Text;
     last_name : Text;
     organization : Text;
     phone_number : Text;
-    role : Text
+    role : Text;
+    username : Text
   };
 type Hash = Nat32;
 type Invoice =
@@ -49,6 +60,16 @@ type Notification =
 type Notification__1 = Notification;
 type Organization = {code : Text; creator : Principal; name : Text};
 type Organization__1 = Organization;
+type Organogram =
+  {
+    code : Text;
+    creator : Principal;
+    departments : ?List<Department>;
+    designations : ?List<Department>;
+    employees : ?List<Employee>;
+    name : Text
+  };
+type Organogram__1 = Organogram;
 type PayrollType =
   {
     amount : Nat;
@@ -81,6 +102,7 @@ type User =
   };
 type User__2 = User;
 actor {
+  stable var autom8PaymentCounter : Nat;
   stable var contactsCounter : Nat;
   stable var courierApiKey : Text;
   stable var departmentsCounter : Nat;
@@ -90,14 +112,15 @@ actor {
   stable var invoiceCounter : Nat;
   stable var invoicesStable : [(Nat, Invoice__1)];
   stable var latestTransactionIndex : Nat;
-  stable var metamaskUsers : [(Text, Principal)];
   stable var noOfEmployees : Nat;
-  stable var noofmetamaskusers : Nat;
   stable var notificationsCounter : Nat;
   stable var notificationsStable : [(Nat, Notification__1)];
   stable var organizationsCounter : Nat;
   stable var organizationsStable : [(Nat, Organization__1)];
+  stable var organogramsCounter : Nat;
+  stable var organogramsStable : [(Nat, Organogram__1)];
   stable var payrollCounter : Nat;
+  stable var stableAutom8Payments : [(Nat, Autom8Payment__1)];
   stable var stableEmployees : [(Nat, Emp)];
   stable var stablePayroll : [(Nat, [PayrollType__1])];
   stable var transactionCounter : Nat;

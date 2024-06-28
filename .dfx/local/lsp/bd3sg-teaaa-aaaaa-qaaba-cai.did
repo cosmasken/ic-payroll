@@ -1,14 +1,14 @@
 type Backend = service {
-  addToMetamaskUsers : (text, principal) -> (Result);
   cancelRecurringTimer : (nat) -> ();
   checkPayroll : () -> ();
-  create_department : (CreateDepartmentArgs) -> (Response_10);
-  create_designation : (CreateDesignationArgs) -> (Response_9);
-  create_emp : (CreateEmpArgs) -> (Response_6);
-  create_organization : (CreateOrganizationArgs) -> (Response_8);
+  createAccount : (User) -> (Response_4);
+  create_department : (CreateDepartmentArgs) -> (Response_9);
+  create_designation : (CreateDesignationArgs) -> (Response_8);
+  create_emp : (CreateEmpArgs) -> (Response_5);
+  create_organization : (CreateOrganizationArgs) -> (Response_7);
   emailExists : (text) -> (bool) query;
   generateCode : (text) -> (text);
-  generatePayslip : (nat) -> (Response_7);
+  generatePayslip : (nat) -> (Response_6);
   generateUUID : () -> (text);
   getCanisterAddress : () -> (text);
   getCanisterBalance : () -> (text);
@@ -16,42 +16,38 @@ type Backend = service {
   getDepartmentsLength : () -> (text) query;
   getDesignations : () -> (vec Designation) query;
   getDesignationsLength : () -> (text) query;
-  getEmpByPrincipal : (principal) -> (Response_6);
+  getEmpByPrincipal : (principal) -> (Response_5);
   getEmployees : () -> (vec Emp);
   getFundingAddress : () -> (text);
   getFundingBalance : () -> (text);
   getLogs : () -> (vec text) query;
-  getMetamaskUsers : () -> (vec record { text; principal });
   getMyTransactionLength : () -> (text);
   getNotifications : () -> (vec Notification__1);
   getOrganizations : () -> (vec Organization) query;
   getOrganizationsLength : () -> (text) query;
-  getPrincipalByAddress : (text) -> (Response_5);
   getTradingAddress : () -> (text);
-  getTradingBalance : () -> (text);
   getTransactionLength : () -> (text) query;
   getUnreadNotifications : () -> (vec Notification__1);
   getUnreadNotificationsLength : () -> (text);
-  getUser : () -> (Response);
-  getUserByPrincipal : (principal) -> (Response);
-  getUserPayslip : (text) -> (Response_4);
+  getUser : () -> (Response_4);
+  getUserByPrincipal : (principal) -> (Response_4);
+  getUserPayslip : (text) -> (Response_3);
   getUsersList : () -> (vec record { text; User }) query;
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions : () -> (vec Transaction) query;
   isRegistered : () -> (bool);
-  mapPrincipal : (text) -> (principal);
-  runpayroll : (vec PayrollType__1) -> (Response_3);
+  runpayroll : (vec PayrollType__1) -> (Response_2);
   save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
   save_payroll : (SchedulePaymentsArgs) -> (SchedulePaymentsResult);
   save_transaction : (CreateTransactionArgs) -> (CreateTransactionResult);
-  sendToOwner : (nat, text) -> (Response_1);
+  schedulePayment : (nat) -> (nat);
+  sendToOwner : (nat, text) -> (Response);
   send_notifications : (text, text, text, text, text) -> ();
-  setCourierApiKey : (text) -> (Response_2);
+  setCourierApiKey : (text) -> (Response_1);
   setRecurringTimer : (nat) -> (nat);
   transferFromCanistertoSubAccount : () -> (Result);
-  transferFromSubAccountToSubAccount : (text, nat) -> (Response_1);
+  transferFromSubAccountToSubAccount : (text, nat) -> (Response);
   transform : (TransformArgs) -> (CanisterHttpResponsePayload) query;
-  updateUser : (User) -> (Response);
   userLength : () -> (text);
   whoami : () -> (principal) query;
 };
@@ -60,12 +56,12 @@ type CanisterHttpResponsePayload = record {
   body : vec nat8;
   headers : vec HttpHeader;
 };
-type CreateDepartmentArgs = record { code : text; name : text };
-type CreateDesignationArgs = record { code : text; name : text };
+type CreateDepartmentArgs = record { name : text };
+type CreateDesignationArgs = record { name : text };
 type CreateEmpArgs = record {
   disability : bool;
   email_address : text;
-  joining_date : text;
+  username : text;
   gross_salary : nat;
   designation : text;
   role : text;
@@ -94,7 +90,7 @@ type CreateNotificationResult = variant {
   err : CreateNotificationErr;
 };
 type CreateNotificationSuccess = record { notification : Notification };
-type CreateOrganizationArgs = record { code : text; name : text };
+type CreateOrganizationArgs = record { name : text };
 type CreateTransactionArgs = record {
   creator : principal;
   destination : principal;
@@ -124,7 +120,7 @@ type Emp = record {
   disability : bool;
   email_address : text;
   creator : principal;
-  joining_date : text;
+  username : text;
   gross_salary : nat;
   designation : text;
   role : text;
@@ -215,67 +211,61 @@ type PayslipData = record {
 };
 type Response = record {
   status : nat16;
-  data : opt User;
+  data : opt Transaction;
   status_text : text;
   error_text : opt text;
 };
 type Response_1 = record {
   status : nat16;
-  data : opt Transaction;
-  status_text : text;
-  error_text : opt text;
-};
-type Response_10 = record {
-  status : nat16;
-  data : opt Department;
+  data : opt text;
   status_text : text;
   error_text : opt text;
 };
 type Response_2 = record {
   status : nat16;
-  data : opt text;
+  data : opt vec PayrollType__1;
   status_text : text;
   error_text : opt text;
 };
 type Response_3 = record {
   status : nat16;
-  data : opt vec PayrollType__1;
+  data : opt PayslipData;
   status_text : text;
   error_text : opt text;
 };
 type Response_4 = record {
   status : nat16;
-  data : opt PayslipData;
+  data : opt User;
   status_text : text;
   error_text : opt text;
 };
 type Response_5 = record {
   status : nat16;
-  data : opt principal;
+  data : opt Emp;
   status_text : text;
   error_text : opt text;
 };
 type Response_6 = record {
   status : nat16;
-  data : opt Emp;
+  data : opt Payslip;
   status_text : text;
   error_text : opt text;
 };
 type Response_7 = record {
   status : nat16;
-  data : opt Payslip;
+  data : opt Organization;
   status_text : text;
   error_text : opt text;
 };
 type Response_8 = record {
   status : nat16;
-  data : opt Organization;
+  data : opt Designation;
   status_text : text;
   error_text : opt text;
 };
 type Response_9 = record {
   status : nat16;
-  data : opt Designation;
+  data : opt Department;
   status_text : text;
   error_text : opt text;
 };

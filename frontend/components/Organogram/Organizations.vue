@@ -534,23 +534,7 @@ const addData = async () => {
                             />
                           </div>
                         </div>
-                        <div class="col-span-3">
-                          <label
-                            for="organization-code"
-                            class="block text-sm font-medium leading-6 text-gray-600"
-                            >Organization Code</label
-                          >
-                          <div class="mt-1">
-                            <input
-                              v-model="data.code"
-                              type="text"
-                              name="organization-code"
-                              id="organization-code"
-                              autocomplete="organization-code"
-                              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
-                            />
-                          </div>
-                        </div>
+                        
                       </div>
                     </div>
                   </div>

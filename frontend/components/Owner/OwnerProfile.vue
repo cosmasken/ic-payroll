@@ -5,12 +5,25 @@ import * as yup from "yup";
 import Spinner from "../Common/Spinner.vue";
 const authStore = useAuthStore();
 const principal = ref("");
+let firstname = ref("");
+let lastname = ref("");
+let emailaddress = ref("");
+let phonenumber = ref("");
+let accounttype = ref("");
 let fundingaddress = ref("");
 let tradingaddress = ref("");
 const fundingbalance = ref("");
 const tradingbalance = ref("");
 let isLoading = ref(false);
 let emailExists = ref(false);
+
+const data = {
+  first_name: "",
+  last_name: "",
+  email_address: "",
+  phone_number: "",
+  account_type : ""
+};
 
 watchEffect(async () => {
   const identity = await authStore.whoamiActor?.whoami();
@@ -32,11 +45,11 @@ watchEffect(async () => {
   const user = await authStore.whoamiActor?.getUser();
   if (user.status === 200) {
     console.log("User:", user.data);
-    principal.value = await user.data[0].principal;
-    email_address.value = await user.data[0].email_address;
-    phone_number.value = await user.data[0].phone_number;
-    first_name.value = await user.data[0].first_name;
-    last_name.value = await user.data[0].last_name;
+    emailaddress.value = await user.data[0].email_address;
+    phonenumber.value = await user.data[0].phone_number;
+    firstname.value = await user.data[0].first_name;
+    lastname.value = await user.data[0].last_name;
+    accounttype.value = await user.data[0].account_type;
   }
   isLoading.value = false;
 });
@@ -46,10 +59,11 @@ const refresh = async () => {
   const user = await authStore.whoamiActor?.getUser();
   if (user.status === 200) {
     console.log("User:", user.data);
-    email_address.value = await user.data[0].email_address;
-    phone_number.value = await user.data[0].phone_number;
-    first_name.value = await user.data[0].first_name;
-    last_name.value = await user.data[0].last_name;
+    emailaddress.value = await user.data[0].email_address;
+    phonenumber.value = await user.data[0].phone_number;
+    firstname.value = await user.data[0].first_name;
+    lastname.value = await user.data[0].last_name;
+    accounttype.value = await user.data[0].account_type;
   }
   isLoading.value = false;
 };
@@ -61,52 +75,8 @@ watchEffect(async () => {
   principal.value = identity;
 });
 
-const data = {
-  first_name: "",
-  last_name: "",
-  email_address: "",
-  phone_number: "",
-};
 
-const addData = async () => {
-  isLoading.value = true;
-  // authStore.updateRegistrationData(data);
-  // const exists = await authStore.whoamiActor.emailExists(data.email_address);
 
-  // if (exists) {
-  //   emailExists.value = true;
-  //   authStore.isRegistered = true;
-
-  // }
-
-  console.log("exists" + exists);
-
-  const firstname = data.first_name;
-  const lastname = data.last_name;
-  const email = data.email_address;
-  const phone = data.phone_number;
-
-  //console.log(firstname, lastname, email, phone);
-
-  try {
-    const response = authStore.whoamiActor.updateUser({
-      first_name: firstname,
-      last_name: lastname,
-      email_notifications: true,
-      email_address: email,
-      phone_notifications: true,
-      phone_number: phone,
-    });
-
-    // if (response.)
-    //await new Promise((resolve) => setTimeout(resolve, 1000));
-  } catch (error) {
-    console.error("Error submitting data:", error);
-  } finally {
-    isLoading.value = false;
-    // refresh();
-  }
-};
 </script>
 <template>
   <main
@@ -121,81 +91,8 @@ const addData = async () => {
         <Spinner />
       </div>
       <div v-else>
+       
         <div
-          v-if="authStore.isRegistered === false"
-          class="grid grid-cols-1 bg-[#fff] p-2 lg:p-5 rounded-md lg:grid-cols-4 gap-5 mt-4"
-        >
-          <div class="lg:col-span-2">
-            <label
-              for="first-name"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >First Name</label
-            >
-            <div class="mt-1">
-              <input
-                v-model="data.first_name"
-                type="text"
-                name="first-name"
-                id="first-name"
-                autocomplete="first-name"
-                class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-          <div class="lg:col-span-2">
-            <label
-              for="last-name"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >Last name</label
-            >
-            <div class="mt-1">
-              <input
-                v-model="data.last_name"
-                type="text"
-                name="last-name"
-                id="last-name"
-                autocomplete="last-name"
-                class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-          <div class="lg:col-span-2">
-            <label
-              for="phone-number"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >Phone</label
-            >
-            <div class="mt-1">
-              <input
-                v-model="data.phone_number"
-                type="text"
-                name="phone-number"
-                id="phone-number"
-                autocomplete="phone-number"
-                class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-          <div class="lg:col-span-2">
-            <label
-              for="email"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >Email</label
-            >
-            <div class="mt-1">
-              <input
-                v-model="data.email_address"
-                type="text"
-                name="email"
-                id="email"
-                autocomplete="email"
-                class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          v-else
           class="grid grid-cols-1 bg-[#fff] p-2 lg:p-5 rounded-md lg:grid-cols-4 gap-5 mt-4"
         >
           <div class="lg:col-span-2">
@@ -212,7 +109,7 @@ const addData = async () => {
                 autocomplete="first-name"
                 class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
               >
-                {{ first_name }}
+                {{ firstname }}
               </div>
             </div>
           </div>
@@ -230,7 +127,7 @@ const addData = async () => {
                 autocomplete="first-name"
                 class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
               >
-                {{ last_name }}
+                {{ lastname }}
               </div>
             </div>
           </div>
@@ -249,7 +146,7 @@ const addData = async () => {
                 autocomplete="phone-number"
                 class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
               >
-                {{ phone_number }}
+                {{ phonenumber }}
               </div>
             </div>
           </div>
@@ -267,7 +164,7 @@ const addData = async () => {
                 autocomplete="email"
                 class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
               >
-                {{ email_address }}
+                {{ emailaddress }}
               </div>
             </div>
           </div>
@@ -289,79 +186,7 @@ const addData = async () => {
               </div>
             </div>
           </div>
-          <div class="lg:col-span-4">
-            <label
-              for="fundingaddress"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >Funding Address</label
-            >
-            <div class="mt-1">
-              <div
-                type="text"
-                name="fundingaddress"
-                id="fundingaddress"
-                autocomplete="fundingaddress"
-                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
-              >
-                {{ fundingaddress }}
-              </div>
-            </div>
-          </div>
-          <div class="lg:col-span-4">
-            <label
-              for="tradingaddress"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >Trading Address</label
-            >
-            <div class="mt-1">
-              <div
-                type="text"
-                name="tradingaddress"
-                id="tradingaddress"
-                autocomplete="tradingaddress"
-                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
-              >
-                {{ tradingaddress }}
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:col-span-4">
-            <label
-              for="trading-balance"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >Trading Balance</label
-            >
-            <div class="mt-1">
-              <div
-                type="text"
-                name="trading-balance"
-                id="trading-balance"
-                autocomplete="trading-balance"
-                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
-              >
-                {{ tradingbalance }}
-              </div>
-            </div>
-          </div>
-          <div class="lg:col-span-4">
-            <label
-              for="funding-balance"
-              class="block text-sm font-medium leading-6 text-gray-600"
-              >Funding Balance</label
-            >
-            <div class="mt-1">
-              <div
-                type="text"
-                name="funding-balance"
-                id="funding-balance"
-                autocomplete="funding-balance"
-                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
-              >
-                {{ fundingbalance }}
-              </div>
-            </div>
-          </div>
+       
         </div>
         <div v-show="authStore.isRegistered === false" class="flex justify-end">
           <button

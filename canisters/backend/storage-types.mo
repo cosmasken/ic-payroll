@@ -3,8 +3,19 @@ import Nat "mo:base/Nat";
 import Blob "mo:base/Blob";
 import Text "mo:base/Text";
 import Result "mo:base/Result";
+import List "mo:base/List";
 
 module {
+
+    public type Organogram = {
+    creator : Principal;
+    code : Text;
+    name : Text;
+    departments : ?List.List<Department>;
+    designations : ?List.List<Department>;
+    employees : ?List.List<Employee>;
+  };
+
 
   public type Department = {
     code : Text;
@@ -50,7 +61,7 @@ module {
     identity : Text;
     email_address : Text;
     phone_number : Text;
-    joining_date : Text;
+    username : Text;
     gender : Text;
     disability : Bool;
     organization : Text;
@@ -68,7 +79,7 @@ module {
     email_address : Text;
     identity : Text;
     phone_number : Text;
-    joining_date : Text;
+    username : Text;
     gender : Text;
     disability : Bool;
     organization : Text;
@@ -94,7 +105,6 @@ module {
   };
 
   public type CreateDepartmentArgs = {
-    code : Text;
     name : Text;
   };
   public type CreateDepartmentResult = Result.Result<CreateDepartmentSuccess, CreateDepartmentErr>;
@@ -110,8 +120,28 @@ module {
     };
   };
 
+
+   public type CreateOrganogramArgs = {
+    name : Text;
+     departments : List.List<Department>;
+    designations : List.List<Department>;
+    employees : List.List<Employee>;
+
+  };
+    public type CreateOrganogramResult = Result.Result<CreateOrganogramSuccess, CreateOrganogramErr>;
+  public type CreateOrganogramSuccess = {
+    organogram : Organogram;
+  };
+  public type CreateOrganogramErr = {
+    message : ?Text;
+    kind : {
+      #InvalidOrganogram;
+      #InvalidPrincipal;
+      #Other;
+    };
+  };
+
   public type CreateOrganizationArgs = {
-    code : Text;
     name : Text;
   };
   public type CreateOrganizationResult = Result.Result<CreateOrganizationSuccess, CreateOrganizationErr>;
@@ -128,7 +158,6 @@ module {
   };
 
   public type CreateDesignationArgs = {
-    code : Text;
     name : Text;
   };
   public type CreateDesignationResult = Result.Result<CreateDesignationSuccess, CreateDesignationErr>;

@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
 import * as asn1js from "asn1js";
-import { DelegationIdentity, DelegationChain } from "@dfinity/identity";
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { DelegationIdentity, DelegationChain, ECDSAKeyIdentity } from "@dfinity/identity";
 import {
   createActor,
   canisterId,
@@ -11,6 +12,7 @@ import { ic_siwe_provider } from "../../src/declarations/ic_siwe_provider";
 import { toRaw, markRaw } from "vue";
 import Swal from "sweetalert2";
 import Web3 from "web3";
+import { Principal } from "@dfinity/principal";
 
 const defaultOptions = {
   /**
@@ -36,22 +38,13 @@ const defaultOptions = {
   // }
 };
 
-async function createIdentityFromDelegation(account, delegationResponse) {
-  const { delegation, signature } = delegationResponse.Ok;
-
-  // Create the DelegationIdentity
-  const delegationIdentity = DelegationIdentity.fromDelegation(account, {
-    delegation: {
-      pubkey: Uint8Array.from(delegation.pubkey),
-      expiration: BigInt(delegation.expiration),
-      targets: delegation.targets,
-    },
-    signature: Uint8Array.from(signature),
+const createMyAgent = (canisterId, identity, idlFactory) => {
+  const agent = new HttpAgent(identity);
+  return Actor.createActor(idlFactory, {
+    agent,
+    canisterId,
   });
-
-  return delegationIdentity;
-}
-
+};
 function actorFromIdentity(identity) {
   return createActor(canisterId, {
     agentOptions: {
@@ -103,6 +96,9 @@ export const useAuthStore = defineStore("auth", {
       this.whoamiActor = whoamiActor;
       this.isReady = true;
       this.isRegistered = false;
+
+      console.log("identity format is", this.identity);
+      console.log("whoamiActor", this.whoamiActor);
     },
 
     async login() {
@@ -151,6 +147,7 @@ export const useAuthStore = defineStore("auth", {
           params: [loginChallenge, account],
         });
 
+        
         // Prepare a dummy session key for demonstration purposes
         const sessionKey = new Uint8Array([67]);
         //use asn1js to generate a DER-encoded OctetString
@@ -166,11 +163,11 @@ export const useAuthStore = defineStore("auth", {
           account,
           derSessionKeyUint8
         );
-        console.log("Login response:", loginResponse);
+       // console.log("Login response:", loginResponse);
         //get principal
 
         const principal = await ic_siwe_provider.get_principal(account);
-        console.log("Principal:", principal);
+       // console.log("Principal:", principal);
         // Get the current timestamp in milliseconds
         const currentTimestamp = Date.now();
         // Convert the timestamp to a BigInt
@@ -178,8 +175,8 @@ export const useAuthStore = defineStore("auth", {
 
         const pubkey = loginResponse.Ok.user_canister_pubkey;
         const expiration = loginResponse.Ok.expiration;
-        console.log("Pubkey:", pubkey);
-        console.log("Expiration:", expiration);
+        //console.log("Pubkey:", pubkey);
+       // console.log("Expiration:", expiration);
         const delegation = await ic_siwe_provider.siwe_get_delegation(
           account,
           derSessionKeyUint8,
@@ -190,16 +187,25 @@ export const useAuthStore = defineStore("auth", {
         console.log("Delegation ok Signature:", delegation.Ok.signature);
 
         const delegationSignature = delegation.Ok.signature;
-
-        const delegationok = delegation.Ok.delegation;
+          const delegationok = delegation.Ok.delegation;
         const publickey = new Uint8Array(delegationok.public_key);
-        const delegationExpiration = delegationok.expiration;
+        const delegationExpiration = BigInt(delegationok.expiration);
         const targets = delegationok.targets;
 
+        console.log("Delegation Signature:", delegationSignature);
+        console.log("Delegation Public Key:", publickey);
+        console.log("Delegation Expiration:", delegationExpiration);
+        console.log("Delegation Targets:", targets);
+        const dummyid = ECDSAKeyIdentity.generate();
+        const dummprincipal = (await dummyid).getPrincipal();
+
+        console.log("dummyid", dummyid);
+        
+        console.log("dummprincipal", dummprincipal);
         if (delegation.Ok) {
           // Create the DelegationIdentity
           const delegationIdentity = DelegationIdentity.fromDelegation(
-            account,
+            dummprincipal,
             {
               delegation: {
                 pubkey: Uint8Array.from(publickey),
@@ -219,15 +225,18 @@ export const useAuthStore = defineStore("auth", {
 
           this.whoamiActor = whoamiActor;
 
-          const isRegistered = await this.whoamiActor?.isRegistered();
+       //   const isRegistered = await this.whoamiActor?.isRegistered();
 
-          const whoami = await this.whoamiActor?.whoami();
-          this.isRegistered = isRegistered;
-          console.log("is registered" + this.isRegistered);
-          console.log("whoami", whoami);
+        //  const whoami = await this.whoamiActor?.whoami();
+          this.isRegistered = false;
+        //  console.log("is registered" + this.isRegistered);
+        //  console.log("whoami", whoami);
           this.isAuthenticated = true;
           this.isReady = true;
         }
+       
+         
+        
       } catch (error) {
         console.error("Error during login:", error);
       }

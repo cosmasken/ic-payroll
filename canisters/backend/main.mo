@@ -14,7 +14,7 @@ import HttpTypes "./http-types";
 import UserTypes "./user-types";
 import PaymentTypes "./payment-types";
 import StorageTypes "./storage-types";
-import { toAccount; toSubaccount; defaultSubaccount } "./utils";
+import { toSubaccount; } "./utils";
 import Error "mo:base/Error";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
@@ -52,6 +52,7 @@ shared (actorContext) actor class Backend() = this {
   type Leave = StorageTypes.Leave;
   type Department = StorageTypes.Department;
   type Organization = StorageTypes.Organization;
+  type Organogram = StorageTypes.Organogram;
   type Designation = StorageTypes.Designation;
   type Notification = StorageTypes.Notification;
 
@@ -60,6 +61,7 @@ shared (actorContext) actor class Backend() = this {
   type Transaction = PaymentTypes.Transaction;
   type Invoice = PaymentTypes.Invoice;
   type PayslipData = PaymentTypes.PayslipData;
+  type Autom8Payment = PaymentTypes.Autom8Payment;
 
   public type TransactionId = Nat32;
 
@@ -74,94 +76,45 @@ shared (actorContext) actor class Backend() = this {
   // The user data store. The key is the user's principal ID.
   private stable var userStore : Trie.Trie<Text, User> = Trie.empty();
   stable var transactionsStable : [(Nat, Transaction)] = [];
-  stable var metamaskUsers : [(Text, Principal)] = [];
   stable var departmentsStable : [(Nat, Department)] = [];
   stable var organizationsStable : [(Nat, Organization)] = [];
+    stable var organogramsStable : [(Nat, Organogram)] = [];
   stable var designationsStable : [(Nat, Designation)] = [];
   stable var stableEmployees : [(Nat, Emp)] = [];
   stable var notificationsStable : [(Nat, Notification)] = [];
   stable var invoicesStable : [(Nat, Invoice)] = [];
   stable var stablePayroll : [(Nat, [PayrollType])] = [];
+  stable var stableAutom8Payments : [(Nat, Autom8Payment)] = [];
   stable var transactionCounter : Nat = 0;
   stable var contactsCounter : Nat = 0;
   stable var noOfEmployees : Nat = 0;
   stable var organizationsCounter : Nat = 0;
+    stable var organogramsCounter : Nat = 0;
   stable var departmentsCounter : Nat = 0;
   stable var designationsCounter : Nat = 0;
   let oneMinute = 60;
   stable var notificationsCounter : Nat = 0;
   stable var invoiceCounter : Nat = 0;
   stable var payrollCounter : Nat = 0;
-  stable var noofmetamaskusers : Nat = 0;
+  stable var autom8PaymentCounter : Nat = 0;
   var transactions : HashMap.HashMap<Nat, Transaction> = HashMap.fromIter(Iter.fromArray(transactionsStable), transactionsStable.size(), Nat.equal, Hash.hash);
   var employees : HashMap.HashMap<Nat, Emp> = HashMap.fromIter(Iter.fromArray(stableEmployees), stableEmployees.size(), Nat.equal, Hash.hash);
   var notifications : HashMap.HashMap<Nat, Notification> = HashMap.fromIter(Iter.fromArray(notificationsStable), notificationsStable.size(), Nat.equal, Hash.hash);
   var payrolls : HashMap.HashMap<Nat, [PayrollType]> = HashMap.fromIter(Iter.fromArray(stablePayroll), stablePayroll.size(), Nat.equal, Hash.hash);
   var organizations : HashMap.HashMap<Nat, Organization> = HashMap.fromIter(Iter.fromArray(organizationsStable), organizationsStable.size(), Nat.equal, Hash.hash);
+  var organograms : HashMap.HashMap<Nat, Organogram> = HashMap.fromIter(Iter.fromArray(organogramsStable), organogramsStable.size(), Nat.equal, Hash.hash);
   var departments : HashMap.HashMap<Nat, Department> = HashMap.fromIter(Iter.fromArray(departmentsStable), departmentsStable.size(), Nat.equal, Hash.hash);
   var designations : HashMap.HashMap<Nat, Designation> = HashMap.fromIter(Iter.fromArray(designationsStable), designationsStable.size(), Nat.equal, Hash.hash);
-  var selfcustodyusers : HashMap.HashMap<Text, Principal> = HashMap.fromIter(Iter.fromArray(metamaskUsers), metamaskUsers.size(), Text.equal, Text.hash);
+  var autom8payments : HashMap.HashMap<Nat, Autom8Payment> = HashMap.fromIter(Iter.fromArray(stableAutom8Payments), stableAutom8Payments.size(), Nat.equal, Hash.hash);
+let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
 
   var MAX_TRANSACTIONS = 30_000;
-  let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
-
-  public func mapPrincipal(wallet : Text) : async Principal {
-
-    return Principal.fromText(wallet);
-  };
+  var MAX_AUTOM8_PAYMENTS = 30_000;
+  
 
   public shared ({ caller }) func generatePayslip(income : Nat) : async Types.Response<Payslip> {
     let payslipInfo = await Taxcalculator.calculateTax(income);
     return payslipInfo;
-  };
-
-  public shared ({ caller }) func addToMetamaskUsers(address : Text, identity : Principal) : async Result.Result<Text, Text> {
-    //check if address exists
-    let addressExists = selfcustodyusers.get(address);
-
-    Debug.print("address exists???? " # debug_show (addressExists));
-    if (addressExists != null) {
-      return #err("Address already exists");
-    };
-
-    selfcustodyusers.put(address, identity);
-
-    return #ok("identity" # "address");
-
-  };
-
-  public shared ({ caller }) func getMetamaskUsers() : async [(Text, Principal)] {
-    let allEntries = Iter.toArray(selfcustodyusers.entries());
-    var users : [(Text, Principal)] = [];
-    let buffer = Buffer.Buffer<(Text, Principal)>(10000);
-    for ((key, value) in allEntries.vals()) {
-      buffer.add(key, value);
-    };
-    return Buffer.toArray<(Text, Principal)>(buffer);
-  };
-
-    public shared ({ caller }) func getPrincipalByAddress(walletAddress : Text) : async Types.Response<Principal> {
-    let allEntries = Iter.toArray(selfcustodyusers.entries());
-
-    //get employee by principal and then if creator is caller return employee
-    for ((key, value) in allEntries.vals()) {
-      if (walletAddress == key) {
-          return {
-            status = 200;
-            status_text = "OK";
-            data = ?value;
-            error_text = null;
-          };
-        
-      };
-    };
-
-    return {
-      status = 404;
-      status_text = "Not Found";
-      data = null;
-      error_text = null;
-    };
   };
 
   public shared ({ caller }) func getUserPayslip(identity : Text) : async Types.Response<PayslipData> {
@@ -228,6 +181,18 @@ shared (actorContext) actor class Backend() = this {
     return timerId;
   };
 
+  public func schedulePayment(when:Nat) : async Nat {
+    let now = Time.now();
+     let timerId = recurringTimer(
+      #seconds when,
+      func() : async () {
+       // Debug.print("Here are the items that are pending");
+        await checkPayroll();
+      },
+    );
+    return timerId;
+  };
+
   public func cancelRecurringTimer(id : Nat) : async () {
     // switch (timerId) {
     //   case (?id) { ignore cancelTimer(id); };
@@ -264,26 +229,10 @@ return await  UserUtils.getUser(userStore,caller);
   /**
     *  Get user data by principal
     */
-  public shared ({ caller }) func getUserByPrincipal(principal : Principal) : async Types.Response<User> {
-    // switch (Trie.get(userStore, userKey(Principal.toText(principal)), Text.equal)) {
-    //   case (?user) {
-    //     {
-    //       status = 200;
-    //       status_text = "OK";
-    //       data = ?user;
-    //       error_text = null;
-    //     };
-    //   };
-    //   case null {
-    //     {
-    //       status = 404;
-    //       status_text = "Not Found";
-    //       data = null;
-    //       error_text = ?("User with principal ID: " # Principal.toText(principal) # " not found.");
-    //     };
-    //   };
-    // };
-    return await UserUtils.getUserByPrincipal(userStore,principal);
+  public shared ({ caller }) func getUserByPrincipal(identity : Principal) : async Types.Response<User> {
+
+//let principal: Principal = Principal.fromText(identity);
+    return await UserUtils.getUserByPrincipal(userStore,identity);
   };
 
   /**
@@ -298,7 +247,7 @@ return await  UserUtils.getUser(userStore,caller);
   /**
     * Update the user's information
     */
-  public shared (context) func updateUser(user : User) : async Types.Response<User> {
+  public shared (context) func createAccount(user : User) : async Types.Response<User> {
 
     let caller : Principal = context.caller;
     userStore := Trie.replace(
@@ -314,6 +263,7 @@ return await  UserUtils.getUser(userStore,caller);
       error_text = null;
     };
   };
+
 
   //no of users
   public shared ({ caller }) func userLength() : async Text {
@@ -334,9 +284,9 @@ return await  UserUtils.getUser(userStore,caller);
     return await BalanceUtils.getFundingBalance(caller);
   };
 
-  public shared ({ caller }) func getTradingBalance() : async Text {
-    return await BalanceUtils.getTradingBalance(Principal.fromActor(this), caller);
-  };
+  // public shared ({ caller }) func getTradingBalance() : async Text {
+  //   return await BalanceUtils.getTradingBalance(Principal.fromActor(this), caller);
+  // };
 
   public shared ({ caller }) func getCanisterBalance() : async Text {
     return await BalanceUtils.getCanisterBalance(Principal.fromActor(this));
@@ -841,6 +791,7 @@ return await  UserUtils.getUser(userStore,caller);
     let id : Nat = noOfEmployees;
     // increment counter
     noOfEmployees += 1;
+    let empId = await generateCode("emp");
 
     let newEmp : Emp = {
       creator = caller;
@@ -849,7 +800,7 @@ return await  UserUtils.getUser(userStore,caller);
       identity = args.identity;
       email_address = args.email_address;
       phone_number = args.phone_number;
-      joining_date = args.joining_date;
+      username = args.username;
       gender = args.gender;
       disability = args.disability;
       organization = args.organization;
@@ -878,9 +829,10 @@ return await  UserUtils.getUser(userStore,caller);
     let id : Nat = departmentsCounter;
     // increment counter
     departmentsCounter += 1;
+    let code = await generateCode("dep");
 
     let department : Department = {
-      code = args.code;
+      code = code;
       name = args.name;
       creator = caller;
     };
@@ -903,9 +855,10 @@ return await  UserUtils.getUser(userStore,caller);
     let id : Nat = organizationsCounter;
     // increment counter
     organizationsCounter += 1;
+    let code = await generateCode("org");
 
     let organization : Organization = {
-      code = args.code;
+      code = code;
       name = args.name;
       creator = caller;
     };
@@ -922,6 +875,37 @@ return await  UserUtils.getUser(userStore,caller);
   };
 
   // #endregion
+
+//  public shared ({ caller }) func create_organogram(args : StorageTypes.CreateOrganogramArgs) : async Types.Response<Organogram> {
+//  let id : Nat = organogramsCounter;
+//     // increment counter
+//     organogramsCounter += 1;
+
+//     let code = await generateCode("org");
+
+//     let organogram : Organogram = {
+//       creator = caller;
+//       code = code;
+//       name = args.name;
+//       departments = ?args.departments;
+//       designations = ?args.designations;
+//       employees = ?args.employees;
+//     };
+
+
+//     organograms.put(id, organogram);
+
+//     {
+//       status = 200;
+//       status_text = "OK";
+//       data = ?organogram;
+//       error_text = null;
+//     };
+ 
+//  };
+
+
+
 
   //get no of my organizations
   public shared query ({ caller }) func getOrganizationsLength() : async Text {
@@ -965,8 +949,10 @@ return await  UserUtils.getUser(userStore,caller);
     // increment counter
     designationsCounter += 1;
 
+    let code = await generateCode("desig");
+
     let designation : Designation = {
-      code = args.code;
+      code = code;
       name = args.name;
       creator = caller;
     };

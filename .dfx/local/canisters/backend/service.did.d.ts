@@ -3,16 +3,16 @@ import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
 export interface Backend {
-  'addToMetamaskUsers' : ActorMethod<[string, Principal], Result>,
   'cancelRecurringTimer' : ActorMethod<[bigint], undefined>,
   'checkPayroll' : ActorMethod<[], undefined>,
-  'create_department' : ActorMethod<[CreateDepartmentArgs], Response_10>,
-  'create_designation' : ActorMethod<[CreateDesignationArgs], Response_9>,
-  'create_emp' : ActorMethod<[CreateEmpArgs], Response_6>,
-  'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_8>,
+  'createAccount' : ActorMethod<[User], Response_4>,
+  'create_department' : ActorMethod<[CreateDepartmentArgs], Response_9>,
+  'create_designation' : ActorMethod<[CreateDesignationArgs], Response_8>,
+  'create_emp' : ActorMethod<[CreateEmpArgs], Response_5>,
+  'create_organization' : ActorMethod<[CreateOrganizationArgs], Response_7>,
   'emailExists' : ActorMethod<[string], boolean>,
   'generateCode' : ActorMethod<[string], string>,
-  'generatePayslip' : ActorMethod<[bigint], Response_7>,
+  'generatePayslip' : ActorMethod<[bigint], Response_6>,
   'generateUUID' : ActorMethod<[], string>,
   'getCanisterAddress' : ActorMethod<[], string>,
   'getCanisterBalance' : ActorMethod<[], string>,
@@ -20,31 +20,27 @@ export interface Backend {
   'getDepartmentsLength' : ActorMethod<[], string>,
   'getDesignations' : ActorMethod<[], Array<Designation>>,
   'getDesignationsLength' : ActorMethod<[], string>,
-  'getEmpByPrincipal' : ActorMethod<[Principal], Response_6>,
+  'getEmpByPrincipal' : ActorMethod<[Principal], Response_5>,
   'getEmployees' : ActorMethod<[], Array<Emp>>,
   'getFundingAddress' : ActorMethod<[], string>,
   'getFundingBalance' : ActorMethod<[], string>,
   'getLogs' : ActorMethod<[], Array<string>>,
-  'getMetamaskUsers' : ActorMethod<[], Array<[string, Principal]>>,
   'getMyTransactionLength' : ActorMethod<[], string>,
   'getNotifications' : ActorMethod<[], Array<Notification__1>>,
   'getOrganizations' : ActorMethod<[], Array<Organization>>,
   'getOrganizationsLength' : ActorMethod<[], string>,
-  'getPrincipalByAddress' : ActorMethod<[string], Response_5>,
   'getTradingAddress' : ActorMethod<[], string>,
-  'getTradingBalance' : ActorMethod<[], string>,
   'getTransactionLength' : ActorMethod<[], string>,
   'getUnreadNotifications' : ActorMethod<[], Array<Notification__1>>,
   'getUnreadNotificationsLength' : ActorMethod<[], string>,
-  'getUser' : ActorMethod<[], Response>,
-  'getUserByPrincipal' : ActorMethod<[Principal], Response>,
-  'getUserPayslip' : ActorMethod<[string], Response_4>,
+  'getUser' : ActorMethod<[], Response_4>,
+  'getUserByPrincipal' : ActorMethod<[Principal], Response_4>,
+  'getUserPayslip' : ActorMethod<[string], Response_3>,
   'getUsersList' : ActorMethod<[], Array<[string, User]>>,
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
   'get_transactions' : ActorMethod<[], Array<Transaction>>,
   'isRegistered' : ActorMethod<[], boolean>,
-  'mapPrincipal' : ActorMethod<[string], Principal>,
-  'runpayroll' : ActorMethod<[Array<PayrollType__1>], Response_3>,
+  'runpayroll' : ActorMethod<[Array<PayrollType__1>], Response_2>,
   'save_notification' : ActorMethod<
     [CreateNotificationArgs],
     CreateNotificationResult
@@ -54,20 +50,20 @@ export interface Backend {
     [CreateTransactionArgs],
     CreateTransactionResult
   >,
-  'sendToOwner' : ActorMethod<[bigint, string], Response_1>,
+  'schedulePayment' : ActorMethod<[bigint], bigint>,
+  'sendToOwner' : ActorMethod<[bigint, string], Response>,
   'send_notifications' : ActorMethod<
     [string, string, string, string, string],
     undefined
   >,
-  'setCourierApiKey' : ActorMethod<[string], Response_2>,
+  'setCourierApiKey' : ActorMethod<[string], Response_1>,
   'setRecurringTimer' : ActorMethod<[bigint], bigint>,
   'transferFromCanistertoSubAccount' : ActorMethod<[], Result>,
   'transferFromSubAccountToSubAccount' : ActorMethod<
     [string, bigint],
-    Response_1
+    Response
   >,
   'transform' : ActorMethod<[TransformArgs], CanisterHttpResponsePayload>,
-  'updateUser' : ActorMethod<[User], Response>,
   'userLength' : ActorMethod<[], string>,
   'whoami' : ActorMethod<[], Principal>,
 }
@@ -76,12 +72,12 @@ export interface CanisterHttpResponsePayload {
   'body' : Uint8Array | number[],
   'headers' : Array<HttpHeader>,
 }
-export interface CreateDepartmentArgs { 'code' : string, 'name' : string }
-export interface CreateDesignationArgs { 'code' : string, 'name' : string }
+export interface CreateDepartmentArgs { 'name' : string }
+export interface CreateDesignationArgs { 'name' : string }
 export interface CreateEmpArgs {
   'disability' : boolean,
   'email_address' : string,
-  'joining_date' : string,
+  'username' : string,
   'gross_salary' : bigint,
   'designation' : string,
   'role' : string,
@@ -109,7 +105,7 @@ export interface CreateNotificationErr {
 export type CreateNotificationResult = { 'ok' : CreateNotificationSuccess } |
   { 'err' : CreateNotificationErr };
 export interface CreateNotificationSuccess { 'notification' : Notification }
-export interface CreateOrganizationArgs { 'code' : string, 'name' : string }
+export interface CreateOrganizationArgs { 'name' : string }
 export interface CreateTransactionArgs {
   'creator' : Principal,
   'destination' : Principal,
@@ -143,7 +139,7 @@ export interface Emp {
   'disability' : boolean,
   'email_address' : string,
   'creator' : Principal,
-  'joining_date' : string,
+  'username' : string,
   'gross_salary' : bigint,
   'designation' : string,
   'role' : string,
@@ -239,67 +235,61 @@ export interface PayslipData {
 }
 export interface Response {
   'status' : number,
-  'data' : [] | [User],
+  'data' : [] | [Transaction],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_1 {
   'status' : number,
-  'data' : [] | [Transaction],
-  'status_text' : string,
-  'error_text' : [] | [string],
-}
-export interface Response_10 {
-  'status' : number,
-  'data' : [] | [Department],
+  'data' : [] | [string],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_2 {
   'status' : number,
-  'data' : [] | [string],
+  'data' : [] | [Array<PayrollType__1>],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_3 {
   'status' : number,
-  'data' : [] | [Array<PayrollType__1>],
+  'data' : [] | [PayslipData],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_4 {
   'status' : number,
-  'data' : [] | [PayslipData],
+  'data' : [] | [User],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_5 {
   'status' : number,
-  'data' : [] | [Principal],
+  'data' : [] | [Emp],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_6 {
   'status' : number,
-  'data' : [] | [Emp],
+  'data' : [] | [Payslip],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_7 {
   'status' : number,
-  'data' : [] | [Payslip],
+  'data' : [] | [Organization],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_8 {
   'status' : number,
-  'data' : [] | [Organization],
+  'data' : [] | [Designation],
   'status_text' : string,
   'error_text' : [] | [string],
 }
 export interface Response_9 {
   'status' : number,
-  'data' : [] | [Designation],
+  'data' : [] | [Department],
   'status_text' : string,
   'error_text' : [] | [string],
 }
