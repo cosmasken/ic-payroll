@@ -131,7 +131,7 @@ const getTestTokens = async () => {
                 class="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               >
                 <span class="sr-only">Close sidebar</span>
-                <!-- Heroicon name: outline/x-mark -->
+                
                 <svg
                   class="h-6 w-6 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +163,7 @@ const getTestTokens = async () => {
                   to="javascript:void(0) "
                   class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                 >
-                  <!-- Heroicon name: outline/home -->
+                  
                   <span class="flex items-center space-x-4">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -188,7 +188,7 @@ const getTestTokens = async () => {
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -234,7 +234,7 @@ const getTestTokens = async () => {
                       to="/home/organizations"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>Organizations</span>
                       </span>
@@ -244,7 +244,7 @@ const getTestTokens = async () => {
                       to="/home/departments"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>Departments</span>
                       </span>
@@ -254,7 +254,7 @@ const getTestTokens = async () => {
                       to="/home/designations"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>Designations</span>
                       </span>
@@ -267,7 +267,7 @@ const getTestTokens = async () => {
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -313,7 +313,7 @@ const getTestTokens = async () => {
                       to="/home/all-employees"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>All Employees</span>
                       </span>
@@ -333,7 +333,7 @@ const getTestTokens = async () => {
                       to="/home/add-employee"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>Add Employee</span>
                       </span>
@@ -346,7 +346,7 @@ const getTestTokens = async () => {
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -392,7 +392,7 @@ const getTestTokens = async () => {
                       to="/home/one-time-payments"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>One Time Payments</span>
                       </span>
@@ -401,7 +401,7 @@ const getTestTokens = async () => {
                       to="/home/transactions"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>Transactions</span>
                       </span>
@@ -410,7 +410,7 @@ const getTestTokens = async () => {
                       to="/home/all-salary"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>All Salaries</span>
                       </span>
@@ -420,7 +420,7 @@ const getTestTokens = async () => {
                       to="/home/deductions"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>Deductions</span>
                       </span>
@@ -430,20 +430,19 @@ const getTestTokens = async () => {
                       to="/home/payslips"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
+                      
                       <span class="flex items-center">
                         <span>Payslips</span>
                       </span>
                     </router-link>
                   </div>
                 </div>
-                <div class="space-y-1">
+                <!--div class="space-y-1">
                   <a
                     @click="leavesOpen = !leavesOpen"
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -489,7 +488,6 @@ const getTestTokens = async () => {
                       to="/home/all-leaves"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
                       <span class="flex items-center">
                         <span>All Leaves</span>
                       </span>
@@ -499,7 +497,6 @@ const getTestTokens = async () => {
                       to="/home/leave-application"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
                       <span class="flex items-center">
                         <span>Leave Application</span>
                       </span>
@@ -509,20 +506,18 @@ const getTestTokens = async () => {
                       to="/home/leave-settings"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
                       <span class="flex items-center">
                         <span>Leave Settings</span>
                       </span>
                     </router-link>
                   </div>
-                </div>
-                <div class="space-y-1">
+                </div-->
+                <!--div class="space-y-1">
                   <a
                     @click="assetsOpen = !assetsOpen"
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -568,7 +563,6 @@ const getTestTokens = async () => {
                       to="/home/assigned-assets"
                       class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
                       <span class="flex items-center">
                         <span>Assigned Assets</span>
                       </span>
@@ -578,20 +572,19 @@ const getTestTokens = async () => {
                       to="/home/assign-assets"
                       class="text-gray-500 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
-                      <!-- Heroicon name: outline/home -->
                       <span class="flex items-center">
                         <span>Assign Assets</span>
                       </span>
                     </router-link>
                   </div>
-                </div>
+                </div-->
               </nav>
               <nav class="mt-4 flex-1 space-y-2 pt-2">
                 <a
                   href="javascript:void(0) "
                   class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                 >
-                  <!-- Heroicon name: outline/home -->
+                  
                   <span class="flex items-center space-x-3">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -651,7 +644,7 @@ const getTestTokens = async () => {
                   active-class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                 >
                   <span class="flex items-center space-x-4">
-                    <!-- Your icon here -->
+                    
                     <span>{{ link.text }}</span>
                   </span>
                 </router-link>
@@ -662,7 +655,7 @@ const getTestTokens = async () => {
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -714,7 +707,7 @@ const getTestTokens = async () => {
                       active-class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
                       <span class="flex items-center space-x-4">
-                        <!-- Your icon here -->
+                        
                         <span>{{ link.text }}</span>
                       </span>
                     </router-link>
@@ -727,7 +720,7 @@ const getTestTokens = async () => {
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -779,7 +772,7 @@ const getTestTokens = async () => {
                       active-class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
                       <span class="flex items-center space-x-4">
-                        <!-- Your icon here -->
+                        
                         <span>{{ link.text }}</span>
                       </span>
                     </router-link>
@@ -792,7 +785,7 @@ const getTestTokens = async () => {
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -844,20 +837,20 @@ const getTestTokens = async () => {
                       active-class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
                       <span class="flex items-center space-x-4">
-                        <!-- Your icon here -->
+                        
                         <span>{{ link.text }}</span>
                       </span>
                     </router-link>
                   </div>
                 </div>
 
-                <div class="space-y-1">
+                <!--div class="space-y-1">
                   <a
                     @click="leavesOpen = !leavesOpen"
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -909,20 +902,20 @@ const getTestTokens = async () => {
                       active-class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
                       <span class="flex items-center space-x-4">
-                        <!-- Your icon here -->
+                        
                         <span>{{ link.text }}</span>
                       </span>
                     </router-link>
                   </div>
-                </div>
+                </div-->
 
-                <div class="space-y-1">
+                <!--div class="space-y-1">
                   <a
                     @click="assetsOpen = !assetsOpen"
                     href="javascript:void(0) "
                     class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                   >
-                    <!-- Heroicon name: outline/home -->
+                    
                     <span class="flex items-center space-x-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -974,19 +967,19 @@ const getTestTokens = async () => {
                       active-class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
                     >
                       <span class="flex items-center space-x-4">
-                        <!-- Your icon here -->
+                        
                         <span>{{ link.text }}</span>
                       </span>
                     </router-link>
                   </div>
-                </div>
+                </div-->
               </nav>
               <nav class="mt-4 flex-1 space-y-2 pt-2">
                 <a
                   href="javascript:void(0) "
                   class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 lg:px-4 py-2 text-sm font-medium rounded-md"
                 >
-                  <!-- Heroicon name: outline/home -->
+                  
                   <span class="flex items-center space-x-3">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -1157,14 +1150,13 @@ const getTestTokens = async () => {
                     >Profile</router-link
                   >
 
-                  <a
+                  <!--a
                     href="# "
                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-autom8-blue-100 font-medium hover:text-white"
                     role="menuitem "
                     tabindex="-1 "
                     id="user-menu-item-1 "
-                    >Settings</a
-                  >
+                    >Settings</a-->
 
                   <div
                     @click="logout"

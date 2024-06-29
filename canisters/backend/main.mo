@@ -284,9 +284,9 @@ return await  UserUtils.getUser(userStore,caller);
     return await BalanceUtils.getFundingBalance(caller);
   };
 
-  // public shared ({ caller }) func getTradingBalance() : async Text {
-  //   return await BalanceUtils.getTradingBalance(Principal.fromActor(this), caller);
-  // };
+  public shared ({ caller }) func getTradingBalance() : async Text {
+    return await BalanceUtils.getTradingBalance(Principal.fromActor(this), caller);
+  };
 
   public shared ({ caller }) func getCanisterBalance() : async Text {
     return await BalanceUtils.getCanisterBalance(Principal.fromActor(this));
