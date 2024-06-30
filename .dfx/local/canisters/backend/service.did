@@ -36,6 +36,7 @@ type Backend = service {
   getUsersList : () -> (vec record { text; User }) query;
   get_transaction : (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions : () -> (vec Transaction) query;
+  isReg : () -> (bool);
   isRegistered : () -> (bool);
   runpayroll : (vec PayrollType__1) -> (Response_2);
   save_notification : (CreateNotificationArgs) -> (CreateNotificationResult);
@@ -318,6 +319,7 @@ type User = record {
   email_address : text;
   phone_notifications : bool;
   email_notifications : bool;
+  is_verified : bool;
   first_name : text;
   last_name : text;
   phone_number : text;

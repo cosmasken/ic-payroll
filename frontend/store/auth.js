@@ -76,7 +76,6 @@ export const useAuthStore = defineStore("auth", {
       tradingaddress: null,
       canisterbalance: null,
       notifications: [],
-      isRegistered: null,
       userInfo: null,
       transactions: [],
       ethActor: null,
@@ -96,7 +95,6 @@ export const useAuthStore = defineStore("auth", {
       this.identity = identity;
       this.whoamiActor = whoamiActor;
       this.isReady = true;
-      this.isRegistered = false;
 
       console.log("identity format is", this.identity);
       console.log("whoamiActor", this.whoamiActor);
@@ -121,10 +119,7 @@ export const useAuthStore = defineStore("auth", {
 
           console.log("whoamiActor", this.whoamiActor);
 
-          this.isRegistered = await this.whoamiActor.isRegistered();
-          console.log("is registered" + this.isRegistered);
           const whoami = await this.whoamiActor?.whoami();
-          console.log("whoami", whoami);
         },
       });
     },
@@ -226,12 +221,6 @@ export const useAuthStore = defineStore("auth", {
 
           this.whoamiActor = whoamiActor;
 
-       //   const isRegistered = await this.whoamiActor?.isRegistered();
-
-        //  const whoami = await this.whoamiActor?.whoami();
-          this.isRegistered = false;
-        //  console.log("is registered" + this.isRegistered);
-        //  console.log("whoami", whoami);
           this.isAuthenticated = true;
           this.isReady = true;
         }
@@ -263,20 +252,17 @@ export const useAuthStore = defineStore("auth", {
       const canisteraddress = await this.whoamiActor.getCanisterAddress();
       const canisterbalance = await this.whoamiActor.getCanisterBalance();
       const notifications = await this.whoamiActor.getNotifications();
-      const registered = await this.whoamiActor.isRegistered();
       this.fundingbalance = await fundingbalance;
       this.tradingbalance = await tradingbalance;
       this.fundingaddress = await fundingaddress;
       this.canisteraddress = await canisteraddress;
       this.canisterbalance = await canisterbalance;
       this.tradingaddress = await tradingaddress;
-      this.isRegistered = await registered;
     },
     async logout() {
       const authClient = toRaw(this.authClient);
       await authClient?.logout();
       this.isAuthenticated = false;
-      this.isRegistered = false;
       this.identity = null;
       this.whoamiActor = null;
       router.push("/auth");
@@ -327,8 +313,6 @@ export const useAuthStore = defineStore("auth", {
           icon: "success",
         });
         console.log(" user registered");
-        console.log(response);
-        this.isRegistered = true;
       }
 
       console.log(response);
@@ -404,11 +388,6 @@ export const useAuthStore = defineStore("auth", {
       });
 
       console.log(response);
-    },
-  },
-  getters: {
-    registrationStatus(state) {
-      return state.isRegistered;
     },
   },
 });

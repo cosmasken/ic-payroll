@@ -7,6 +7,7 @@ import router from "./router";
 const authStore = useAuthStore();
 
 let isLoading = ref(false);
+let isRegistered = ref(false);
 let emailExists = ref(false);
 let name = ref("");
 let email = ref("");
@@ -27,33 +28,30 @@ watchEffect(async () => {
   const identity = await authStore.whoamiActor?.whoami();
   name.value = identity;
 });
+watchEffect(async () => {
+  const isReg = await authStore.whoamiActor?.isReg();
+  console.log("isReg", isReg);
+  if (isReg === true) {
+    router.push("/home/dashboard");
+  }
+});
+
 
 
 const logout = () => {
   authStore.logout();
 };
 
-const { isRegistered, } = storeToRefs(authStore);
+//const { isRegistered, } = storeToRefs(authStore);
 
-if(isRegistered.value === true){
-  console.log("User is already registered");
-  router.push("/home/dashboard");
-};
+// if(isRegistered.value === true){
+//   console.log("User is already registered");
+//   router.push("/home/dashboard");
+// };
 
 const addData = async () => {
   isLoading.value = true;
   authStore.updateRegistrationData(registrationData);
-  // const exists = await authStore.whoamiActor?.emailExists(
-  //   authStore.registrationData.email_address
-  // );
-
-  //  if (exists) {
-  //    emailExists.value = true;
-  //    isLoading.value = false;
-  //    router.push("/home/dashboard");
-  //    return;
-  //  };
-
 
   const firstname = authStore.registrationData.first_name;
   const lastname = authStore.registrationData.last_name;
@@ -93,7 +91,8 @@ const addData = async () => {
       email_address: email,
         phone_notifications:phone_notifications,
         phone_number: phone,
-        account_type: accountTypeVariant
+        account_type: accountTypeVariant,
+        is_verified : true,
    } );
     await new Promise((resolve) => setTimeout(resolve, 1000));
   } catch (error) {
@@ -178,7 +177,7 @@ v-else
                 type="phone"
                 class="w-full border-0 bg-inherit p-0 shadow-none outline-none ring-0 placeholder:text-disabled focus:shadow-none focus:outline-none focus:ring-0 rounded-l-lg rounded-r-lg text-primary h-[30px] text-body-lg"
                 placeholder="Phone Number"
-                value=""
+            
               />
             </div>
           </div>
@@ -187,7 +186,7 @@ v-else
           >
             <div class="flex-1">
               <input
-              v-model="registrationData.phone_number"
+              v-model="registrationData.email_address"
                 type="email"
                 class="w-full border-0 bg-inherit p-0 shadow-none outline-none ring-0 placeholder:text-disabled focus:shadow-none focus:outline-none focus:ring-0 rounded-l-lg rounded-r-lg text-primary h-[30px] text-body-lg"
                 placeholder="Email Address"

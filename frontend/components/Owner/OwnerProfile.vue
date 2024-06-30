@@ -4,7 +4,7 @@ import { useAuthStore } from "../../store/auth";
 import * as yup from "yup";
 import Spinner from "../Common/Spinner.vue";
 const authStore = useAuthStore();
-const principal = ref("");
+let principal = ref("");
 let firstname = ref("");
 let lastname = ref("");
 let emailaddress = ref("");
@@ -15,7 +15,7 @@ let tradingaddress = ref("");
 let fundingbalance = ref("");
 let tradingbalance = ref("");
 let isLoading = ref(false);
-let emailExists = ref(false);
+let isReg = ref(false);
 
 const data = {
   first_name: "",
@@ -42,15 +42,21 @@ watchEffect(async () => {
 
 watchEffect(async () => {
   isLoading.value = true;
-  const user = await authStore.whoamiActor?.getUser();
-  if (user.status === 200) {
-    console.log("User:", user.data);
-    emailaddress.value = await user.data[0].email_address;
-    phonenumber.value = await user.data[0].phone_number;
-    firstname.value = await user.data[0].first_name;
-    lastname.value = await user.data[0].last_name;
-    accounttype.value = await user.data[0].account_type;
-  }
+  const isReg = await authStore.whoamiActor?.isReg();
+  console.log("isReg", isReg);
+
+  if (isReg === true) {
+    const user = await authStore.whoamiActor?.getUser();
+    if (user.status === 200) {
+      console.log("User:", user.data);
+      emailaddress.value = await user.data[0].email_address;
+      phonenumber.value = await user.data[0].phone_number;
+      firstname.value = await user.data[0].first_name;
+      lastname.value = await user.data[0].last_name;
+      accounttype.value = await user.data[0].account_type;
+    }
+  };
+
   isLoading.value = false;
 });
 

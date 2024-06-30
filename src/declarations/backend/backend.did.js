@@ -3,6 +3,7 @@ export const idlFactory = ({ IDL }) => {
     'email_address' : IDL.Text,
     'phone_notifications' : IDL.Bool,
     'email_notifications' : IDL.Bool,
+    'is_verified' : IDL.Bool,
     'first_name' : IDL.Text,
     'last_name' : IDL.Text,
     'phone_number' : IDL.Text,
@@ -350,6 +351,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_transactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
+    'isReg' : IDL.Func([], [IDL.Bool], []),
     'isRegistered' : IDL.Func([], [IDL.Bool], []),
     'runpayroll' : IDL.Func([IDL.Vec(PayrollType__1)], [Response_2], []),
     'save_notification' : IDL.Func(

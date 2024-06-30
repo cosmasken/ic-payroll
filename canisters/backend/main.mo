@@ -36,6 +36,7 @@ import Timer "mo:base/Timer";
 import { abs } = "mo:base/Int";
 import { now } = "mo:base/Time";
 import { setTimer; recurringTimer; cancelTimer } = "mo:base/Timer";
+import Deque "mo:base/Deque";
 import Taxcalculator "taxcalculator";
 import BalanceUtils "balance-utils";
 import UserUtils "user-utils";
@@ -243,6 +244,30 @@ return await  UserUtils.getUser(userStore,caller);
     return await UserUtils.isRegistered(userStore,caller);
     
   };
+
+ /**
+    *  Check if user is registered
+    */
+  public shared ({ caller }) func isReg() : async Bool {
+
+let data : Types.Response<User> = await getUserByPrincipal(caller);
+
+     switch (data.data) {
+      case (?user) {
+        let isRegistered = user.is_verified;
+        Debug.print("isRegistered:  is  " # debug_show (isRegistered));
+
+        return isRegistered;
+        
+         };
+      case null {
+        Debug.print("isRegistered:  is  " # debug_show (false));
+        return  false };
+    };
+
+  };
+
+
 
   /**
     * Update the user's information

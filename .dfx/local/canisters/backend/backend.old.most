@@ -96,6 +96,7 @@ type User =
     email_address : Text;
     email_notifications : Bool;
     first_name : Text;
+    is_verified : Bool;
     last_name : Text;
     phone_notifications : Bool;
     phone_number : Text

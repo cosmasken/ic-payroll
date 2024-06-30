@@ -3,6 +3,7 @@ type User =
    email_address: text;
    email_notifications: bool;
    first_name: text;
+   is_verified: bool;
    last_name: text;
    phone_notifications: bool;
    phone_number: text;
@@ -387,6 +388,8 @@ type Backend =
                             }) query;
    get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
    get_transactions: () -> (vec Transaction) query;
+   /// *  Check if user is registered
+   isReg: () -> (bool);
    /// *  Check if user exists and return Bool
    isRegistered: () -> (bool);
    runpayroll: (vec PayrollType__1) -> (Response_2);

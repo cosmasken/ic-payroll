@@ -40,6 +40,7 @@ export interface Backend {
   'getUsersList' : ActorMethod<[], Array<[string, User]>>,
   'get_transaction' : ActorMethod<[GetTransactionArgs], GetTransactionResult>,
   'get_transactions' : ActorMethod<[], Array<Transaction>>,
+  'isReg' : ActorMethod<[], boolean>,
   'isRegistered' : ActorMethod<[], boolean>,
   'runpayroll' : ActorMethod<[Array<PayrollType__1>], Response_2>,
   'save_notification' : ActorMethod<
@@ -342,6 +343,7 @@ export interface User {
   'email_address' : string,
   'phone_notifications' : boolean,
   'email_notifications' : boolean,
+  'is_verified' : boolean,
   'first_name' : string,
   'last_name' : string,
   'phone_number' : string,

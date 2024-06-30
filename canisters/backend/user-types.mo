@@ -21,6 +21,7 @@ module {
     email_address : Text;
     phone_notifications : Bool;
     phone_number : Text;
+    is_verified : Bool;
   };
 
 };

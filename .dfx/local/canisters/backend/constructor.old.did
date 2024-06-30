@@ -3,6 +3,7 @@ type User =
    email_address: text;
    email_notifications: bool;
    first_name: text;
+   is_verified: bool;
    last_name: text;
    phone_notifications: bool;
    phone_number: text;
@@ -382,6 +383,7 @@ service : {
                            }) query;
   get_transaction: (GetTransactionArgs) -> (GetTransactionResult) query;
   get_transactions: () -> (vec Transaction) query;
+  isReg: () -> (bool);
   isRegistered: () -> (bool);
   runpayroll: (vec PayrollType__1) -> (Response_2);
   save_notification: (CreateNotificationArgs) -> (CreateNotificationResult);
