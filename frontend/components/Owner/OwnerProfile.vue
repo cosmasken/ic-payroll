@@ -12,8 +12,8 @@ let phonenumber = ref("");
 let accounttype = ref("");
 let fundingaddress = ref("");
 let tradingaddress = ref("");
-const fundingbalance = ref("");
-const tradingbalance = ref("");
+let fundingbalance = ref("");
+let tradingbalance = ref("");
 let isLoading = ref(false);
 let emailExists = ref(false);
 
@@ -183,6 +183,42 @@ watchEffect(async () => {
                 class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
               >
                 {{ principal }}
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-4">
+            <label
+              for="principal"
+              class="block text-sm font-medium leading-6 text-gray-600"
+              >Funding Balance</label
+            >
+            <div class="mt-1">
+              <div
+                type="text"
+                name="principal"
+                id="principal"
+                autocomplete="principal"
+                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
+              >
+                {{ fundingbalance }}
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-4">
+            <label
+              for="principal"
+              class="block text-sm font-medium leading-6 text-gray-600"
+              >Trading Balance</label
+            >
+            <div class="mt-1">
+              <div
+                type="text"
+                name="principal"
+                id="principal"
+                autocomplete="principal"
+                class="block w-full rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6"
+              >
+                {{ tradingbalance }}
               </div>
             </div>
           </div>

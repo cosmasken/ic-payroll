@@ -30,6 +30,7 @@ export interface Backend {
   'getOrganizations' : ActorMethod<[], Array<Organization>>,
   'getOrganizationsLength' : ActorMethod<[], string>,
   'getTradingAddress' : ActorMethod<[], string>,
+  'getTradingBalance' : ActorMethod<[], string>,
   'getTransactionLength' : ActorMethod<[], string>,
   'getUnreadNotifications' : ActorMethod<[], Array<Notification__1>>,
   'getUnreadNotificationsLength' : ActorMethod<[], string>,

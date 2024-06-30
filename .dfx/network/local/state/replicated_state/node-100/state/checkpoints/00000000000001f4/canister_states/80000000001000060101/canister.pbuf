@@ -1,10 +1,10 @@
-Ð(¬:ÄÄ
+¶(Ø:ÄÄ
 ¸°˜
 Ð°˜
 É‹¥
 Ð‹¥
 €€@
-ëäÔ¹I"
+‘ÕÔ¹I"
  <ic-cdk internal> timer_executor
 acknowledge_entries
 add
@@ -39,7 +39,7 @@ $authn_method_registration_mode_enter%
 remove	
 replace
 update
-verify_tentative_deviceget_anchor_credentialsget_delegationget_id_aliasget_principalhttp_requestidentity_authn_infolookupstats Ð*Å¼
+verify_tentative_deviceget_anchor_credentialsget_delegationget_id_aliasget_principalhttp_requestidentity_authn_infolookupstats ¶*Å¼
 O
 candid:args@(opt InternetIdentityInit) ˆÂ‘ö¶Q&1ñå)…€ÿ¨˜”®pÐÂYž’á~
 í·
@@ -673,14 +673,14 @@ service : (opt InternetIdentityInit) -> {
 K
 supported_certificate_versions)1,2 ŽÔ»bØ—øÑŒ;ZâFATbà€'¨ø_¿M»'‡&û—2 #WØ"ÍE%Àí«>EÛR«
 *ÈÄ°ÇŠÌ[Áy8Z
-xˆž¢ qW³1É¶¨	ê›úº¨(QœJgô‹ƒä+`¥›4²¢Åþ½¸€šžÊ
+xˆƒ¢ µxÊÚ†jÿ DËú“Íñ zóH|Ã÷nævØRÑ²±‘»½¸€šžÊ
 
 €      Ê
-ˆVÆÅ1KÇ³ž³u²1³¾BÔƒÞXOLOÊÒ^u¦ÞÏ          Ø‚ú
-ââ‘ÐÚî‚                ˆ¨œ«¿çÔÚî¢Þ‰)¢
-ÝÞ°ˆ¢	ÏÞ›a¢¬ä¢
+ˆVÆÅ1KÇ³ž³u²1³¾BÔƒÞXOLOÊÒOO·ÞÏ          Ø‚ú
+ßî¿˜ÆÞñî‚                ˆŽõÌ××àñî¢ÄÊ¢
+ôÓ°ˆ¢	‘åù`¢üó¢
 ì™ýÓª¦
-KÈ×ŽìÊŸÚî"
+K·æÉØÑÎñî"
 
 
 €      */
@@ -689,7 +689,7 @@ KÈ×ŽìÊŸÚî"
 €      
 
 ˆVÆÅ1KÇ³ž³u²1³¾BÔƒÞXOLOÊ
-Uï¡Á„Ÿ Úî!
+U½¸áï–Ïñî!
 
 ˆVÆÅ1KÇ³ž³u²1³¾BÔƒÞXOLOÊ:$ #WØ"ÍE%Àí«>EÛR«
 *ÈÄ°ÇŠÌ[Áy²                º P9'Œ          Â ÊP

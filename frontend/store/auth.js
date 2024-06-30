@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { AuthClient } from "@dfinity/auth-client";
 import * as asn1js from "asn1js";
 import { Actor, HttpAgent } from '@dfinity/agent';
+import router from "../router";
 import { DelegationIdentity, DelegationChain, ECDSAKeyIdentity } from "@dfinity/identity";
 import {
   createActor,
@@ -275,8 +276,10 @@ export const useAuthStore = defineStore("auth", {
       const authClient = toRaw(this.authClient);
       await authClient?.logout();
       this.isAuthenticated = false;
+      this.isRegistered = false;
       this.identity = null;
       this.whoamiActor = null;
+      router.push("/auth");
     },
 
     async siwelogout() {

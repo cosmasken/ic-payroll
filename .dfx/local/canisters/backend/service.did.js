@@ -332,6 +332,7 @@ export const idlFactory = ({ IDL }) => {
     'getOrganizations' : IDL.Func([], [IDL.Vec(Organization)], ['query']),
     'getOrganizationsLength' : IDL.Func([], [IDL.Text], ['query']),
     'getTradingAddress' : IDL.Func([], [IDL.Text], []),
+    'getTradingBalance' : IDL.Func([], [IDL.Text], []),
     'getTransactionLength' : IDL.Func([], [IDL.Text], ['query']),
     'getUnreadNotifications' : IDL.Func([], [IDL.Vec(Notification__1)], []),
     'getUnreadNotificationsLength' : IDL.Func([], [IDL.Text], []),

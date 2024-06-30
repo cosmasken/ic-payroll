@@ -43,16 +43,17 @@ if(isRegistered.value === true){
 const addData = async () => {
   isLoading.value = true;
   authStore.updateRegistrationData(registrationData);
-  const exists = await authStore.whoamiActor?.emailExists(
-    authStore.registrationData.email_address
-  );
+  // const exists = await authStore.whoamiActor?.emailExists(
+  //   authStore.registrationData.email_address
+  // );
 
-  // if (exists) {
-  //   emailExists.value = true;
-  //   isLoading.value = false;
-  //   router.push("/home/dashboard");
-  //   return;
-  // };
+  //  if (exists) {
+  //    emailExists.value = true;
+  //    isLoading.value = false;
+  //    router.push("/home/dashboard");
+  //    return;
+  //  };
+
 
   const firstname = authStore.registrationData.first_name;
   const lastname = authStore.registrationData.last_name;
@@ -122,7 +123,7 @@ v-else
   >
     <div class="flex items-center justify-between self-stretch px-6 pt-6">
       <div class="flex gap-2">
-        <div class="text-md text-black">Signing up as to BitPochi</div>
+        <div class="text-md text-black">Signing up to BitPochi</div>
         <div
           @click="logout()"
           class="cursor-pointer text-subtitle-md text-black"

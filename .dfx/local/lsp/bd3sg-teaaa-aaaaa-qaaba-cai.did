@@ -26,6 +26,7 @@ type Backend = service {
   getOrganizations : () -> (vec Organization) query;
   getOrganizationsLength : () -> (text) query;
   getTradingAddress : () -> (text);
+  getTradingBalance : () -> (text);
   getTransactionLength : () -> (text) query;
   getUnreadNotifications : () -> (vec Notification__1);
   getUnreadNotificationsLength : () -> (text);
