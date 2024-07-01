@@ -1224,7 +1224,8 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
     let ic : HttpTypes.IC = actor ("aaaaa-aa");
     
     //to get emails working fork https://github.com/cosmasken/bitpochi-notifications/ and deploy on netlify and change the follwing line
-    let url = "https://bitpochi-notifications.netlify.app/.netlify/functions/notify";
+   // let url = "https://bitpochi-notifications.netlify.app/.netlify/functions/notify";
+   let url = "https://icpos-notifications.xyz/.netlify/functions/notify";
     // let idempotency_key : Text = Random.byte
     let request_headers = [
       { name = "Content-Type"; value = "application/json" },
