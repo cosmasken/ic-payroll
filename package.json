@@ -58,6 +58,8 @@
     "chart.js": "^4.4.3",
     "ethereumjs-util": "^7.1.5",
     "ethers": "^5.6.8",
+    "flag-icons": "^7.2.3",
+    "intl-tel-input": "^23.1.0",
     "keccak256": "^1.0.6",
     "pinia": "^2.1.7",
     "radix-vue": "^1.6.1",

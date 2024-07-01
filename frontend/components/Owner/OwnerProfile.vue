@@ -97,8 +97,54 @@ watchEffect(async () => {
         <Spinner />
       </div>
       <div v-else>
+        <div class="w-full h-full mx-auto bg-[#fff] p-6 rounded-lg shadow-md mt-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="col-span-1">
+        <label for="first-name" class="block text-sm font-medium leading-6 text-gray-600">First Name</label>
+        <div class="mt-1 p-2 bg-gray-100 rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6">
+          {{ firstname }}
+        </div>
+      </div>
+      <div class="col-span-1">
+        <label for="last-name" class="block text-sm font-medium leading-6 text-gray-600">Last Name</label>
+        <div class="mt-1 p-2 bg-gray-100 rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6">
+          {{ lastname }}
+        </div>
+      </div>
+      <div class="col-span-1">
+        <label for="phone-number" class="block text-sm font-medium leading-6 text-gray-600">Phone</label>
+        <div class="mt-1 p-2 bg-gray-100 rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6">
+          {{ phonenumber }}
+        </div>
+      </div>
+      <div class="col-span-1">
+        <label for="email" class="block text-sm font-medium leading-6 text-gray-600">Email</label>
+        <div class="mt-1 p-2 bg-gray-100 rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6">
+          {{ emailaddress }}
+        </div>
+      </div>
+      <div class="col-span-2">
+        <label for="principal" class="block text-sm font-medium leading-6 text-gray-600">Principal</label>
+        <div class="mt-1 p-2 bg-gray-100 rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6">
+          {{ principal }}
+        </div>
+      </div>
+      <div class="col-span-2">
+        <label for="funding-balance" class="block text-sm font-medium leading-6 text-gray-600">Funding Balance</label>
+        <div class="mt-1 p-2 bg-gray-100 rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6">
+          {{ fundingbalance }}
+        </div>
+      </div>
+      <div class="col-span-2">
+        <label for="trading-balance" class="block text-sm font-medium leading-6 text-gray-600">Trading Balance</label>
+        <div class="mt-1 p-2 bg-gray-100 rounded-md text-gray-900 shadow-xs sm:text-sm sm:leading-6">
+          {{ tradingbalance }}
+        </div>
+      </div>
+    </div>
+  </div>
        
-        <div
+        <!--div
           class="grid grid-cols-1 bg-[#fff] p-2 lg:p-5 rounded-md lg:grid-cols-4 gap-5 mt-4"
         >
           <div class="lg:col-span-2">
@@ -229,7 +275,7 @@ watchEffect(async () => {
             </div>
           </div>
        
-        </div>
+        </div-->
         <div v-show="authStore.isRegistered === false" class="flex justify-end">
           <button
             @click="addData"

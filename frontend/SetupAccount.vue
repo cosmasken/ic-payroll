@@ -1,7 +1,7 @@
 <script setup>
 import { useAuthStore } from "./store/auth";
 import { ref ,watchEffect, watch} from "vue";
-
+import PhonePicker from "./components/Common/PhonePicker.vue";
 import { storeToRefs } from "pinia";
 import router from "./router";
 const authStore = useAuthStore();
@@ -23,6 +23,10 @@ const registrationData = {
   phone_number: "",
   account_type: "",
 };
+
+function handlePhoneNumberInput(fullNumber) {
+  console.log('Full phone number:', fullNumber);
+}
 
 watchEffect(async () => {
   const identity = await authStore.whoamiActor?.whoami();
@@ -122,7 +126,7 @@ v-else
   >
     <div class="flex items-center justify-between self-stretch px-6 pt-6">
       <div class="flex gap-2">
-        <div class="text-md text-black">Signing up to BitPochi</div>
+        <div class="text-md text-black">Signing up to BitPochi as {{ name }}</div>
         <div
           @click="logout()"
           class="cursor-pointer text-subtitle-md text-black"
@@ -171,7 +175,7 @@ v-else
           <div
             class="flex items-center justify-stretch overflow-hidden rounded-lg border border-wash bg-top-layer p-2"
           >
-            <div class="flex-1">
+            <!--div class="flex-1">
               <input
               v-model="registrationData.phone_number"
                 type="phone"
@@ -179,7 +183,9 @@ v-else
                 placeholder="Phone Number"
             
               />
-            </div>
+              
+            </div-->
+            <PhonePicker @input="handlePhoneNumberInput" />
           </div>
           <div
             class="flex items-center justify-stretch overflow-hidden rounded-lg border border-wash bg-top-layer p-2"

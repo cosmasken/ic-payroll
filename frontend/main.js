@@ -7,7 +7,6 @@ import { MotionPlugin } from "@vueuse/motion";
 import router from "./router/";
 
 const app = createApp(AuthGuard);
-
 app.use(MotionPlugin);
 app.use(router);
 app.use(ethers);
