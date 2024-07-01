@@ -43,7 +43,7 @@
       </div>
       <div class="px-4 py-1 dark:border-[#272730] text-end">
         <span
-          class="px-2 py-0.5 rounded-[6px] w-[58px] inline-block text-center bg-[#63cf2433] text-[#349250] text-[10px] leading-[22px] font-semibold"
+          class="px-2 py-0.5 rounded-[6px] inline-block text-center bg-[#63cf2433] text-[#349250] text-[10px] leading-[22px] font-semibold"
           >Successful</span
         >
       </div>

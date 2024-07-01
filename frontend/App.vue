@@ -46,6 +46,8 @@ const payroll = [
   { to: "/home/deductions", text: "Deductions" },
   { to: "/home/payslips", text: "Payslips" },
   { to: "/home/one-time-payments", text: "One Time Payments" },
+  { to: "/home/bulk-payments", text: "Bulk Payments" },
+  { to: "/home/schedule-payments", text: "Schedule Payments" },
   { to: "/home/transactions", text: "Transactions" },
   // Add more links here
 ];
@@ -362,7 +364,7 @@ const getTestTokens = async () => {
                           stroke-linejoin="round"
                         />
                       </svg>
-                      <span>Payroll $ Salaries</span>
+                      <span>Payroll & Salaries</span>
                     </span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -395,6 +397,24 @@ const getTestTokens = async () => {
                       
                       <span class="flex items-center">
                         <span>One Time Payments</span>
+                      </span>
+                    </router-link>
+                    <router-link
+                      to="/home/bulk-payments"
+                      class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
+                    >
+                      
+                      <span class="flex items-center">
+                        <span>Bulk Payments</span>
+                      </span>
+                    </router-link>
+                    <router-link
+                      to="/home/schedule-payments"
+                      class="text-gray-700 bg-gray-50 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md"
+                    >
+                      
+                      <span class="flex items-center">
+                        <span>Schedule Payments</span>
                       </span>
                     </router-link>
                     <router-link
