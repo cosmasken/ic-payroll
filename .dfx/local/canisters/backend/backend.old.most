@@ -1,0 +1,136 @@
+// Version: 1.0.0
+type AssocList<K, V> = List<(K, V)>;
+type AssocList__1<K, V> = AssocList<K, V>;
+type Autom8Payment =
+  {
+    amount : Nat;
+    created_at : Int;
+    creator : Principal;
+    id : Nat;
+    receiver : Principal;
+    scheduled_at : Int;
+    status : {#Accepted; #Paid; #Rejected; #Unpaid}
+  };
+type Autom8Payment__1 = Autom8Payment;
+type Branch<K, V> = {left : Trie<K, V>; right : Trie<K, V>; size : Nat};
+type Department = {code : Text; creator : Principal; name : Text};
+type Department__1 = Department;
+type Designation = {code : Text; creator : Principal; name : Text};
+type Designation__1 = Designation;
+type Emp = Employee;
+type Employee =
+  {
+    creator : Principal;
+    department : Text;
+    designation : Text;
+    disability : Bool;
+    email_address : Text;
+    employee_type : Text;
+    first_name : Text;
+    gender : Text;
+    gross_salary : Nat;
+    job_group : Text;
+    last_name : Text;
+    organization : Text;
+    phone_number : Text;
+    profile_image : Text;
+    role : Text;
+    username : Text
+  };
+type Hash = Nat32;
+type ImgId = Text;
+type Invoice =
+  {
+    amount : Text;
+    client : Text;
+    created_at : Int;
+    creator : Text;
+    id : Nat;
+    isApproved : Bool;
+    isPaid : Bool;
+    memo : ?Text;
+    modified_at : Int;
+    receiver : Text
+  };
+type Invoice__1 = Invoice;
+type Key__1<K> = {hash : Hash; key : K};
+type Leaf<K, V> = {keyvals : AssocList__1<Key__1<K>, V>; size : Nat};
+type List<T> = ?(T, List<T>);
+type Notification =
+  {amount : Nat; id : Nat; isRead : Bool; receiver : Text; sender : Text};
+type Notification__1 = Notification;
+type Organization = {code : Text; creator : Principal; name : Text};
+type Organization__1 = Organization;
+type Organogram =
+  {
+    code : Text;
+    creator : Principal;
+    departments : ?List<Department>;
+    designations : ?List<Department>;
+    employees : ?List<Employee>;
+    name : Text
+  };
+type Organogram__1 = Organogram;
+type PayrollType =
+  {
+    amount : Nat;
+    created_at : Int;
+    creator : Text;
+    destination : Text;
+    id : Nat;
+    successful : Bool
+  };
+type PayrollType__1 = PayrollType;
+type Transaction__1 =
+  {
+    amount : Nat;
+    created_at : Int;
+    creator : Principal;
+    destination : Principal;
+    id : Nat;
+    successful : Bool
+  };
+type Transaction__3 = Transaction__1;
+type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
+type User =
+  {
+    email_address : Text;
+    email_notifications : Bool;
+    first_name : Text;
+    is_verified : Bool;
+    last_name : Text;
+    phone_notifications : Bool;
+    phone_number : Text
+  };
+type User__2 = User;
+actor {
+  stable var _currentMemoryOffset : Nat64;
+  stable var _imgOffset : [(ImgId, Nat64)];
+  stable var _imgSize : [(ImgId, Nat)];
+  stable var _thumbs : [(ImgId, Blob)];
+  stable var autom8PaymentCounter : Nat;
+  stable var contactsCounter : Nat;
+  stable var courierApiKey : Text;
+  stable var departmentsCounter : Nat;
+  stable var departmentsStable : [(Nat, Department__1)];
+  stable var designationsCounter : Nat;
+  stable var designationsStable : [(Nat, Designation__1)];
+  stable var invoiceCounter : Nat;
+  stable var invoicesStable : [(Nat, Invoice__1)];
+  stable var latestTransactionIndex : Nat;
+  stable var noOfEmployees : Nat;
+  stable var notificationsCounter : Nat;
+  stable var notificationsStable : [(Nat, Notification__1)];
+  stable var organizationsCounter : Nat;
+  stable var organizationsStable : [(Nat, Organization__1)];
+  stable var organogramsCounter : Nat;
+  stable var organogramsStable : [(Nat, Organogram__1)];
+  stable var payrollCounter : Nat;
+  stable var stableAutom8Payments : [(Nat, Autom8Payment__1)];
+  stable var stableEmployees : [(Nat, Emp)];
+  stable var stablePayroll : [(Nat, [PayrollType__1])];
+  stable var transactionCounter : Nat;
+  stable var transactionsStable : [(Nat, Transaction__3)];
+  stable var userStore :
+    {#branch : Branch<Text, User__2>; #empty; #leaf : Leaf<Text, User__2>}
+};

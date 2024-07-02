@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watchEffect } from "vue";
 import { useAuthStore } from "../../store/auth";
-import DropDown from "./DropDown.vue";
 import router from "../../router";
 const authStore = useAuthStore();
 let departmentsArray = ref([]);
@@ -12,6 +11,58 @@ let organizationsArray = ref([]);
 let noOfOrganizations = ref(0);
 const isLoading = ref(false);
 const filterOpen = ref(false);
+const blobUrl = ref(null);
+const imgBlob = ref(null);
+const uploadComplete = ref(false);
+const isUploading = ref(false);
+const selectedFile = ref(null);
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+      selectedFile.value = file;
+      
+    };
+
+    const uploadImage = async () => {
+      if (!selectedFile.value) return;
+
+      isUploading.value = true;
+
+      const img = new Image();
+      img.src = URL.createObjectURL(selectedFile.value);
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        ctx.drawImage(img, 0, 0);
+
+        canvas.toBlob(async (blob) => {
+          const arrayBuffer = await blob.arrayBuffer();
+       const myupload = await authStore.whoamiActor?.uploadImg('img001', [...new Uint8Array(arrayBuffer)]);
+       console.log("myupload",myupload);
+          isUploading.value = false;
+          uploadComplete.value = true;
+          
+
+          blobUrl.value = URL.createObjectURL(blob);
+         
+         
+          // Convert blob to base64 string
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        imgBlob.value = base64data; // Store the base64 encoded string
+        console.log(imgBlob);
+      };
+          
+
+          
+        }, 'image/jpeg', 1.0);
+      };
+    };
+
 
 const disability = ref(false);
 
@@ -212,7 +263,7 @@ const data = {
   designation: "",
   employee_type: "",
   job_group: "",
-  identity: "",
+  username: "",
   gross_salary: "",
   role: "",
 };
@@ -243,9 +294,10 @@ const addUser = async () => {
       designation: data.designation,
       employee_type: data.employee_type,
       job_group: data.job_group,
-      identity: data.identity,
+      username: data.username,
       gross_salary: data.gross_salary,
       role: data.role,
+      profile_image : imgBlob,
       // permissions: {
       //   canAdd: true,
       //   canView: false,
@@ -257,7 +309,9 @@ const addUser = async () => {
       // permissions : userpermissions,
     });
 
-    console.log(disability.value);
+    console.log(profile_image)
+
+    console.log("blobUrl",blobUrl );
 
     if (res.status === 200) {
       console.log(" employee registered");
@@ -429,24 +483,30 @@ const addUser = async () => {
 
           <div class="bg-[#fff] md:p-5 rounded-md mt-4">
             <div
-              class="border md:h-[300px] p-2 md:p-5 border-dashed border-autom8-blue-500 bg-[#f8fafb] grid items-center justify-center text-center mt-4 rounded-md"
+              class="border md:h-[300px] p-2 md:p-5 border-dashed border-autom8-blue-500 bg-[#f8fafb] grid grid-cols-1 items-center justify-center text-center mt-4 rounded-md"
             >
-              <div class="flex flex-col">
-                <img
-                  class="h-8 w-auto"
-                  src="../../assets/upload.svg"
-                  alt="autom8"
-                />
+        
+            <div>
+              <div class="flex flex-col mx-auto items-center justify-center">
+              
+                <input class="w-auto inline-flex items-center justify-center" type="file" @change="handleFileUpload" />
 
-                <p>Upload a File</p>
               </div>
 
               <button
                 type="button"
+                @click="uploadImage"
+                :disabled="isUploading"
                 class="inline-flex items-center justify-center sm:w-40 min-w-[125px] rounded-md border border-autom8-blue-500 bg-autom8-blue-500 px-3 py-2 text-sm space-x-2 font-medium leading-4 text-white shadow-sm hover:bg-autom8-blue-600 hover:border-autom8-blue-600 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
               >
                 Upload a File
               </button>
+            </div>
+            <div v-if="uploadComplete && blobUrl">
+      <h3>Uploaded Image:</h3>
+      <img :src="blobUrl" alt="Profile Image" />
+    </div>
+              
             </div>
           </div>
         </div>
@@ -615,17 +675,17 @@ const addUser = async () => {
           </div>
           <div class="lg:col-span-2">
             <label
-              for="identity"
+              for="username"
               class="block text-sm font-medium leading-6 text-gray-600"
-              >Identity</label
+              >Username</label
             >
             <div class="mt-1">
               <input
                 type="text"
-                name="identity"
-                id="identity"
-                v-model="data.identity"
-                autocomplete="identity"
+                name="username"
+                id="username"
+                v-model="data.username"
+                autocomplete="username"
                 class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-autom8-blue-500 sm:text-sm sm:leading-6"
               />
             </div>

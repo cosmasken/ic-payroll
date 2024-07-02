@@ -57,7 +57,6 @@ module {
     creator : Principal;
     first_name : Text;
     last_name : Text;
-    identity : Text;
     email_address : Text;
     phone_number : Text;
     username : Text;
@@ -70,13 +69,13 @@ module {
     job_group : Text;
     gross_salary : Nat;
     role : Text;
+    profile_image : Text ;
   };
 
   public type CreateEmpArgs = {
     first_name : Text;
     last_name : Text;
     email_address : Text;
-    identity : Text;
     phone_number : Text;
     username : Text;
     gender : Text;
@@ -88,6 +87,8 @@ module {
     job_group : Text;
     gross_salary : Nat;
     role : Text;
+    profile_image : Text ;
+
   };
 
   public type CreateEmpResult = Result.Result<CreateEmpSuccess, CreateEmpErr>;

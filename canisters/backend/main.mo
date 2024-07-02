@@ -133,34 +133,34 @@ shared (actorContext) actor class Backend() = this {
     return payslipInfo;
   };
 
-  public shared ({ caller }) func getUserPayslip(identity : Text) : async Types.Response<PayslipData> {
-    let employee = await getEmpByPrincipal(Principal.fromText(identity));
-    Debug.print("employee is " # debug_show (employee));
+  // public shared ({ caller }) func getUserPayslip(identity : Text) : async Types.Response<PayslipData> {
+  //   let employee = await getEmpByPrincipal(Principal.fromText(identity));
+  //   Debug.print("employee is " # debug_show (employee));
 
-    let payslipData : PayslipData = {
-      name = "N/A";
-      organization = "N/A";
-      department = "N/A";
-      designation = "N/A";
-      gross_salary = 0;
-      taxable_income = 0;
-      net_salary = 0;
-      housing = 0;
-      nhif_deductions = 0;
-      nssf_deductions = 0;
-      personal_relief = 0;
-      paye = 0;
-      other_deductions = 0;
-      total_tax = 0;
-    };
-    {
-      status = 200;
-      status_text = "Yes";
-      data = ?payslipData;
-      error_text = null;
-    };
+  //   let payslipData : PayslipData = {
+  //     name = "N/A";
+  //     organization = "N/A";
+  //     department = "N/A";
+  //     designation = "N/A";
+  //     gross_salary = 0;
+  //     taxable_income = 0;
+  //     net_salary = 0;
+  //     housing = 0;
+  //     nhif_deductions = 0;
+  //     nssf_deductions = 0;
+  //     personal_relief = 0;
+  //     paye = 0;
+  //     other_deductions = 0;
+  //     total_tax = 0;
+  //   };
+  //   {
+  //     status = 200;
+  //     status_text = "Yes";
+  //     data = ?payslipData;
+  //     error_text = null;
+  //   };
 
-  };
+  // };
 
   /**
    * High-Level API
@@ -879,7 +879,6 @@ shared (actorContext) actor class Backend() = this {
       creator = caller;
       first_name = args.first_name;
       last_name = args.last_name;
-      identity = args.identity;
       email_address = args.email_address;
       phone_number = args.phone_number;
       username = args.username;
@@ -892,6 +891,7 @@ shared (actorContext) actor class Backend() = this {
       job_group = args.job_group;
       gross_salary = args.gross_salary;
       role = args.role;
+      profile_image  = args.profile_image;
 
     };
 
@@ -1101,30 +1101,30 @@ shared (actorContext) actor class Backend() = this {
   };
 
   //get employee data based on principal
-  public shared ({ caller }) func getEmpByPrincipal(principal : Principal) : async Types.Response<Emp> {
-    let allEntries = Iter.toArray(employees.entries());
+  // public shared ({ caller }) func getEmpByPrincipal(principal : Principal) : async Types.Response<Emp> {
+  //   let allEntries = Iter.toArray(employees.entries());
 
-    //get employee by principal and then if creator is caller return employee
-    for ((_, employee) in allEntries.vals()) {
-      if (Principal.fromText(employee.identity) == principal) {
-        if (employee.creator == caller) {
-          return {
-            status = 200;
-            status_text = "OK";
-            data = ?employee;
-            error_text = null;
-          };
-        };
-      };
-    };
+  //   //get employee by principal and then if creator is caller return employee
+  //   for ((_, employee) in allEntries.vals()) {
+  //     if (Principal.fromText(employee.identity) == principal) {
+  //       if (employee.creator == caller) {
+  //         return {
+  //           status = 200;
+  //           status_text = "OK";
+  //           data = ?employee;
+  //           error_text = null;
+  //         };
+  //       };
+  //     };
+  //   };
 
-    return {
-      status = 404;
-      status_text = "Not Found";
-      data = null;
-      error_text = null;
-    };
-  };
+  //   return {
+  //     status = 404;
+  //     status_text = "Not Found";
+  //     data = null;
+  //     error_text = null;
+  //   };
+  // };
 
   //transfer funds from owner  caller to oter owner caller
 
