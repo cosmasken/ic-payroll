@@ -1422,7 +1422,7 @@ shared (actorContext) actor class Backend() = this {
     };
   };
 
-  public query func http_request(request : HttpTypes.Request) : async HttpTypes.Response {
+  public query func http_request(request : ImgTypes.Request) : async ImgTypes.Response {
     if (Text.contains(request.url, #text("imgid"))) {
       let imgId = Iter.toArray(Text.tokens(request.url, #text("imgid=")))[1];
 
@@ -1452,7 +1452,7 @@ shared (actorContext) actor class Backend() = this {
   };
 
   // A 200 Ok response with picture
-  private func picture(pic : Blob) : HttpTypes.Response {
+  private func picture(pic : Blob) : ImgTypes.Response {
     {
       body = pic;
       headers = [
@@ -1466,7 +1466,7 @@ shared (actorContext) actor class Backend() = this {
   };
 
   // A 404 response with an optional error message.
-  private func http404(msg : ?Text) : HttpTypes.Response {
+  private func http404(msg : ?Text) : ImgTypes.Response {
     {
       body = Text.encodeUtf8(
         switch (msg) {

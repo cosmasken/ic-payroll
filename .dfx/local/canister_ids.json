@@ -11,13 +11,7 @@
   "ckbtc_ledger": {
     "local": "bkyz2-fmaaa-aaaaa-qaaaq-cai"
   },
-  "ic_siwe_provider": {
-    "local": "by6od-j4aaa-aaaaa-qaadq-cai"
-  },
   "icrc1_index": {
     "local": "bw4dl-smaaa-aaaaa-qaacq-cai"
-  },
-  "internet_identity": {
-    "local": "b77ix-eeaaa-aaaaa-qaada-cai"
   }
 }
