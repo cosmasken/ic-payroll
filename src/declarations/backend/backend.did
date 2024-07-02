@@ -372,6 +372,7 @@ type Backend =
    getNotifications: () -> (vec Notification__1);
    getOrganizations: () -> (vec Organization) query;
    getOrganizationsLength: () -> (text) query;
+   getTestTokens: () -> (Result);
    getTradingAddress: () -> (text);
    getTradingBalance: () -> (text);
    getTransactionLength: () -> (text) query;

@@ -9,9 +9,8 @@ import Nat64 "mo:base/Nat64";
 import Cycles "mo:base/ExperimentalCycles";
 import Buffer "mo:base/Buffer";
 module {
-   
-    
-     //this method is used for the Idempotency Key used in the request headers of the POST request.
+
+  //this method is used for the Idempotency Key used in the request headers of the POST request.
   public func generateUUID() : async Text {
     let random = Random.Finite(await Random.blob());
     let randomNat = random.range(32);
@@ -20,7 +19,5 @@ module {
       case null { throw Error.reject("Entropy exhausted") };
     };
   };
-   
 
-
-}
+};

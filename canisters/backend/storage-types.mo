@@ -7,7 +7,7 @@ import List "mo:base/List";
 
 module {
 
-    public type Organogram = {
+  public type Organogram = {
     creator : Principal;
     code : Text;
     name : Text;
@@ -15,7 +15,6 @@ module {
     designations : ?List.List<Department>;
     employees : ?List.List<Employee>;
   };
-
 
   public type Department = {
     code : Text;
@@ -120,15 +119,14 @@ module {
     };
   };
 
-
-   public type CreateOrganogramArgs = {
+  public type CreateOrganogramArgs = {
     name : Text;
-     departments : List.List<Department>;
+    departments : List.List<Department>;
     designations : List.List<Department>;
     employees : List.List<Employee>;
 
   };
-    public type CreateOrganogramResult = Result.Result<CreateOrganogramSuccess, CreateOrganogramErr>;
+  public type CreateOrganogramResult = Result.Result<CreateOrganogramSuccess, CreateOrganogramErr>;
   public type CreateOrganogramSuccess = {
     organogram : Organogram;
   };

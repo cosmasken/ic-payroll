@@ -67,7 +67,7 @@ const assets = [
 const getTestTokens = async () => {
   try {
     isLoading.value = true;
-    const response = authStore.whoamiActor.transferFromCanistertoSubAccount();
+    const response = authStore.whoamiActor.getTestTokens();
     console.log(response);
     // transferresponse.value = await response
   } catch (error) {
@@ -1067,7 +1067,7 @@ const getTestTokens = async () => {
               type="button"
               class="inline-flex items-center justify-center sm:w-40 min-w-[125px] rounded-md border border-autom8-blue-500 bg-autom8-blue-500 px-3 py-2 text-sm space-x-2 font-medium leading-4 text-white shadow-sm hover:bg-autom8-blue-600 hover:border-autom8-blue-600 focus:outline-none focus:ring-2 focus:ring-autom8-blue-500 focus:ring-offset-2"
             >
-              Get loan
+              Get Test Tokens
             </button>
             <!--div class="hidden md:block">
               <label

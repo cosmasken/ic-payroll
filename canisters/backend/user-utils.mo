@@ -4,19 +4,18 @@ import Types "types";
 import Trie "mo:base/Trie";
 import Text "mo:base/Text";
 import Nat "mo:base/Nat";
-module UserUtils{
+module UserUtils {
 
-    type User = UserTypes.User;
-   
-     /**
+  type User = UserTypes.User;
+
+  /**
     * Generate a Trie key based on  principal ID
     */
   private func userKey(x : Text) : Trie.Key<Text> {
     return { hash = Text.hash(x); key = x };
   };
 
-  public func getUser(userStore:Trie.Trie<Text, User>,caller:Principal) : async Types.Response<User> {
-
+  public func getUser(userStore : Trie.Trie<Text, User>, caller : Principal) : async Types.Response<User> {
 
     switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
       case (?user) {
@@ -41,7 +40,7 @@ module UserUtils{
   /**
     *  Get user data by principal
     */
-  public func getUserByPrincipal(userStore:Trie.Trie<Text, User>, principal : Principal) : async Types.Response<User> {
+  public func getUserByPrincipal(userStore : Trie.Trie<Text, User>, principal : Principal) : async Types.Response<User> {
     switch (Trie.get(userStore, userKey(Principal.toText(principal)), Text.equal)) {
       case (?user) {
         {
@@ -62,11 +61,11 @@ module UserUtils{
     };
   };
 
-    /**
+  /**
     *  Check if user exists and return Bool
     */
-  public func isRegistered(userStore:Trie.Trie<Text, User>, caller : Principal) : async Bool {
-  
+  public func isRegistered(userStore : Trie.Trie<Text, User>, caller : Principal) : async Bool {
+
     switch (Trie.get(userStore, userKey(Principal.toText(caller)), Text.equal)) {
       case (?user) {
         return true;
@@ -77,14 +76,12 @@ module UserUtils{
     };
   };
 
-
   /**
     *  Check no of registered users
     */
-  public  func userLength(userStore:Trie.Trie<Text, User>) : async Text {
+  public func userLength(userStore : Trie.Trie<Text, User>) : async Text {
     var size = Trie.size(userStore);
     return Nat.toText(size);
   };
 
-   
-}
+};

@@ -98,7 +98,7 @@ const data = {
   code: "",
 };
 const addData = async () => {
-  // isLoading.value = true;
+   isLoading.value = true;
   const name = data.name;
   const code = data.code;
   const result = ref(null);
@@ -113,8 +113,8 @@ const addData = async () => {
   } catch (error) {
     console.error("Error submitting data:", error);
   } finally {
-    //  isLoading.value = false;
-    //openDepartmentModal.value = false;
+      isLoading.value = false;
+    openDepartmentModal.value = false;
     refresh();
   }
 };

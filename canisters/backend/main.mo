@@ -14,7 +14,7 @@ import HttpTypes "./http-types";
 import UserTypes "./user-types";
 import PaymentTypes "./payment-types";
 import StorageTypes "./storage-types";
-import { toSubaccount; } "./utils";
+import { toSubaccount } "./utils";
 import Error "mo:base/Error";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
@@ -41,6 +41,10 @@ import Taxcalculator "taxcalculator";
 import BalanceUtils "balance-utils";
 import UserUtils "user-utils";
 import EmailUtils "email-utils";
+
+import ImgTypes "img-types";
+
+import Memory "mo:base/ExperimentalStableMemory";
 
 shared (actorContext) actor class Backend() = this {
 
@@ -79,7 +83,7 @@ shared (actorContext) actor class Backend() = this {
   stable var transactionsStable : [(Nat, Transaction)] = [];
   stable var departmentsStable : [(Nat, Department)] = [];
   stable var organizationsStable : [(Nat, Organization)] = [];
-    stable var organogramsStable : [(Nat, Organogram)] = [];
+  stable var organogramsStable : [(Nat, Organogram)] = [];
   stable var designationsStable : [(Nat, Designation)] = [];
   stable var stableEmployees : [(Nat, Emp)] = [];
   stable var notificationsStable : [(Nat, Notification)] = [];
@@ -90,7 +94,7 @@ shared (actorContext) actor class Backend() = this {
   stable var contactsCounter : Nat = 0;
   stable var noOfEmployees : Nat = 0;
   stable var organizationsCounter : Nat = 0;
-    stable var organogramsCounter : Nat = 0;
+  stable var organogramsCounter : Nat = 0;
   stable var departmentsCounter : Nat = 0;
   stable var designationsCounter : Nat = 0;
   let oneMinute = 60;
@@ -107,11 +111,22 @@ shared (actorContext) actor class Backend() = this {
   var departments : HashMap.HashMap<Nat, Department> = HashMap.fromIter(Iter.fromArray(departmentsStable), departmentsStable.size(), Nat.equal, Hash.hash);
   var designations : HashMap.HashMap<Nat, Designation> = HashMap.fromIter(Iter.fromArray(designationsStable), designationsStable.size(), Nat.equal, Hash.hash);
   var autom8payments : HashMap.HashMap<Nat, Autom8Payment> = HashMap.fromIter(Iter.fromArray(stableAutom8Payments), stableAutom8Payments.size(), Nat.equal, Hash.hash);
-let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
+  let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(invoicesStable), invoicesStable.size(), Nat.equal, Hash.hash);
 
   var MAX_TRANSACTIONS = 30_000;
   var MAX_AUTOM8_PAYMENTS = 30_000;
-  
+
+  //img utils
+  type ImgId = Text;
+  private stable var _currentMemoryOffset : Nat64 = 2;
+  private stable var _imgOffset : [(ImgId, Nat64)] = [];
+  private var imgOffset : HashMap.HashMap<ImgId, Nat64> = HashMap.fromIter(_imgOffset.vals(), 0, Text.equal, Text.hash);
+  private stable var _imgSize : [(ImgId, Nat)] = [];
+  private var imgSize : HashMap.HashMap<ImgId, Nat> = HashMap.fromIter(_imgSize.vals(), 0, Text.equal, Text.hash);
+
+  // thumbnail handling
+  private stable var _thumbs : [(ImgId, Blob)] = [];
+  private var thumbs = HashMap.HashMap<ImgId, Blob>(0, Text.equal, Text.hash);
 
   public shared ({ caller }) func generatePayslip(income : Nat) : async Types.Response<Payslip> {
     let payslipInfo = await Taxcalculator.calculateTax(income);
@@ -182,12 +197,12 @@ let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(i
     return timerId;
   };
 
-  public func schedulePayment(when:Nat) : async Nat {
+  public func schedulePayment(when : Nat) : async Nat {
     let now = Time.now();
-     let timerId = recurringTimer(
+    let timerId = recurringTimer(
       #seconds when,
       func() : async () {
-       // Debug.print("Here are the items that are pending");
+        // Debug.print("Here are the items that are pending");
         await checkPayroll();
       },
     );
@@ -223,8 +238,8 @@ let invoices : HashMap.HashMap<Nat, Invoice> = HashMap.fromIter(Iter.fromArray(i
   /**
     *  Get the merchant's information
     */
-  public  shared ({ caller }) func getUser() : async Types.Response<User> {
-return await  UserUtils.getUser(userStore,caller);
+  public shared ({ caller }) func getUser() : async Types.Response<User> {
+    return await UserUtils.getUser(userStore, caller);
   };
 
   /**
@@ -232,8 +247,8 @@ return await  UserUtils.getUser(userStore,caller);
     */
   public shared ({ caller }) func getUserByPrincipal(identity : Principal) : async Types.Response<User> {
 
-//let principal: Principal = Principal.fromText(identity);
-    return await UserUtils.getUserByPrincipal(userStore,identity);
+    //let principal: Principal = Principal.fromText(identity);
+    return await UserUtils.getUserByPrincipal(userStore, identity);
   };
 
   /**
@@ -241,33 +256,32 @@ return await  UserUtils.getUser(userStore,caller);
     */
   public shared ({ caller }) func isRegistered() : async Bool {
 
-    return await UserUtils.isRegistered(userStore,caller);
-    
+    return await UserUtils.isRegistered(userStore, caller);
+
   };
 
- /**
+  /**
     *  Check if user is registered
     */
   public shared ({ caller }) func isReg() : async Bool {
 
-let data : Types.Response<User> = await getUserByPrincipal(caller);
+    let data : Types.Response<User> = await getUserByPrincipal(caller);
 
-     switch (data.data) {
+    switch (data.data) {
       case (?user) {
         let isRegistered = user.is_verified;
         Debug.print("isRegistered:  is  " # debug_show (isRegistered));
 
         return isRegistered;
-        
-         };
+
+      };
       case null {
         Debug.print("isRegistered:  is  " # debug_show (false));
-        return  false };
+        return false;
+      };
     };
 
   };
-
-
 
   /**
     * Update the user's information
@@ -289,11 +303,10 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
     };
   };
 
-
   //no of users
   public shared ({ caller }) func userLength() : async Text {
-   
-     return await UserUtils.userLength(userStore);
+
+    return await UserUtils.userLength(userStore);
   };
 
   public query func getUsersList() : async [(Text, User)] {
@@ -387,6 +400,39 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
     };
 
     return #ok("🥠: " # "success");
+  };
+
+  public shared ({ caller }) func getTestTokens() : async Result.Result<Text, Text> {
+    try {
+      // if enough funds were sent, move them to the canisters default account
+      let transferResult = await CkBtcLedger.icrc1_transfer({
+        amount = 5000;
+        from_subaccount = null;
+        created_at_time = null;
+        fee = ?10;
+        memo = null;
+        to = {
+          owner = Principal.fromActor(this);
+          subaccount = ?toSubaccount(caller);
+        };
+      });
+
+      Debug.print("transferresult:  is  " # debug_show (transferResult));
+
+      switch (transferResult) {
+        case (#Err(transferError)) {
+          return #err("Couldn't transfer funds to default account:\n" # debug_show (transferError));
+        };
+        case (_) {
+          return #err("Couldn't transfer funds to default account:\n");
+        };
+        case (#Ok(transfer)) {
+          return #ok("Funds Transferred");
+        };
+      };
+    } catch (error : Error) {
+      return #err("Reject message: " # Error.message(error));
+    };
   };
 
   //transfer from one subaccount to another
@@ -697,6 +743,11 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
     organizationsStable := Iter.toArray(organizations.entries());
     departmentsStable := Iter.toArray(departments.entries());
     designationsStable := Iter.toArray(designations.entries());
+
+    _imgOffset := Iter.toArray(imgOffset.entries());
+    _imgSize := Iter.toArray(imgSize.entries());
+
+    _thumbs := Iter.toArray(thumbs.entries());
   };
 
   system func postupgrade() {
@@ -717,6 +768,12 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
 
     designations := HashMap.fromIter(Iter.fromArray(designationsStable), designationsStable.size(), Nat.equal, Hash.hash);
     designationsStable := [];
+
+    _imgOffset := [];
+    _imgSize := [];
+
+    thumbs := HashMap.fromIter<ImgId, Blob>(_thumbs.vals(), 10, Text.equal, Text.hash);
+    _thumbs := [];
 
   };
 
@@ -901,36 +958,32 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
 
   // #endregion
 
-//  public shared ({ caller }) func create_organogram(args : StorageTypes.CreateOrganogramArgs) : async Types.Response<Organogram> {
-//  let id : Nat = organogramsCounter;
-//     // increment counter
-//     organogramsCounter += 1;
+  //  public shared ({ caller }) func create_organogram(args : StorageTypes.CreateOrganogramArgs) : async Types.Response<Organogram> {
+  //  let id : Nat = organogramsCounter;
+  //     // increment counter
+  //     organogramsCounter += 1;
 
-//     let code = await generateCode("org");
+  //     let code = await generateCode("org");
 
-//     let organogram : Organogram = {
-//       creator = caller;
-//       code = code;
-//       name = args.name;
-//       departments = ?args.departments;
-//       designations = ?args.designations;
-//       employees = ?args.employees;
-//     };
+  //     let organogram : Organogram = {
+  //       creator = caller;
+  //       code = code;
+  //       name = args.name;
+  //       departments = ?args.departments;
+  //       designations = ?args.designations;
+  //       employees = ?args.employees;
+  //     };
 
+  //     organograms.put(id, organogram);
 
-//     organograms.put(id, organogram);
+  //     {
+  //       status = 200;
+  //       status_text = "OK";
+  //       data = ?organogram;
+  //       error_text = null;
+  //     };
 
-//     {
-//       status = 200;
-//       status_text = "OK";
-//       data = ?organogram;
-//       error_text = null;
-//     };
- 
-//  };
-
-
-
+  //  };
 
   //get no of my organizations
   public shared query ({ caller }) func getOrganizationsLength() : async Text {
@@ -1219,13 +1272,13 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
   };
 
   //PULIC METHOD
- //This method sends a POST request to a URL with a free API we can test.
+  //This method sends a POST request to a URL with a free API we can test.
   public func send_notifications(name : Text, email : Text, phone : Text, amount : Text, sender : Text) : async () {
     let ic : HttpTypes.IC = actor ("aaaaa-aa");
-    
+
     //to get emails working fork https://github.com/cosmasken/bitpochi-notifications/ and deploy on netlify and change the follwing line
-   // let url = "https://bitpochi-notifications.netlify.app/.netlify/functions/notify";
-   let url = "https://icpos-notifications.xyz/.netlify/functions/notify";
+    // let url = "https://bitpochi-notifications.netlify.app/.netlify/functions/notify";
+    let url = "https://icpos-notifications.xyz/.netlify/functions/notify";
     // let idempotency_key : Text = Random.byte
     let request_headers = [
       { name = "Content-Type"; value = "application/json" },
@@ -1263,11 +1316,11 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
         case (null) { "No value returned" };
         case (?y) { y };
       };
-     // log("Error sending notification: " # decoded_text);
-     Debug.print("Error sending notification: " # decoded_text);
+      // log("Error sending notification: " # decoded_text);
+      Debug.print("Error sending notification: " # decoded_text);
     } else {
-        Debug.print("Notification sent to " # email );
-    //  log("Notification sent");
+      Debug.print("Notification sent to " # email);
+      //  log("Notification sent");
     };
   };
 
@@ -1284,7 +1337,7 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
   };
 
   //Helper method that generates a unique code for departments/employees/organizations
-   public func generateCode(prefix:Text) : async Text {
+  public func generateCode(prefix : Text) : async Text {
     let random = Random.Finite(await Random.blob());
     let randomNat = random.range(32);
     switch (randomNat) {
@@ -1303,6 +1356,130 @@ let data : Types.Response<User> = await getUserByPrincipal(caller);
       };
     };
     return false;
+  };
+
+  public shared (msg) func uploadImg(imgId : ImgId, image : Blob) {
+    storeBlobImg(imgId, image);
+  };
+
+  public shared (msg) func uploadThumbnail(imgId : ImgId, thumbnail : Blob) {
+    thumbs.put(imgId, thumbnail);
+  };
+
+  public query ({ caller }) func getPic(id : ImgId) : async Blob {
+    var pic = loadBlobImg(id);
+    switch (pic) {
+      case (null) {
+        return Blob.fromArray([]);
+      };
+      case (?existingPic) {
+        return existingPic;
+      };
+    };
+  };
+
+  public query ({ caller }) func getThumbnail(id : ImgId) : async Blob {
+    var pic = thumbs.get(id);
+    switch (pic) {
+      case (null) {
+        return Blob.fromArray([]);
+      };
+      case (?existingPic) {
+        return existingPic;
+      };
+    };
+  };
+
+  private func storeBlobImg(imgId : ImgId, value : Blob) {
+    var size : Nat = Nat32.toNat(Nat32.fromIntWrap(value.size()));
+    // Each page is 64KiB (65536 bytes)
+    var growBy : Nat = size / 65536 + 1;
+    let a = Memory.grow(Nat64.fromNat(growBy));
+    Memory.storeBlob(_currentMemoryOffset, value);
+    imgOffset.put(imgId, _currentMemoryOffset);
+    imgSize.put(imgId, size);
+    size := size + 4;
+    _currentMemoryOffset += Nat64.fromNat(size);
+  };
+
+  private func loadBlobImg(imgId : ImgId) : ?Blob {
+    let offset = imgOffset.get(imgId);
+    switch (offset) {
+      case (null) {
+        return null;
+      };
+      case (?offset) {
+        let size = imgSize.get(imgId);
+        switch (size) {
+          case (null) {
+            return null;
+          };
+          case (?size) {
+            return ?Memory.loadBlob(offset, size);
+          };
+        };
+      };
+    };
+  };
+
+  public query func http_request(request : HttpTypes.Request) : async HttpTypes.Response {
+    if (Text.contains(request.url, #text("imgid"))) {
+      let imgId = Iter.toArray(Text.tokens(request.url, #text("imgid=")))[1];
+
+      if (Text.contains(request.url, #text("thumbnail"))) {
+        var pic = thumbs.get(imgId);
+        switch (pic) {
+          case (null) {
+            return http404(?"no pic available");
+          };
+          case (?existingPic) {
+            return picture(existingPic);
+          };
+        };
+      } else {
+        var pic = loadBlobImg(imgId);
+        switch (pic) {
+          case (null) {
+            return http404(?"no thumbnail available");
+          };
+          case (?existingPic) {
+            return picture(existingPic);
+          };
+        };
+      };
+    };
+    return http404(?"Path not found.");
+  };
+
+  // A 200 Ok response with picture
+  private func picture(pic : Blob) : HttpTypes.Response {
+    {
+      body = pic;
+      headers = [
+        ("Content-Type", "image/jpg"),
+        ("Access-Control-Allow-Origin", "*"),
+        ("Expires", "Wed, 9 Jan 2099 09:09:09 GMT"),
+      ];
+      status_code = 200;
+      streaming_strategy = null;
+    };
+  };
+
+  // A 404 response with an optional error message.
+  private func http404(msg : ?Text) : HttpTypes.Response {
+    {
+      body = Text.encodeUtf8(
+        switch (msg) {
+          case (?msg) msg;
+          case null "Not found.";
+        }
+      );
+      headers = [
+        ("Content-Type", "text/plain"),
+      ];
+      status_code = 404;
+      streaming_strategy = null;
+    };
   };
 
 };

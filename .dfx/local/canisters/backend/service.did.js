@@ -116,6 +116,7 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Nat,
     'receiver' : IDL.Text,
   });
+  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const PayslipData = IDL.Record({
     'nhif_deductions' : IDL.Nat,
     'nssf_deductions' : IDL.Nat,
@@ -285,7 +286,6 @@ export const idlFactory = ({ IDL }) => {
     'status_text' : IDL.Text,
     'error_text' : IDL.Opt(IDL.Text),
   });
-  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
   const HttpResponsePayload = IDL.Record({
     'status' : IDL.Nat,
@@ -332,6 +332,7 @@ export const idlFactory = ({ IDL }) => {
     'getNotifications' : IDL.Func([], [IDL.Vec(Notification__1)], []),
     'getOrganizations' : IDL.Func([], [IDL.Vec(Organization)], ['query']),
     'getOrganizationsLength' : IDL.Func([], [IDL.Text], ['query']),
+    'getTestTokens' : IDL.Func([], [Result], []),
     'getTradingAddress' : IDL.Func([], [IDL.Text], []),
     'getTradingBalance' : IDL.Func([], [IDL.Text], []),
     'getTransactionLength' : IDL.Func([], [IDL.Text], ['query']),

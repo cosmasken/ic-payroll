@@ -185,7 +185,7 @@ v-else
               />
               
             </div-->
-            <PhonePicker @input="handlePhoneNumberInput" />
+            <PhonePicker v-model="registrationData.phone_number"  @input="handlePhoneNumberInput" />
           </div>
           <div
             class="flex items-center justify-stretch overflow-hidden rounded-lg border border-wash bg-top-layer p-2"
