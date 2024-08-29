@@ -1,0 +1,5 @@
+[dependencies]
+base = "0.11.0"
+sha2 = "0.0.2"
+map = "8.1.0"
+random = "1.0.1"

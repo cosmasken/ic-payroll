@@ -1,0 +1,11 @@
+/home/cosmas/harambeeapps/ic-siwe-vue-demo-rust/target/release/deps/libserde_bytes-f47fd3ed6b431ef1.rmeta: /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/lib.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytes.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/de.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/ser.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytebuf.rs
+
+/home/cosmas/harambeeapps/ic-siwe-vue-demo-rust/target/release/deps/libserde_bytes-f47fd3ed6b431ef1.rlib: /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/lib.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytes.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/de.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/ser.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytebuf.rs
+
+/home/cosmas/harambeeapps/ic-siwe-vue-demo-rust/target/release/deps/serde_bytes-f47fd3ed6b431ef1.d: /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/lib.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytes.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/de.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/ser.rs /home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytebuf.rs
+
+/home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/lib.rs:
+/home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytes.rs:
+/home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/de.rs:
+/home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/ser.rs:
+/home/cosmas/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_bytes-0.11.12/src/bytebuf.rs:
