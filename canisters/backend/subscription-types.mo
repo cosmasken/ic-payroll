@@ -25,6 +25,12 @@ import Time "mo:base/Time";
         yearly: [Nat];   // Array to store amounts for each employee tier
     };
 
+     // Constants for duration in nanoseconds
+    let oneDay : Nat64 = 86_400_000_000_000;  // 24 hours in nanoseconds
+    let oneMonth : Nat64 = oneDay * 30;       // Approximation of 30 days in nanoseconds
+    let oneYear : Nat64 = oneDay * 365;       // Approximation of 365 days in nanoseconds
+
+
     // Define a type to represent a subscription
     public type Subscription = {
         id: Nat;                        // Unique identifier for the subscription
@@ -32,8 +38,17 @@ import Time "mo:base/Time";
         subscriptionType: SubscriptionType; // Type of the subscription
         employeeCount: Nat;             // Number of employees
         amount: Nat;                    // Amount to be paid for the subscription
-        startDate: Time;                // Start date of the subscription
-        endDate: ?Time;                 // Optional end date for trial subscriptions or cancellations
+        startDate: Time.Time;                // Start date of the subscription
+        endDate: ?Time.Time;                 // Optional end date for trial subscriptions or cancellations
+    };
+
+    // Function to calculate the end date based on the subscription type
+    public func calculateEndDate(subscriptionType: SubscriptionType, startDate: Time.Time) : ?Time.Time {
+        switch subscriptionType {
+            case (#Trial) null;  // Trials may not have a predefined end date
+            case (#Monthly) ?Time.add(startDate, oneMonth);
+            case (#Yearly) ?Time.add(startDate, oneYear);
+        }
     };
 
     // Define default amounts for different subscription types and employee tiers
@@ -78,7 +93,7 @@ import Time "mo:base/Time";
             employeeCount = employeeCount;
             amount = amount;
             startDate = startDate;
-            endDate = null; // End date is null unless it is a trial or canceled subscription
+            endDate = calculateEndDate(subscriptionType, startDate);  // Calculate end date based on subscription type
         }
     };
 
