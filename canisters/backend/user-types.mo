@@ -9,6 +9,11 @@ module {
     #blob : Blob;
   };
 
+  public type AccType = {
+    #account : Account;
+    #user : User;
+  };
+
   public type Account = {
     owner : Principal;
     subaccount : ?Subaccount;
@@ -22,6 +27,7 @@ module {
     phone_notifications : Bool;
     phone_number : Text;
     is_verified : Bool;
+    kyc : ?Bool;
   };
 
 };
