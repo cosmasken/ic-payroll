@@ -1,0 +1,57 @@
+[
+  {
+    "first_name": "Andray",
+    "last_name": "Muthomi",
+    "email_address": "andraymuthomi04@gmail.com",
+    "phone_number": "123-456-7890",
+    "joining_date": "2023-01-15",
+    "gender": "Male",
+    "disability": false,
+    "organization": "ABC Company",
+    "department": "Engineering",
+    "designation": "Software Engineer",
+    "employee_type": "Full-time",
+    "job_group": "JG-6",
+    "gross_salary": 60000,
+    "role": "Employee",
+    "identity": "omdih-s2boh-uk7a7-7rzkr-mm3qx-suksg-gfmip-nlamb-n3fmc-4ugd6-6qe"
+  },
+  {
+    "first_name": "Mercury",
+    "last_name": "Williams",
+    "email_address": "mercurywilliams74@gmail.com",
+    "phone_number": "234-567-8901",
+    "joining_date": "2023-02-20",
+    "gender": "Female",
+    "disability": true,
+    "organization": "XYZ Corporation",
+    "department": "Marketing",
+    "designation": "Marketing Manager",
+    "employee_type": "Full-time",
+    "job_group": "JG-7",
+    "gross_salary": 80000,
+    "role": "Employee",
+    "identity": "6bqnl-bejo3-fku4w-kbegv-6xu3q-57rpr-qge2r-2gwdg-pvv64-36poq-gqe"
+  },
+  {
+    "first_name": "Bentina",
+    "last_name": "Apwoka",
+    "email_address": "bentinaapwok772@gmail.com",
+    "phone_number": "345-678-9012",
+    "joining_date": "2023-03-25",
+    "gender": "Male",
+    "disability": false,
+    "organization": "PQR Ltd.",
+    "department": "Finance",
+    "designation": "Financial Analyst",
+    "employee_type": "Full-time",
+    "job_group": "JG-5",
+    "gross_salary": 70000,
+    "role": "Employee",
+    "identity": "j6mkk-kxsir-pfrxx-2czox-gwchm-fn7ns-qfl55-iv2q5-qbri4-z5eih-qqe"
+  }
+
+  
+
+
+]
